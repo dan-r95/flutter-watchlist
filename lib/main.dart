@@ -68,8 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<ArbitrarySuggestionType> suggestions = [];
 
+  bool loading = false;
+  List<ArbitrarySuggestionType> favorites = [];
+
   void updateSuggestions(String query) async {
     if (query.length > 2) {
+      setState(() {
+        loading = true;
+      });
       final response =
           await http.get("https://www.omdbapi.com/?s=${query}&apikey=e83d3bc2");
 
@@ -81,9 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
             .map((m) => ArbitrarySuggestionType.fromMappedJson(m))
             .toList();
         print(list.toString());
-       // setState(() {
-          suggestions = list;
-       // });
+        // setState(() {
+        suggestions = list;
+        // });
+        setState(() {
+          loading = false;
+        });
       }
     }
   }
@@ -115,22 +124,133 @@ class _MyHomePageState extends State<MyHomePage> {
       itemFilter: (suggestion, input) =>
           suggestion.name.toLowerCase().startsWith(input.toLowerCase()),
     );
+
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          _searchText = "";
+          filteredNames = names;
+        });
+      } else {
+        setState(() {
+          _searchText = _filter.text;
+        });
+        updateSuggestions(_searchText);
+      }
+    });
+  }
+
+  final TextEditingController _filter = new TextEditingController();
+  //final dio = new Dio();
+  String _searchText = "";
+  List names = new List();
+  List filteredNames = new List();
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Watchlist');
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = new Icon(Icons.close);
+        this._appBarTitle = new TextField(
+            controller: _filter,
+            decoration: new InputDecoration(
+                prefixIcon: new Icon(Icons.search), hintText: 'Search...'),
+            autofocus: true);
+      } else {
+        this._searchIcon = new Icon(Icons.search);
+        this._appBarTitle = new Text('Watchlist');
+        suggestions.clear();
+        _filter.clear();
+      }
+    });
+  }
+
+  Widget _buildList() {
+    if (_searchText.isNotEmpty) {
+      List tempList = new List();
+      for (int i = 0; i < filteredNames.length; i++) {
+        if (filteredNames[i]['name']
+            .toLowerCase()
+            .contains(_searchText.toLowerCase())) {
+          tempList.add(filteredNames[i]);
+        }
+      }
+      filteredNames = tempList;
+    }
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (BuildContext context, int index) {
+        return new Card(
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          ListTile(
+            title: Text(suggestions[index].name),
+            onTap: () => print(suggestions[index].imgURL),
+          ),
+          Image.network(suggestions[index].imgURL, fit: BoxFit.scaleDown),
+          ButtonTheme.bar(
+              // make buttons use the appropriate styles for cards
+              child: ButtonBar(children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.star),
+              onPressed: () {
+                favorites.add(suggestions[index]);
+              },
+            )
+          ]))
+        ]));
+      },
+    );
+  }
+
+  Widget _buildFavoritesList() {
+    return ListView.builder(
+      itemCount: favorites.length,
+      itemBuilder: (BuildContext context, int index) {
+        return new Card(
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          ListTile(
+            title: Text(favorites[index].name),
+            onTap: () => print(favorites[index].imgURL),
+          ),
+          Image.network(favorites[index].imgURL, fit: BoxFit.scaleDown),
+          ButtonTheme.bar(
+              // make buttons use the appropriate styles for cards
+              child: ButtonBar(children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                favorites.removeAt(index);
+                setState(() {});
+              },
+            )
+          ]))
+        ]));
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: new AppBar(
-        title: new Text('My Watchlist'),
-      ),
-      body: new Column(children: [
-        new Padding(
-            child: new Container(child: textField),
-            padding: EdgeInsets.all(16.0)),
-        new Padding(
-            padding: EdgeInsets.fromLTRB(0.0, 64.0, 0.0, 0.0),
-            child: new Card(
+    return MaterialApp(
+        title: "Watchlist",
+        home: Scaffold(
+            appBar: new AppBar(
+                centerTitle: true,
+                title: _appBarTitle,
+                leading: new IconButton(
+                  icon: _searchIcon,
+                  onPressed: _searchPressed,
+                )),
+            body: new Stack(children: <Widget>[
+              new Container(child: _buildFavoritesList()),
+              Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: _buildList()),
+              if (loading) new CircularProgressIndicator(),
+            ])
+
+            /* new Card(
                 child: selected != null
                     ? new Column(children: [
                         new ListTile(
@@ -143,8 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: 400.0,
                             height: 300.0)
                       ])
-                    : new Icon(Icons.cancel))),
-      ]),
-    );
+                    : new Icon(Icons.cancel))),*/
+            ));
   }
 }
