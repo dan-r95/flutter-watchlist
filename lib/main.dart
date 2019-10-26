@@ -1,14 +1,33 @@
 import 'dart:convert';
-
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  // final FirebaseApp app = await FirebaseApp.configure(
+  //   name: 'db2',
+  //   // options: Platform.isIOS
+  //   //     ? {} :
+  //   options: const FirebaseOptions(
+  //     googleAppID: '1:297855924061:android:669871c998cc21bd',
+  //     apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
+  //     databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
+  //   ),
+  // );
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  MyApp({Key key}) : super(key: key);
+  // final FirebaseApp app;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +50,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key, this.title, this.app}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -43,6 +62,7 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final FirebaseApp app;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
