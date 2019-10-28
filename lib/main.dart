@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase/firebase.dart' as firebase;
 
 Future<void> main() async {
   // final FirebaseApp app = await FirebaseApp.configure(
@@ -18,6 +19,15 @@ Future<void> main() async {
   //     databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
   //   ),
   // );
+
+  firebase.initializeApp(
+    apiKey: "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
+    authDomain: "flutter-watchlist.firebaseapp.com",
+    databaseURL: "https://flutter-watchlist.firebaseio.com",
+    projectId: "flutter-watchlist",
+    storageBucket: "flutter-watchlist.appspot.com",
+    messagingSenderId: "220852966414",
+  );
 
   runApp(MyApp());
 }
@@ -70,17 +80,32 @@ class MyHomePage extends StatefulWidget {
 
 class ArbitrarySuggestionType {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
-  String imdbUrl;
-  String name, imgURL;
-  double stars;
-  String year;
-  ArbitrarySuggestionType(this.stars, this.name, this.imgURL);
+  String _imdbUrl;
+  String _name, _imgURL;
+  double _stars;
+  String _year;
+  String _id;
+  ArbitrarySuggestionType(this._stars, this._name, this._imgURL);
 
   ArbitrarySuggestionType.fromMappedJson(Map<String, dynamic> json)
-      : imdbUrl = json['imdbID'],
-        name = json['Title'],
-        imgURL = json['Poster'],
-        year = json['Year'];
+      : _imdbUrl = json['imdbID'],
+        _name = json['Title'],
+        _imgURL = json['Poster'],
+        _year = json['Year'];
+
+  ArbitrarySuggestionType.fromSnapshot(DataSnapshot snapshot) {
+    _id = snapshot.key;
+    _name = snapshot.value['Title'];
+    _imgURL = snapshot.value['Poster'];
+    _year = snapshot.value['Year'];
+  }
+
+  String get id => _id;
+  double get stars => _stars;
+  String get year => _year;
+  String get name => _name;
+  String get imdbUrl => _imdbUrl;
+  String get imgURL => _imgURL;
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -90,6 +115,51 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool loading = false;
   List<ArbitrarySuggestionType> favorites = [];
+  StreamSubscription<Event> _onNoteAddedSubscription;
+  StreamSubscription<Event> _onNoteChangedSubscription;
+  final notesReference = FirebaseDatabase.instance.reference().child('flutter-watchlist');
+
+  @override
+  void initState() {
+    super.initState();
+     notesReference.reference().once().then((DataSnapshot snapshot) {
+      print('Connected to second database and read ${snapshot.value}');
+    });
+    favorites = new List();
+    _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
+    _onNoteChangedSubscription =
+        notesReference.onChildChanged.listen(_onNoteUpdated);
+  }
+
+  @override
+  void dispose() {
+    _onNoteAddedSubscription.cancel();
+    super.dispose();
+  }
+
+  void _onNoteAdded(Event event) {
+    setState(() {
+      favorites.add(new ArbitrarySuggestionType.fromSnapshot(event.snapshot));
+    });
+  }
+
+  void _onNoteUpdated(Event event) {
+    var oldNoteValue =
+        favorites.singleWhere((note) => note.id == event.snapshot.key);
+    setState(() {
+      favorites[favorites.indexOf(oldNoteValue)] =
+          new ArbitrarySuggestionType.fromSnapshot(event.snapshot);
+    });
+  }
+
+  void pushToDB(ArbitrarySuggestionType item) {
+    print("will push");
+    notesReference.push().set({
+      'Title': item.name,
+      'Poster': item._imgURL,
+      'Year': item.year
+    });
+  }
 
   void updateSuggestions(String query) async {
     if (query.length > 2) {
@@ -215,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.star),
               onPressed: () {
                 favorites.add(suggestions[index]);
+                pushToDB(suggestions[index]);
               },
             )
           ]))
