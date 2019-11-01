@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase/firebase.dart' as firebase;
+import 'snackbar.dart';
+import 'bloc.dart';
+import 'types.dart';
 
 Future<void> main() async {
   // final FirebaseApp app = await FirebaseApp.configure(
@@ -60,7 +63,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.app}) : super(key: key);
+  MyHomePage({Key key, this.title, this.app, this.uiErrorUtils, this.bloc})
+      : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -73,39 +77,14 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
   final FirebaseApp app;
+  final UiErrorUtils uiErrorUtils;
+  final Bloc bloc;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class ArbitrarySuggestionType {
-  //For the mock data type we will use review (perhaps this could represent a restaurant);
-  String _imdbUrl;
-  String _name, _imgURL;
-  double _stars;
-  String _year;
-  String _id;
-  ArbitrarySuggestionType(this._stars, this._name, this._imgURL);
-
-  ArbitrarySuggestionType.fromMappedJson(Map<String, dynamic> json)
-      : _imdbUrl = json['imdbID'],
-        _name = json['Title'],
-        _imgURL = json['Poster'],
-        _year = json['Year'];
-
-  ArbitrarySuggestionType.fromSnapshot(DataSnapshot snapshot) {
-    _id = snapshot.key;
-    _name = snapshot.value['Title'];
-    _imgURL = snapshot.value['Poster'];
-    _year = snapshot.value['Year'];
-  }
-
-  String get id => _id;
-  double get stars => _stars;
-  String get year => _year;
-  String get name => _name;
-  String get imdbUrl => _imdbUrl;
-  String get imgURL => _imgURL;
+  _MyHomePageState createState() => _MyHomePageState(
+        uiErrorUtils: uiErrorUtils,
+        bloc: bloc,
+      );
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -117,12 +96,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ArbitrarySuggestionType> favorites = [];
   StreamSubscription<Event> _onNoteAddedSubscription;
   StreamSubscription<Event> _onNoteChangedSubscription;
-  final notesReference = FirebaseDatabase.instance.reference().child('flutter-watchlist');
+  final notesReference = FirebaseDatabase.instance.reference();
+  UiErrorUtils _uiErrorUtils;
+  Bloc _bloc;
 
   @override
   void initState() {
     super.initState();
-     notesReference.reference().once().then((DataSnapshot snapshot) {
+    notesReference.reference().once().then((DataSnapshot snapshot) {
       print('Connected to second database and read ${snapshot.value}');
     });
     favorites = new List();
@@ -154,11 +135,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void pushToDB(ArbitrarySuggestionType item) {
     print("will push");
-    notesReference.push().set({
-      'Title': item.name,
-      'Poster': item._imgURL,
-      'Year': item.year
-    });
+    notesReference
+        .push()
+        .set({'Title': item.name, 'Poster': item.imgURL, 'Year': item.year});
   }
 
   void updateSuggestions(String query) async {
@@ -194,27 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ArbitrarySuggestionType selected;
 
-  _MyHomePageState() {
-    textField = new AutoCompleteTextField<ArbitrarySuggestionType>(
-      clearOnSubmit: true,
-      submitOnSuggestionTap: true,
-      suggestionsAmount: 5,
-      textChanged: (value) => {updateSuggestions(value)},
-      decoration: new InputDecoration(
-          hintText: "Search IMDB:", suffixIcon: new Icon(Icons.search)),
-      itemSubmitted: (item) => setState(() => selected = item),
-      key: key,
-      suggestions: suggestions,
-      itemBuilder: (context, suggestion) => new Padding(
-          child: new ListTile(
-              title: new Text(suggestion.name),
-              trailing: new Text("Stars: ${suggestion.year}")),
-          padding: EdgeInsets.all(8.0)),
-      //&itemSorter: (a, b) => a.stars == b.stars ? 0 : a.stars > b.stars ? -1 : 1,
-      itemFilter: (suggestion, input) =>
-          suggestion.name.toLowerCase().startsWith(input.toLowerCase()),
-    );
-
+  _MyHomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -228,6 +187,9 @@ class _MyHomePageState extends State<MyHomePage> {
         updateSuggestions(_searchText);
       }
     });
+
+    _bloc = bloc ?? Bloc();
+    _uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
   }
 
   final TextEditingController _filter = new TextEditingController();
@@ -284,8 +246,13 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: Icon(Icons.star),
               onPressed: () {
-                favorites.add(suggestions[index]);
-                pushToDB(suggestions[index]);
+                if (favorites.indexOf(suggestions[index]) == -1) {
+                  favorites.add(suggestions[index]);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('added to favs!'),
+                  ));
+                  pushToDB(suggestions[index]);
+                }
               },
             )
           ]))
@@ -312,6 +279,9 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.delete),
               onPressed: () {
                 favorites.removeAt(index);
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('deleted!'),
+                ));
                 setState(() {});
               },
             )
@@ -323,6 +293,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Subscribe to UI feedback streams from  provided _bloc
+    _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
     return MaterialApp(
         title: "Watchlist",
         home: Scaffold(
@@ -336,6 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
             body: new Stack(children: <Widget>[
               new Container(child: _buildFavoritesList()),
               Container(
+                  color: const Color(0xFFFFFF).withOpacity(0.5),
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: _buildList()),
               if (loading) new CircularProgressIndicator(),
