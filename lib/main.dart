@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'snackbar.dart';
 import 'bloc.dart';
@@ -17,26 +17,6 @@ import 'register.dart';
 import 'splash.dart';
 
 Future<void> main() async {
-  // final FirebaseApp app = await FirebaseApp.configure(
-  //   name: 'db2',
-  //   // options: Platform.isIOS
-  //   //     ? {} :
-  //   options: const FirebaseOptions(
-  //     googleAppID: '1:297855924061:android:669871c998cc21bd',
-  //     apiKey: 'AIzaSyD_shO5mfO9lhy2TVWhfo1VUmARKlG4suk',
-  //     databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
-  //   ),
-  // );
-  /*
-  FirebaseDatabase.initializeApp(
-    apiKey: "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
-    authDomain: "flutter-watchlist.firebaseapp.com",
-    databaseURL: "https://flutter-watchlist.firebaseio.com",
-    projectId: "flutter-watchlist",
-    storageBucket: "flutter-watchlist.appspot.com",
-    messagingSenderId: "220852966414",
-  );
-*/
   runApp(MyApp());
 }
 
@@ -154,7 +134,7 @@ class _HomePageState extends State<HomePage> {
     favorites.add(item);
   }
 
-  void updateSuggestions(String query) async {
+  Future<List<ArbitrarySuggestionType>> updateSuggestions(String query) async {
     if (query.length > 2) {
       setState(() {
         loading = true;
@@ -171,13 +151,16 @@ class _HomePageState extends State<HomePage> {
             .toList();
         print(list.toString());
         // setState(() {
-        suggestions = list;
+        //suggestions = list;
         // });
         setState(() {
           loading = false;
         });
+        return list;
       }
+      return null;
     }
+    return null;
   }
 
   GlobalKey key =
@@ -218,11 +201,27 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
-            controller: _filter,
-            decoration: new InputDecoration(
-                prefixIcon: new Icon(Icons.search), hintText: 'Search...'),
-            autofocus: true);
+        this._appBarTitle = TypeAheadField(
+          textFieldConfiguration: TextFieldConfiguration(
+              autofocus: true,
+              style: DefaultTextStyle.of(context)
+                  .style
+                  .copyWith(fontStyle: FontStyle.italic),
+              decoration: InputDecoration(border: OutlineInputBorder())),
+          suggestionsCallback: (pattern) async {
+            return await updateSuggestions(pattern);
+          },
+          itemBuilder: (context, ArbitrarySuggestionType suggestion) {
+            return ListTile(
+              leading: Icon(Icons.shopping_cart),
+              title: Text(suggestion.name),
+              subtitle: Text('\$${suggestion.year}'),
+            );
+          },
+          onSuggestionSelected: (suggestion) {
+            showDialogA(context, suggestion);
+          },
+        );
       } else {
         this._searchIcon = new Icon(Icons.search);
         this._appBarTitle = new Text('Watchlist');
@@ -231,7 +230,57 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+
   //TODO use https://pub.dev/packages/flutter_typeahead
+  showDialogA(BuildContext context, ArbitrarySuggestionType suggestion) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rewind and remember'),
+          content: SingleChildScrollView(
+              child: ListBody(children: <Widget>[
+            new Card(
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              ListTile(
+                title: Text(suggestion.name),
+                onTap: () => print(suggestion.imgURL),
+              ),
+              Image.network(suggestion.imgURL, fit: BoxFit.scaleDown),
+              ButtonTheme.bar(
+                // make buttons use the appropriate styles for cards
+                child: ButtonBar(
+                  children: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.star),
+                        onPressed: () {
+                          /*if (favorites.indexOf(suggestions[dex]) == -1) {
+                  favorites.add(suggestions[index]);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('added to favs!'),
+                  ));*/
+                          pushToDB(suggestion);
+                          //}
+                        }),
+                  ],
+                ),
+              )
+            ]))
+          ])),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _buildList() {
     if (_searchText.isNotEmpty) {
@@ -322,7 +371,7 @@ class _HomePageState extends State<HomePage> {
                           shrinkWrap: true,
                           itemCount: snapshot.data.documents.length,
                           itemBuilder: (BuildContext context, int index) {
-                            if(snapshot.data.documents.length == 0){
+                            if (snapshot.data.documents.length == 0) {
                               return Text("start adding movies!");
                             }
                             var document = snapshot.data.documents[index];
@@ -384,10 +433,6 @@ class _HomePageState extends State<HomePage> {
                 )),
             body: new Stack(children: <Widget>[
               new Container(child: _buildFavoritesList()),
-             /* Container(
-                  //color: const Color(0xFFFFFF).withOpacity(0.5),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: _buildList()),*/
               if (loading) new CircularProgressIndicator(),
             ])
 
