@@ -118,8 +118,8 @@ class _HomePageState extends State<HomePage> {
     });
     favorites = new List();
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
-    _onNoteChangedSubscription =
-        notesReference.onChildChanged.listen(_onNoteUpdated);
+    // _onNoteChangedSubscription =
+    //    notesReference.onChildChanged.listen(_onNoteUpdated);
   }
 
   @override
@@ -134,6 +134,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+/*
   void _onNoteUpdated(Event event) {
     var oldNoteValue =
         favorites.singleWhere((note) => note.id == event.snapshot.key);
@@ -142,16 +143,15 @@ class _HomePageState extends State<HomePage> {
           new ArbitrarySuggestionType.fromSnapshot(event.snapshot);
     });
   }
-
+*/
   void pushToDB(ArbitrarySuggestionType item) {
     print("will push");
     Firestore.instance
         .collection('favorites')
         .add({'Title': item.name, 'Poster': item.imgURL, 'Year': item.year})
-        .then((result) => {
-              Navigator.pop(context),
-            })
-        .catchError((err) => print(err));
+        .then((result) => {})
+        .catchError((err) => (_bloc.addMessage(err)));
+    favorites.add(item);
   }
 
   void updateSuggestions(String query) async {
@@ -231,6 +231,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+  //TODO use https://pub.dev/packages/flutter_typeahead
 
   Widget _buildList() {
     if (_searchText.isNotEmpty) {
@@ -303,31 +304,68 @@ class _HomePageState extends State<HomePage> {
         ]));
       },
     );*/
-    Center(
+    _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
+    return Center(
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('tasks').snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError)
-                  return new Text('Error: ${snapshot.error}');
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return new Text('Loading...');
-                  default:
-                    return new ListView(
-                      children: snapshot.data.documents
-                          .map((DocumentSnapshot document) {
-                        return new ListTile(
-                          title: document['Title'],
-                          leading: document['Year'],
-                        );
-                      }).toList(),
-                    );
-                }
-              },
-            )));
+                stream: Firestore.instance.collection('favorites').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError)
+                    return new Text('Error: ${snapshot.error}');
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return new Text('Loading...');
+                    default:
+                      return new ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if(snapshot.data.documents.length == 0){
+                              return Text("start adding movies!");
+                            }
+                            var document = snapshot.data.documents[index];
+
+                            return new Card(
+                              semanticContainer: true,
+                              child: Column(children: <Widget>[
+                                Image.network(
+                                  document['Poster'],
+                                  fit: BoxFit.scaleDown,
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.album),
+                                  title: Text(document['Title']),
+                                  subtitle: Text(document['Year']),
+                                ),
+                                ButtonTheme.bar(
+                                    // make buttons use the appropriate styles for cards
+                                    child: ButtonBar(children: <Widget>[
+                                  FlatButton(
+                                    child: const Text('Remove'),
+                                    onPressed: () {
+                                      Firestore.instance
+                                          .document("favorites/" +
+                                              document.documentID)
+                                          .delete()
+                                          .then((onValue) =>
+                                              _bloc.addMessage("deleted entry"))
+                                          .catchError((error) =>
+                                              _bloc.addMessage(error));
+                                    },
+                                  ),
+                                ]))
+                              ]),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              elevation: 5,
+                              margin: EdgeInsets.all(10),
+                            );
+                          });
+                  }
+                })));
   }
 
   @override
@@ -346,10 +384,10 @@ class _HomePageState extends State<HomePage> {
                 )),
             body: new Stack(children: <Widget>[
               new Container(child: _buildFavoritesList()),
-              Container(
-                  color: const Color(0xFFFFFF).withOpacity(0.5),
+             /* Container(
+                  //color: const Color(0xFFFFFF).withOpacity(0.5),
                   width: MediaQuery.of(context).size.width * 0.8,
-                  child: _buildList()),
+                  child: _buildList()),*/
               if (loading) new CircularProgressIndicator(),
             ])
 

@@ -4,21 +4,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
 import 'bloc.dart';
 import 'snackbar.dart';
+
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key,this.uiErrorUtils, this.bloc}) : super(key: key);
- final UiErrorUtils uiErrorUtils;
-  final Bloc bloc; 
+  SplashPage({Key key, this.uiErrorUtils, this.bloc}) : super(key: key);
+  final UiErrorUtils uiErrorUtils;
+  final Bloc bloc;
   @override
-  _SplashPageState createState() => _SplashPageState(  uiErrorUtils,
-         bloc);
+  _SplashPageState createState() => _SplashPageState(uiErrorUtils, bloc);
 }
 
 class _SplashPageState extends State<SplashPage> {
-
-    UiErrorUtils uiErrorUtils;
+  UiErrorUtils uiErrorUtils;
   Bloc bloc;
 
- _SplashPageState(this.uiErrorUtils, this.bloc) {
+  _SplashPageState(this.uiErrorUtils, this.bloc) {
     bloc = bloc ?? Bloc();
     uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
   }
@@ -44,7 +43,7 @@ class _SplashPageState extends State<SplashPage> {
                                         title: result["fname"] + "'s Tasks",
                                         uuid: currentUser.uid,
                                       ))))
-                      .catchError((err) => print(err))
+                      .catchError((err) => bloc.addMessage(err))
                 }
             })
         .catchError((err) => (bloc.addMessage(err)));
@@ -53,6 +52,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(
       body: Center(
         child: Container(

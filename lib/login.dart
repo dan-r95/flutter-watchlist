@@ -58,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(
         appBar: AppBar(
           title: Text("Login"),
@@ -108,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   uuid: currentUser.user.uid,
                                                 )))})
                                 .catchError((err) =>bloc.addMessage(err)))
-                            .catchError((err) => (err));
+                            .catchError((err) => (bloc.addMessage(err)));
                       }
                     },
                   ),

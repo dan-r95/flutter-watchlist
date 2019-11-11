@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
+import 'bloc.dart';
+import 'snackbar.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({Key key}) : super(key: key);
-
+  RegisterPage({Key key, this.bloc, this.uiErrorUtils}) : super(key: key);
+  final UiErrorUtils uiErrorUtils;
+  final Bloc bloc;
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  _RegisterPageState createState() => _RegisterPageState(uiErrorUtils, bloc);
 }
 
 class _RegisterPageState extends State<RegisterPage> {
@@ -17,6 +20,14 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailInputController;
   TextEditingController pwdInputController;
   TextEditingController confirmPwdInputController;
+
+  UiErrorUtils uiErrorUtils;
+  Bloc bloc;
+
+  _RegisterPageState(this.uiErrorUtils, this.bloc) {
+    bloc = bloc ?? Bloc();
+    uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+  }
 
   @override
   initState() {
@@ -49,6 +60,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(
         appBar: AppBar(
           title: Text("Register"),
@@ -140,8 +152,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                         pwdInputController.clear(),
                                         confirmPwdInputController.clear()
                                       })
-                                  .catchError((err) => (err)))
-                              .catchError((err) => print(err));
+                                  .catchError((err) => (bloc.addMessage(err))))
+                              .catchError((err) => bloc.addMessage(err));
                         } else {
                           showDialog(
                               context: context,
