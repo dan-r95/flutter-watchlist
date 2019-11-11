@@ -235,7 +235,8 @@ class _HomePageState extends State<HomePage> {
   showDialogA(BuildContext context, ArbitrarySuggestionType suggestion) {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true, // user must tap button!
+       
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Rewind and remember'),
@@ -262,6 +263,12 @@ class _HomePageState extends State<HomePage> {
                     content: Text('added to favs!'),
                   ));*/
                           pushToDB(suggestion);
+                          setState(() {
+                            if (this._searchIcon.icon == Icons.search) {
+                              this._searchIcon = new Icon(Icons.close);
+                                this._appBarTitle = new Text('Watchlist');
+                            }
+                          });
                           //}
                         }),
                   ],
