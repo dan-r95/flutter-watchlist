@@ -1,15 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase/firebase.dart' as firebase;
+
 import 'snackbar.dart';
 import 'bloc.dart';
 import 'types.dart';
+import 'login.dart';
+import 'register.dart';
+import 'splash.dart';
 
 Future<void> main() async {
   // final FirebaseApp app = await FirebaseApp.configure(
@@ -22,7 +27,7 @@ Future<void> main() async {
   //     databaseURL: 'https://flutterfire-cd2f7.firebaseio.com',
   //   ),
   // );
-
+  /*
   firebase.initializeApp(
     apiKey: "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
     authDomain: "flutter-watchlist.firebaseapp.com",
@@ -30,7 +35,7 @@ Future<void> main() async {
     projectId: "flutter-watchlist",
     storageBucket: "flutter-watchlist.appspot.com",
     messagingSenderId: "220852966414",
-  );
+  );*/
 
   runApp(MyApp());
 }
@@ -44,26 +49,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: Colors.blue,
+        ),
+        home: SplashPage(),
+        routes: <String, WidgetBuilder>{
+          '/home': (BuildContext context) => HomePage(title: 'Home'),
+          '/login': (BuildContext context) => LoginPage(),
+          '/register': (BuildContext context) => RegisterPage(),
+        });
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, this.app, this.uiErrorUtils, this.bloc})
+class HomePage extends StatefulWidget {
+  HomePage(
+      {Key key, this.title, this.app, this.uiErrorUtils, this.bloc, this.uuid})
       : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -74,20 +84,20 @@ class MyHomePage extends StatefulWidget {
   // case the title) provided by the parent (in this case the App widget) and
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
-
   final String title;
+  final String uuid;
   final FirebaseApp app;
   final UiErrorUtils uiErrorUtils;
   final Bloc bloc;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(
+  _HomePageState createState() => _HomePageState(
         uiErrorUtils: uiErrorUtils,
         bloc: bloc,
       );
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   String currentText = "";
 
   List<ArbitrarySuggestionType> suggestions = [];
@@ -173,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ArbitrarySuggestionType selected;
 
-  _MyHomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
+  _HomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
