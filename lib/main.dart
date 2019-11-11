@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase/firebase.dart' as firebase;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'snackbar.dart';
 import 'bloc.dart';
@@ -28,15 +28,15 @@ Future<void> main() async {
   //   ),
   // );
   /*
-  firebase.initializeApp(
+  FirebaseDatabase.initializeApp(
     apiKey: "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
     authDomain: "flutter-watchlist.firebaseapp.com",
     databaseURL: "https://flutter-watchlist.firebaseio.com",
     projectId: "flutter-watchlist",
     storageBucket: "flutter-watchlist.appspot.com",
     messagingSenderId: "220852966414",
-  );*/
-
+  );
+*/
   runApp(MyApp());
 }
 
@@ -145,9 +145,13 @@ class _HomePageState extends State<HomePage> {
 
   void pushToDB(ArbitrarySuggestionType item) {
     print("will push");
-    notesReference
-        .push()
-        .set({'Title': item.name, 'Poster': item.imgURL, 'Year': item.year});
+    Firestore.instance
+        .collection('favorites')
+        .add({'Title': item.name, 'Poster': item.imgURL, 'Year': item.year})
+        .then((result) => {
+              Navigator.pop(context),
+            })
+        .catchError((err) => print(err));
   }
 
   void updateSuggestions(String query) async {
@@ -272,7 +276,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFavoritesList() {
-    return ListView.builder(
+    /*return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
         return new Card(
@@ -298,7 +302,32 @@ class _HomePageState extends State<HomePage> {
           ]))
         ]));
       },
-    );
+    );*/
+    Center(
+        child: Container(
+            padding: const EdgeInsets.all(10.0),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('tasks').snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError)
+                  return new Text('Error: ${snapshot.error}');
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return new Text('Loading...');
+                  default:
+                    return new ListView(
+                      children: snapshot.data.documents
+                          .map((DocumentSnapshot document) {
+                        return new ListTile(
+                          title: document['Title'],
+                          leading: document['Year'],
+                        );
+                      }).toList(),
+                    );
+                }
+              },
+            )));
   }
 
   @override

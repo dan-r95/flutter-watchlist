@@ -2,24 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
+import 'bloc.dart';
+import 'snackbar.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key}) : super(key: key);
+  LoginPage({Key key, this.uiErrorUtils, this.bloc}) : super(key: key);
+
+  final UiErrorUtils uiErrorUtils;
+  final Bloc bloc;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState(
+         uiErrorUtils,
+         bloc,
+      );
 }
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   TextEditingController emailInputController;
   TextEditingController pwdInputController;
+  UiErrorUtils uiErrorUtils;
+  Bloc bloc;
 
   @override
   initState() {
+    super.initState();
     emailInputController = new TextEditingController();
     pwdInputController = new TextEditingController();
-    super.initState();
+  }
+
+  _LoginPageState(this.uiErrorUtils, this.bloc) {
+    bloc = bloc ?? Bloc();
+    uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
   }
 
   String emailValidator(String value) {
@@ -34,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   String pwdValidator(String value) {
-    if (value.length < 8) {
-      return 'Password must be longer than 8 characters';
+    if (value.length < 6) {
+      return 'Password must be longer than 6 characters';
     } else {
       return null;
     }
@@ -82,7 +97,8 @@ class _LoginPageState extends State<LoginPage> {
                                 .collection("users")
                                 .document(currentUser.user.uid)
                                 .get()
-                                .then((DocumentSnapshot result) =>
+                                .then((DocumentSnapshot result) =>{
+                                   print(result),
                                     Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
@@ -90,9 +106,9 @@ class _LoginPageState extends State<LoginPage> {
                                                   title: result["fname"] +
                                                       "'s Tasks",
                                                   uuid: currentUser.user.uid,
-                                                ))))
-                                .catchError((err) => print(err)))
-                            .catchError((err) => print(err));
+                                                )))})
+                                .catchError((err) =>bloc.addMessage(err)))
+                            .catchError((err) => (err));
                       }
                     },
                   ),

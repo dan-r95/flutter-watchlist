@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "220852966414",
+    "firebase_url": "https://flutter-watchlist.firebaseio.com",
+    "project_id": "flutter-watchlist",
+    "storage_bucket": "flutter-watchlist.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220852966414:android:e61eaf584a23c743cad85f",
+        "android_client_info": {
+          "package_name": "flutter.watchlist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220852966414-65na518a477ikct2348lapo34s7uj8f9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDk08LrBBTBBTzLzEhivG7XQ_q3mfWzSIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220852966414-65na518a477ikct2348lapo34s7uj8f9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

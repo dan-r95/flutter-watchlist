@@ -130,7 +130,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                                           firstNameInputController
                                                                   .text +
                                                               "'s Tasks",
-                                                      uuid: currentUser.user.uid,
+                                                      uuid:
+                                                          currentUser.user.uid,
                                                     )),
                                             (_) => false),
                                         firstNameInputController.clear(),
@@ -139,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         pwdInputController.clear(),
                                         confirmPwdInputController.clear()
                                       })
-                                  .catchError((err) => print(err)))
+                                  .catchError((err) => (err)))
                               .catchError((err) => print(err));
                         } else {
                           showDialog(

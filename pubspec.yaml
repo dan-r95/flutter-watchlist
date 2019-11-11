@@ -22,7 +22,6 @@ dependencies:
   autocomplete_textfield:
   http:
   firebase_database:
-  firebase: ^5.0.0
   rxdart:
   firebase_auth:
   cloud_firestore:
