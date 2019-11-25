@@ -106,6 +106,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _onNoteAddedSubscription.cancel();
     super.dispose();
+    _onNoteChangedSubscription.cancel();
   }
 
   void _onNoteAdded(Event event) {
@@ -204,9 +205,7 @@ class _HomePageState extends State<HomePage> {
         this._appBarTitle = TypeAheadField(
           textFieldConfiguration: TextFieldConfiguration(
               autofocus: true,
-              style: DefaultTextStyle.of(context)
-                  .style
-                  .copyWith(fontStyle: FontStyle.italic),
+              style: TextStyle(),
               decoration: InputDecoration(border: OutlineInputBorder())),
           suggestionsCallback: (pattern) async {
             return await updateSuggestions(pattern);
@@ -236,10 +235,10 @@ class _HomePageState extends State<HomePage> {
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
-       
+
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Rewind and remember'),
+          title: Text('Add new movie?'),
           content: SingleChildScrollView(
               child: ListBody(children: <Widget>[
             new Card(
@@ -250,30 +249,27 @@ class _HomePageState extends State<HomePage> {
                 onTap: () => print(suggestion.imgURL),
               ),
               Image.network(suggestion.imgURL, fit: BoxFit.scaleDown),
-              ButtonTheme.bar(
-                // make buttons use the appropriate styles for cards
-                child: ButtonBar(
-                  children: <Widget>[
-                    IconButton(
-                        icon: Icon(Icons.star),
-                        onPressed: () {
-                          /*if (favorites.indexOf(suggestions[dex]) == -1) {
+              ButtonBar(
+                children: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.star),
+                      onPressed: () {
+                        /*if (favorites.indexOf(suggestions[dex]) == -1) {
                   favorites.add(suggestions[index]);
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('added to favs!'),
                   ));*/
-                          pushToDB(suggestion);
-                          setState(() {
-                            if (this._searchIcon.icon == Icons.search) {
-                              this._searchIcon = new Icon(Icons.close);
-                                this._appBarTitle = new Text('Watchlist');
-                            }
-                          });
-                          //}
-                        }),
-                  ],
-                ),
-              )
+                        pushToDB(suggestion);
+                        setState(() {
+                          if (this._searchIcon.icon == Icons.search) {
+                            this._searchIcon = new Icon(Icons.close);
+                            this._appBarTitle = new Text('Watchlist');
+                          }
+                        });
+                        //}
+                      }),
+                ],
+              ),
             ]))
           ])),
           actions: <Widget>[
@@ -311,9 +307,7 @@ class _HomePageState extends State<HomePage> {
             onTap: () => print(suggestions[index].imgURL),
           ),
           Image.network(suggestions[index].imgURL, fit: BoxFit.scaleDown),
-          ButtonTheme.bar(
-              // make buttons use the appropriate styles for cards
-              child: ButtonBar(children: <Widget>[
+          ButtonBar(children: <Widget>[
             IconButton(
               icon: Icon(Icons.star),
               onPressed: () {
@@ -326,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             )
-          ]))
+          ])
         ]));
       },
     );
@@ -374,8 +368,13 @@ class _HomePageState extends State<HomePage> {
                     case ConnectionState.waiting:
                       return new Text('Loading...');
                     default:
-                      return new ListView.builder(
+                      return new GridView.builder(
                           shrinkWrap: true,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 2.0,
+                                  mainAxisSpacing: 2.0),
                           itemCount: snapshot.data.documents.length,
                           itemBuilder: (BuildContext context, int index) {
                             if (snapshot.data.documents.length == 0) {
@@ -384,41 +383,63 @@ class _HomePageState extends State<HomePage> {
                             var document = snapshot.data.documents[index];
 
                             return new Card(
-                              semanticContainer: true,
-                              child: Column(children: <Widget>[
-                                Image.network(
-                                  document['Poster'],
-                                  fit: BoxFit.scaleDown,
+                                semanticContainer: true,
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
                                 ),
-                                ListTile(
-                                  leading: Icon(Icons.album),
-                                  title: Text(document['Title']),
-                                  subtitle: Text(document['Year']),
-                                ),
-                                ButtonTheme.bar(
-                                    // make buttons use the appropriate styles for cards
-                                    child: ButtonBar(children: <Widget>[
-                                  FlatButton(
-                                    child: const Text('Remove'),
-                                    onPressed: () {
-                                      Firestore.instance
-                                          .document("favorites/" +
-                                              document.documentID)
-                                          .delete()
-                                          .then((onValue) =>
-                                              _bloc.addMessage("deleted entry"))
-                                          .catchError((error) =>
-                                              _bloc.addMessage(error));
-                                    },
+                                elevation: 5,
+                                margin: EdgeInsets.all(10),
+                                child: Stack(children: <Widget>[
+                                  Image.network(
+                                    document['Poster'],
+                                    color: Color.fromRGBO(255, 255, 255, 0.7),
+                                    colorBlendMode: BlendMode.modulate,
+                                    fit: BoxFit.fitWidth,
+                                    // width: context.size.width,
+                                    // height: context.size.height / 4,
                                   ),
-                                ]))
-                              ]),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              elevation: 5,
-                              margin: EdgeInsets.all(10),
-                            );
+                                  // This gradient ensures that the toolbar icons are distinct
+                                  // against the background image.
+                                   DecoratedBox(
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          ListTile(
+                                            leading: Icon(Icons.movie),
+                                            title: Text(document['Title']),
+                                            subtitle: Text(document['Year']),
+                                          ),
+                                          ButtonBar(children: <Widget>[
+                                            FlatButton(
+                                              child: const Text('Remove'),
+                                              onPressed: () {
+                                                Firestore.instance
+                                                    .document("favorites/" +
+                                                        document.documentID)
+                                                    .delete()
+                                                    .then((onValue) =>
+                                                        _bloc.addMessage(
+                                                            "deleted entry"))
+                                                    .catchError((error) => _bloc
+                                                        .addMessage(error));
+                                              },
+                                            ),
+                                          ])
+                                        ]),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment(0.0, -1.0),
+                                        end: Alignment(0.0, -0.4),
+                                        colors: <Color>[
+                                          Color(0x60000000),
+                                          Color(0x00000000)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ]));
                           });
                   }
                 })));
