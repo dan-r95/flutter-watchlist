@@ -1,5 +1,9 @@
 
 import 'package:rxdart/rxdart.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
+
 
 class Bloc {
   // UI Feedback Subjects
@@ -21,5 +25,12 @@ class Bloc {
   @override
   void dispose() {
     snackBarSubject?.close();
+    animationIndexController.close();
   }
+
+   // stream to control the theme of the app
+  BehaviorSubject<int> animationIndexController =
+      BehaviorSubject<int>.seeded(1); //listen with multiple subjects
+  Stream<int> get currentAnimIndex => animationIndexController.stream.asBroadcastStream();
+
 }

@@ -15,6 +15,7 @@ import 'types.dart';
 import 'login.dart';
 import 'register.dart';
 import 'splash.dart';
+import 'tab_bloc.dart';
 
 Future<void> main() async {
   runApp(MyApp());
@@ -100,6 +101,8 @@ class _HomePageState extends State<HomePage> {
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     // _onNoteChangedSubscription =
     //    notesReference.onChildChanged.listen(_onNoteUpdated);
+
+    _children.addAll([_buildFavoritesList(), _buildCompletedList()]);
   }
 
   @override
@@ -391,58 +394,75 @@ class _HomePageState extends State<HomePage> {
                                 elevation: 5,
                                 margin: EdgeInsets.all(10),
                                 child: Stack(children: <Widget>[
-                                  Image.network(
-                                    document['Poster'],
-                                    color: Color.fromRGBO(255, 255, 255, 0.7),
-                                    colorBlendMode: BlendMode.modulate,
-                                    fit: BoxFit.fitWidth,
-                                    // width: context.size.width,
-                                    // height: context.size.height / 4,
-                                  ),
-                                  // This gradient ensures that the toolbar icons are distinct
-                                  // against the background image.
-                                   DecoratedBox(
-                                    child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          ListTile(
-                                            leading: Icon(Icons.movie),
-                                            title: Text(document['Title']),
-                                            subtitle: Text(document['Year']),
-                                          ),
-                                          ButtonBar(children: <Widget>[
-                                            FlatButton(
-                                              child: const Text('Remove'),
-                                              onPressed: () {
-                                                Firestore.instance
-                                                    .document("favorites/" +
-                                                        document.documentID)
-                                                    .delete()
-                                                    .then((onValue) =>
-                                                        _bloc.addMessage(
-                                                            "deleted entry"))
-                                                    .catchError((error) => _bloc
-                                                        .addMessage(error));
-                                              },
-                                            ),
-                                          ])
-                                        ]),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment(0.0, -1.0),
-                                        end: Alignment(0.0, -0.4),
-                                        colors: <Color>[
-                                          Color(0x60000000),
-                                          Color(0x00000000)
-                                        ],
+                                  Column(
+                                    children: <Widget>[
+                                      Image.network(
+                                        document['Poster'],
+                                        color:
+                                            Color.fromRGBO(255, 255, 255, 0.7),
+                                        colorBlendMode: BlendMode.modulate,
+                                        fit: BoxFit.fitWidth,
+                                        // width: context.size.width,
+                                        // height: context.size.height / 4,
                                       ),
-                                    ),
-                                  ),
+                                      // This gradient ensures that the toolbar icons are distinct
+                                      // against the background image.
+                                      DecoratedBox(
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              ListTile(
+                                                leading: Icon(Icons.movie),
+                                                title: Text(document['Title']),
+                                                subtitle:
+                                                    Text(document['Year']),
+                                              ),
+                                              ButtonBar(children: <Widget>[
+                                                FlatButton(
+                                                  child: const Text('Remove'),
+                                                  onPressed: () {
+                                                    Firestore.instance
+                                                        .document("favorites/" +
+                                                            document.documentID)
+                                                        .delete()
+                                                        .then((onValue) =>
+                                                            _bloc.addMessage(
+                                                                "deleted entry"))
+                                                        .catchError((error) =>
+                                                            _bloc.addMessage(
+                                                                error));
+                                                  },
+                                                ),
+                                              ])
+                                            ]),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment(0.0, -1.0),
+                                            end: Alignment(0.0, -0.4),
+                                            colors: <Color>[
+                                              Color(0x60000000),
+                                              Color(0x00000000)
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
                                 ]));
                           });
                   }
                 })));
+  }
+
+  Widget _buildCompletedList() {
+    return Text("TODO");
+  }
+
+  List<Widget> _children = [];
+
+  void onTabTapped(int index) {
+    tabBloc.updateIndex(index);
   }
 
   @override
@@ -455,16 +475,53 @@ class _HomePageState extends State<HomePage> {
             appBar: new AppBar(
                 centerTitle: true,
                 title: _appBarTitle,
-                leading: new IconButton(
-                  icon: _searchIcon,
-                  onPressed: _searchPressed,
-                )),
-            body: new Stack(children: <Widget>[
-              new Container(child: _buildFavoritesList()),
-              if (loading) new CircularProgressIndicator(),
-            ])
+                actions: <Widget>[
+                  new IconButton(
+                    icon: _searchIcon,
+                    onPressed: _searchPressed,
+                  ),
+                ]),
+            body: StreamBuilder(
+                stream: tabBloc.getIndex,
+                initialData: 3,
+                builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                  return IndexedStack(
+                    index: snapshot2.data,
+                    children: _children,
+                  );
+                }),
 
-            /* new Card(
+            // define the bottom tab navigaation bar
+            bottomNavigationBar: StreamBuilder(
+                initialData: 0,
+                stream: tabBloc.getIndex,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  return BottomNavigationBar(
+                    onTap: onTabTapped, // new
+                    fixedColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                    currentIndex: snapshot.data, // new
+                    type: BottomNavigationBarType.fixed,
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: new Icon(Icons.list, color: Colors.white),
+                        title: new Text(
+                          'To Watch',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      BottomNavigationBarItem(
+                        icon: new Icon(Icons.alarm, color: Colors.white),
+                        title: new Text(
+                          'Completed',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  );
+                })));
+
+    /* new Card(
                 child: selected != null
                     ? new Column(children: [
                         new ListTile(
@@ -478,6 +535,5 @@ class _HomePageState extends State<HomePage> {
                             height: 300.0)
                       ])
                     : new Icon(Icons.cancel))),*/
-            ));
   }
 }
