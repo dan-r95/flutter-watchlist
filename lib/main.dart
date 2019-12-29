@@ -132,10 +132,36 @@ class _HomePageState extends State<HomePage> {
     print("will push");
     Firestore.instance
         .collection('favorites')
-        .add({'Title': item.name, 'Poster': item.imgURL, 'Year': item.year})
+        .add({
+          'Title': item.name,
+          'Poster': item.imgURL,
+          'Year': item.year,
+          'imdbUrl': item.imdbUrl
+        })
         .then((result) => {})
         .catchError((err) => (_bloc.addMessage(err)));
     favorites.add(item);
+  }
+
+  Future<MovieDescription> getMovieDescription(String id) async {
+    final response =
+        await http.get("https://www.omdbapi.com/?i=$id&apikey=e83d3bc2");
+
+    print(response.body);
+    Map<String, dynamic> decoded = jsonDecode(response.body);
+    print(decoded);
+    if (decoded != null) {
+      MovieDescription desc = MovieDescription.fromMappedJson(decoded);
+      print(desc.toString());
+      // setState(() {
+      //suggestions = list;
+      // });
+      setState(() {
+        loading = false;
+      });
+      return desc;
+    }
+    return null;
   }
 
   Future<List<ArbitrarySuggestionType>> updateSuggestions(String query) async {
@@ -144,7 +170,7 @@ class _HomePageState extends State<HomePage> {
         loading = true;
       });
       final response =
-          await http.get("https://www.omdbapi.com/?s=${query}&apikey=e83d3bc2");
+          await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
 
       print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
@@ -393,63 +419,71 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 elevation: 5,
                                 margin: EdgeInsets.all(10),
-                                child: Stack(children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      Image.network(
-                                        document['Poster'],
-                                        color:
-                                            Color.fromRGBO(255, 255, 255, 0.7),
-                                        colorBlendMode: BlendMode.modulate,
-                                        fit: BoxFit.fitWidth,
-                                        // width: context.size.width,
-                                        // height: context.size.height / 4,
-                                      ),
-                                      // This gradient ensures that the toolbar icons are distinct
-                                      // against the background image.
-                                      DecoratedBox(
-                                        child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              ListTile(
-                                                leading: Icon(Icons.movie),
-                                                title: Text(document['Title']),
-                                                subtitle:
-                                                    Text(document['Year']),
+                                child: Stack(
+                                  children: <Widget>[
+                                    Image.network(
+                                      document['Poster'],
+                                      color: Color.fromRGBO(255, 255, 255, 0.7),
+                                      colorBlendMode: BlendMode.modulate,
+                                      fit: BoxFit.fitWidth,
+                                      // width: context.size.width,
+                                      // height: context.size.height / 4,
+                                    ),
+                                    // This gradient ensures that the toolbar icons are distinct
+                                    // against the background image.
+                                    DecoratedBox(
+                                      child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            ListTile(
+                                              trailing: IconButton(
+                                                iconSize: 8,
+                                                icon: Icon(Icons.info),
+                                                onPressed: () =>
+                                                    getMovieDescription(
+                                                        document['imdbUrl']),
                                               ),
-                                              ButtonBar(children: <Widget>[
-                                                FlatButton(
-                                                  child: const Text('Remove'),
-                                                  onPressed: () {
-                                                    Firestore.instance
-                                                        .document("favorites/" +
-                                                            document.documentID)
-                                                        .delete()
-                                                        .then((onValue) =>
-                                                            _bloc.addMessage(
-                                                                "deleted entry"))
-                                                        .catchError((error) =>
-                                                            _bloc.addMessage(
-                                                                error));
-                                                  },
-                                                ),
-                                              ])
-                                            ]),
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment(0.0, -1.0),
-                                            end: Alignment(0.0, -0.4),
-                                            colors: <Color>[
-                                              Color(0x60000000),
-                                              Color(0x00000000)
-                                            ],
-                                          ),
+                                              leading: Icon(Icons.movie),
+                                              title: Text(
+                                                document['Title'],
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              subtitle: Text(document['Year']),
+                                            ),
+                                            ButtonBar(children: <Widget>[
+                                              FlatButton(
+                                                child: const Text('Remove'),
+                                                onPressed: () {
+                                                  Firestore.instance
+                                                      .document("favorites/" +
+                                                          document.documentID)
+                                                      .delete()
+                                                      .then((onValue) =>
+                                                          _bloc.addMessage(
+                                                              "deleted entry"))
+                                                      .catchError((error) =>
+                                                          _bloc.addMessage(
+                                                              error));
+                                                },
+                                              ),
+                                            ])
+                                          ]),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment(0.0, -1.0),
+                                          end: Alignment(0.0, -0.4),
+                                          colors: <Color>[
+                                            Color(0x60000000),
+                                            Color(0x00000000)
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  )
-                                ]));
+                                    ),
+                                  ],
+                                ));
                           });
                   }
                 })));

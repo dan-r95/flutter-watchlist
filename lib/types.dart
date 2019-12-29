@@ -29,3 +29,34 @@ class ArbitrarySuggestionType {
   String get imdbUrl => _imdbUrl;
   String get imgURL => _imgURL;
 }
+
+class MovieDescription {
+  String title;
+  String year;
+  double rated;
+  String released;
+  String runtime;
+  String genre;
+  String director;
+  String metascore;
+  String imdbRating;
+  String country;
+  String actors;
+  String plot;
+
+  MovieDescription();
+
+  MovieDescription.fromMappedJson(Map<String, dynamic> json)
+      : title = json['title'],
+        year = json['year'],
+        rated = json['rated'],
+        released = json['released'],
+        runtime = json['runtime'],
+        genre = json['genre'],
+        director = json['director'],
+        metascore = json['metascore'],
+        imdbRating = json['imdbRating'],
+        country = json['country'],
+        actors = json['actors'],
+        plot = json['plot'];
+}
