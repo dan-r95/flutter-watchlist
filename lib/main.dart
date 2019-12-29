@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'My Watchlist',
         theme: ThemeData(
           // This is the theme of your application.
           //
@@ -91,6 +91,8 @@ class _HomePageState extends State<HomePage> {
   UiErrorUtils _uiErrorUtils;
   Bloc _bloc;
 
+  List<ArbitrarySuggestionType> alreadyWatched = [];
+
   @override
   void initState() {
     super.initState();
@@ -128,10 +130,10 @@ class _HomePageState extends State<HomePage> {
     });
   }
 */
-  void pushToDB(ArbitrarySuggestionType item) {
+  void pushToDB(ArbitrarySuggestionType item, String dbName) {
     print("will push");
     Firestore.instance
-        .collection('favorites')
+        .collection(dbName)
         .add({
           'Title': item.name,
           'Poster': item.imgURL,
@@ -152,13 +154,11 @@ class _HomePageState extends State<HomePage> {
     print(decoded);
     if (decoded != null) {
       MovieDescription desc = MovieDescription.fromMappedJson(decoded);
-      print(desc.toString());
+      print(desc.title.toString());
       // setState(() {
       //suggestions = list;
       // });
-      setState(() {
-        loading = false;
-      });
+
       return desc;
     }
     return null;
@@ -227,6 +227,8 @@ class _HomePageState extends State<HomePage> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Watchlist');
 
+  MovieDescription description;
+
   void _searchPressed() {
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
@@ -283,12 +285,12 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                       icon: Icon(Icons.star),
                       onPressed: () {
-                        /*if (favorites.indexOf(suggestions[dex]) == -1) {
+                        /*if (favorites.indexOf(suggestions[index]) == -1) {
                   favorites.add(suggestions[index]);
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('added to favs!'),
                   ));*/
-                        pushToDB(suggestion);
+                        pushToDB(suggestion, 'favorites');
                         setState(() {
                           if (this._searchIcon.icon == Icons.search) {
                             this._searchIcon = new Icon(Icons.close);
@@ -299,6 +301,43 @@ class _HomePageState extends State<HomePage> {
                       }),
                 ],
               ),
+            ]))
+          ])),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //TODO use https://pub.dev/packages/flutter_typeahead
+  showInfoDialog(BuildContext context, MovieDescription description) {
+    print(description.title);
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(description.title),
+          content: SingleChildScrollView(
+              child: ListBody(children: <Widget>[
+            new Card(
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              ListTile(
+                title: Text(description.genre),
+                subtitle: Text(description.imdbRating),
+              ),
+              Text(description.metascore),
+              Text(description.plot),
+              //Image.network(description., fit: BoxFit.scaleDown),
             ]))
           ])),
           actions: <Widget>[
@@ -333,7 +372,16 @@ class _HomePageState extends State<HomePage> {
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           ListTile(
             title: Text(suggestions[index].name),
-            onTap: () => print(suggestions[index].imgURL),
+            onTap: () => {
+              if (favorites.indexOf(suggestions[index]) == -1)
+                {
+                  favorites.add(suggestions[index]),
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('added to favs!'),
+                  )),
+                  pushToDB(suggestions[index], 'favorites')
+                }
+            },
           ),
           Image.network(suggestions[index].imgURL, fit: BoxFit.scaleDown),
           ButtonBar(children: <Widget>[
@@ -345,7 +393,7 @@ class _HomePageState extends State<HomePage> {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('added to favs!'),
                   ));
-                  pushToDB(suggestions[index]);
+                  pushToDB(suggestions[index], 'favorites');
                 }
               },
             )
@@ -356,7 +404,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFavoritesList() {
-    /*return ListView.builder(
+    /*
+    return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
         return new Card(
@@ -366,9 +415,7 @@ class _HomePageState extends State<HomePage> {
             onTap: () => print(favorites[index].imgURL),
           ),
           Image.network(favorites[index].imgURL, fit: BoxFit.scaleDown),
-          ButtonTheme.bar(
-              // make buttons use the appropriate styles for cards
-              child: ButtonBar(children: <Widget>[
+          ButtonBar(children: <Widget>[
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
@@ -379,7 +426,7 @@ class _HomePageState extends State<HomePage> {
                 setState(() {});
               },
             )
-          ]))
+          ])
         ]));
       },
     );*/
@@ -411,86 +458,249 @@ class _HomePageState extends State<HomePage> {
                             }
                             var document = snapshot.data.documents[index];
 
-                            return new Card(
-                                semanticContainer: true,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                elevation: 5,
-                                margin: EdgeInsets.all(10),
-                                child: Stack(
-                                  children: <Widget>[
-                                    Image.network(
-                                      document['Poster'],
-                                      color: Color.fromRGBO(255, 255, 255, 0.7),
-                                      colorBlendMode: BlendMode.modulate,
-                                      fit: BoxFit.fitWidth,
-                                      // width: context.size.width,
-                                      // height: context.size.height / 4,
+                            return new Dismissible(
+                                key: Key(document.data['id']),
+                                onDismissed: (direction) {
+                                  setState(() {
+                                    alreadyWatched.add(
+                                        ArbitrarySuggestionType.fromDocument(
+                                            document));
+                                  });
+                                  print(alreadyWatched.length.toString());
+                                  pushToDB(
+                                      ArbitrarySuggestionType.fromDocument(
+                                          document),
+                                      'alreadyWatched');
+                                  Firestore.instance
+                                      .collection('favorites')
+                                      .document(
+                                          "favorites/" + document.documentID)
+                                      .delete();
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                      content:
+                                          Text("added to already watched")));
+                                },
+                                child: Card(
+                                    semanticContainer: true,
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                    // This gradient ensures that the toolbar icons are distinct
-                                    // against the background image.
-                                    DecoratedBox(
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            ListTile(
-                                              trailing: IconButton(
-                                                iconSize: 8,
-                                                icon: Icon(Icons.info),
-                                                onPressed: () =>
-                                                    getMovieDescription(
-                                                        document['imdbUrl']),
-                                              ),
-                                              leading: Icon(Icons.movie),
-                                              title: Text(
-                                                document['Title'],
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              subtitle: Text(document['Year']),
-                                            ),
-                                            ButtonBar(children: <Widget>[
-                                              FlatButton(
-                                                child: const Text('Remove'),
-                                                onPressed: () {
-                                                  Firestore.instance
-                                                      .document("favorites/" +
-                                                          document.documentID)
-                                                      .delete()
-                                                      .then((onValue) =>
-                                                          _bloc.addMessage(
-                                                              "deleted entry"))
-                                                      .catchError((error) =>
-                                                          _bloc.addMessage(
-                                                              error));
-                                                },
-                                              ),
-                                            ])
-                                          ]),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment(0.0, -1.0),
-                                          end: Alignment(0.0, -0.4),
-                                          colors: <Color>[
-                                            Color(0x60000000),
-                                            Color(0x00000000)
-                                          ],
+                                    elevation: 5,
+                                    margin: EdgeInsets.all(10),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: <Widget>[
+                                        Image.network(
+                                          document['Poster'],
+                                          color: Color.fromRGBO(
+                                              255, 255, 255, 0.7),
+                                          colorBlendMode: BlendMode.modulate,
+                                          fit: BoxFit.contain,
+                                          // width: context.size.width,
+                                          // height: context.size.height / 4,
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ));
+                                        // This gradient ensures that the toolbar icons are distinct
+                                        // against the background image.
+                                        Column(children: <Widget>[
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                            leading: IconButton(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 0, 0),
+                                                iconSize: 24,
+                                                icon: Icon(Icons.info),
+                                                onPressed: () async => {
+                                                      description =
+                                                          (await getMovieDescription(
+                                                              document[
+                                                                  'imdbUrl'])),
+                                                      print(description.actors),
+                                                      showInfoDialog(
+                                                          context, description)
+                                                    }),
+                                            title: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                ),
+                                                child: Text(
+                                                  document['Title'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                            subtitle: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                ),
+                                                child: Text(
+                                                  document['Year'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                          ButtonBar(children: <Widget>[
+                                            FlatButton(
+                                              child: const Text('Remove'),
+                                              onPressed: () {
+                                                Firestore.instance
+                                                    .document("favorites/" +
+                                                        document.documentID)
+                                                    .delete()
+                                                    .then((onValue) =>
+                                                        _bloc.addMessage(
+                                                            "deleted entry"))
+                                                    .catchError((error) => _bloc
+                                                        .addMessage(error));
+                                              },
+                                            ),
+                                          ]),
+                                          // This gradient ensures that the toolbar icons are distinct
+                                          // against the background image.
+                                          const DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment(0.0, -1.0),
+                                                end: Alignment(0.0, -0.4),
+                                                colors: <Color>[
+                                                  Color(0x60000000),
+                                                  Color(0x00000000)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ]),
+                                      ],
+                                    )));
                           });
                   }
                 })));
   }
 
   Widget _buildCompletedList() {
-    return Text("TODO");
+    return Center(
+        child: Container(
+            padding: const EdgeInsets.all(10.0),
+            child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    Firestore.instance.collection('alreadyWatched').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError)
+                    return new Text('Error: ${snapshot.error}');
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return new Text('Loading...');
+                    default:
+                      return new GridView.builder(
+                          shrinkWrap: true,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 2.0,
+                                  mainAxisSpacing: 2.0),
+                          itemCount: snapshot.data.documents.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (snapshot.data.documents.length == 0) {
+                              return Text("start adding movies!");
+                            }
+                            var document = snapshot.data.documents[index];
+
+                            return new Dismissible(
+                                key: Key(document.data['id']),
+                                onDismissed: (direction) {
+                                  setState(() {});
+                                },
+                                child: Card(
+                                    semanticContainer: true,
+                                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    elevation: 5,
+                                    margin: EdgeInsets.all(10),
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Image.network(
+                                          document['Poster'],
+                                          color: Color.fromRGBO(
+                                              255, 255, 255, 0.7),
+                                          colorBlendMode: BlendMode.modulate,
+                                          fit: BoxFit.fitWidth,
+                                          // width: context.size.width,
+                                          // height: context.size.height / 4,
+                                        ),
+                                        // This gradient ensures that the toolbar icons are distinct
+                                        // against the background image.
+                                        DecoratedBox(
+                                          child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: <Widget>[
+                                                ListTile(
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          0, 0, 0, 0),
+                                                  leading: IconButton(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 0, 0, 0),
+                                                    iconSize: 24,
+                                                    icon: Icon(Icons.info),
+                                                    onPressed: () =>
+                                                        getMovieDescription(
+                                                            document[
+                                                                'imdbUrl']),
+                                                  ),
+                                                  title: Text(
+                                                    document['Title'],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  subtitle:
+                                                      Text(document['Year']),
+                                                ),
+                                                ButtonBar(children: <Widget>[
+                                                  FlatButton(
+                                                    child: const Text('Remove'),
+                                                    onPressed: () {
+                                                      Firestore.instance
+                                                          .document("favorites/" +
+                                                              document
+                                                                  .documentID)
+                                                          .delete()
+                                                          .then((onValue) =>
+                                                              _bloc.addMessage(
+                                                                  "deleted entry"))
+                                                          .catchError((error) =>
+                                                              _bloc.addMessage(
+                                                                  error));
+                                                    },
+                                                  ),
+                                                ])
+                                              ]),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment(0.0, -1.0),
+                                              end: Alignment(0.0, -0.4),
+                                              colors: <Color>[
+                                                Color(0x60000000),
+                                                Color(0x00000000)
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )));
+                          });
+                  }
+                })));
   }
 
   List<Widget> _children = [];

@@ -1,4 +1,9 @@
+
+
 import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 
 class ArbitrarySuggestionType {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
@@ -22,6 +27,13 @@ class ArbitrarySuggestionType {
     _year = snapshot.value['Year'];
   }
 
+    ArbitrarySuggestionType.fromDocument(DocumentSnapshot snapshot) {
+    _id = snapshot.data['id'];
+    _name = snapshot.data['Title'];
+    _imgURL = snapshot.data['Poster'];
+    _year = snapshot.data['Year'];
+  }
+
   String get id => _id;
   double get stars => _stars;
   String get year => _year;
@@ -33,7 +45,7 @@ class ArbitrarySuggestionType {
 class MovieDescription {
   String title;
   String year;
-  double rated;
+  String rated;
   String released;
   String runtime;
   String genre;
@@ -47,16 +59,16 @@ class MovieDescription {
   MovieDescription();
 
   MovieDescription.fromMappedJson(Map<String, dynamic> json)
-      : title = json['title'],
-        year = json['year'],
-        rated = json['rated'],
-        released = json['released'],
-        runtime = json['runtime'],
-        genre = json['genre'],
-        director = json['director'],
-        metascore = json['metascore'],
+      : title = json['Title'],
+        year = json['Year'],
+        rated = json['Rated'],
+        released = json['Released'],
+        runtime = json['Runtime'],
+        genre = json['Genre'],
+        director = json['Director'],
+        metascore = json['Metascore'],
         imdbRating = json['imdbRating'],
-        country = json['country'],
-        actors = json['actors'],
-        plot = json['plot'];
+        country = json['Country'],
+        actors = json['Actors'],
+        plot = json['Plot'];
 }
