@@ -9,3 +9,11 @@ movie watchlist using imdb
 ## Android
 
 `flutter build apk --release && flutter install -d "SM A510F"`
+
+## TODO
+
+- build for web
+- youtube trailer link
+- alert dialog dismiss
+- clean UI
+- icons
