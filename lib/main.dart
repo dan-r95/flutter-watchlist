@@ -3,12 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flutter_watchlist/settings.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'snackbar.dart';
 import 'bloc.dart';
 import 'types.dart';
@@ -104,7 +105,8 @@ class _HomePageState extends State<HomePage> {
     // _onNoteChangedSubscription =
     //    notesReference.onChildChanged.listen(_onNoteUpdated);
 
-    _children.addAll([_buildFavoritesList(), _buildCompletedList()]);
+    _children.addAll(
+        [_buildFavoritesList(), _buildCompletedList(), SettingsRoute()]);
   }
 
   @override
@@ -138,7 +140,8 @@ class _HomePageState extends State<HomePage> {
           'Title': item.name,
           'Poster': item.imgURL,
           'Year': item.year,
-          'imdbUrl': item.imdbUrl
+          'imdbUrl': item.imdbUrl,
+          'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
         .then((result) => {})
         .catchError((err) => (_bloc.addMessage(err)));
@@ -169,16 +172,37 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         loading = true;
       });
+      // final response =
+      //     await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
+
+      // print(response.body);
+      // List decoded = jsonDecode(response.body)['Search'];
+      // print(decoded);
+      // if (decoded != null) {
+      //   List<ArbitrarySuggestionType> list = decoded
+      //       .map((m) => ArbitrarySuggestionType.fromMappedJson(m))
+      //       .toList();
+      //   print(list.toString());
+      //   // setState(() {
+      //   //suggestions = list;
+      //   // });
+      //   setState(() {
+      //     loading = false;
+      //   });
+      //   return list;
+      // } else {
       final response =
-          await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
+          await http.get("https://www.omdbapi.com/?t=$query&apikey=e83d3bc2");
 
       print(response.body);
-      List decoded = jsonDecode(response.body)['Search'];
+      Map<String, dynamic> decoded = jsonDecode(response.body);
       print(decoded);
+      List<ArbitrarySuggestionType> list = new List<ArbitrarySuggestionType>();
       if (decoded != null) {
-        List<ArbitrarySuggestionType> list = decoded
-            .map((m) => ArbitrarySuggestionType.fromMappedJson(m))
-            .toList();
+        ArbitrarySuggestionType item =
+            ArbitrarySuggestionType.fromMappedJson(decoded);
+        list.add(item);
+
         print(list.toString());
         // setState(() {
         //suggestions = list;
@@ -187,10 +211,10 @@ class _HomePageState extends State<HomePage> {
           loading = false;
         });
         return list;
+        // }
+
       }
-      return null;
     }
-    return null;
   }
 
   GlobalKey key =
@@ -277,6 +301,7 @@ class _HomePageState extends State<HomePage> {
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               ListTile(
                 title: Text(suggestion.name),
+                subtitle: Text(suggestion.year),
                 onTap: () => print(suggestion.imgURL),
               ),
               Image.network(suggestion.imgURL, fit: BoxFit.scaleDown),
@@ -353,89 +378,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildList() {
-    if (_searchText.isNotEmpty) {
-      List tempList = new List();
-      for (int i = 0; i < filteredNames.length; i++) {
-        if (filteredNames[i]['name']
-            .toLowerCase()
-            .contains(_searchText.toLowerCase())) {
-          tempList.add(filteredNames[i]);
-        }
-      }
-      filteredNames = tempList;
-    }
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Card(
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          ListTile(
-            title: Text(suggestions[index].name),
-            onTap: () => {
-              if (favorites.indexOf(suggestions[index]) == -1)
-                {
-                  favorites.add(suggestions[index]),
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('added to favs!'),
-                  )),
-                  pushToDB(suggestions[index], 'favorites')
-                }
-            },
-          ),
-          Image.network(suggestions[index].imgURL, fit: BoxFit.scaleDown),
-          ButtonBar(children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.star),
-              onPressed: () {
-                if (favorites.indexOf(suggestions[index]) == -1) {
-                  favorites.add(suggestions[index]);
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('added to favs!'),
-                  ));
-                  pushToDB(suggestions[index], 'favorites');
-                }
-              },
-            )
-          ])
-        ]));
-      },
-    );
-  }
-
   Widget _buildFavoritesList() {
-    /*
-    return ListView.builder(
-      itemCount: favorites.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Card(
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          ListTile(
-            title: Text(favorites[index].name),
-            onTap: () => print(favorites[index].imgURL),
-          ),
-          Image.network(favorites[index].imgURL, fit: BoxFit.scaleDown),
-          ButtonBar(children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                favorites.removeAt(index);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('deleted!'),
-                ));
-                setState(() {});
-              },
-            )
-          ])
-        ]));
-      },
-    );*/
-    _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
     return Center(
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection('favorites').snapshots(),
+                stream: Firestore.instance
+                    .collection('favorites')
+                    .orderBy("added", descending: true)
+                    .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError)
@@ -459,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                             var document = snapshot.data.documents[index];
 
                             return new Dismissible(
-                                key: Key(document.data['id']),
+                              key: UniqueKey(),
                                 onDismissed: (direction) {
                                   setState(() {
                                     alreadyWatched.add(
@@ -473,8 +424,7 @@ class _HomePageState extends State<HomePage> {
                                       'alreadyWatched');
                                   Firestore.instance
                                       .collection('favorites')
-                                      .document(
-                                          "favorites/" + document.documentID)
+                                      .document(document.documentID)
                                       .delete();
                                   Scaffold.of(context).showSnackBar(SnackBar(
                                       content:
@@ -491,15 +441,18 @@ class _HomePageState extends State<HomePage> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: <Widget>[
-                                        Image.network(
-                                          document['Poster'],
+                                        new Positioned.fill(
+                                            child: CachedNetworkImage(
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          imageUrl: document['Poster'],
                                           color: Color.fromRGBO(
                                               255, 255, 255, 0.7),
                                           colorBlendMode: BlendMode.modulate,
-                                          fit: BoxFit.contain,
+                                          fit: BoxFit.cover,
                                           // width: context.size.width,
                                           // height: context.size.height / 4,
-                                        ),
+                                        )),
                                         // This gradient ensures that the toolbar icons are distinct
                                         // against the background image.
                                         Column(children: <Widget>[
@@ -509,8 +462,9 @@ class _HomePageState extends State<HomePage> {
                                             leading: IconButton(
                                                 padding: EdgeInsets.fromLTRB(
                                                     0, 0, 0, 0),
-                                                iconSize: 24,
+                                                iconSize: 32,
                                                 icon: Icon(Icons.info),
+                                                color: Colors.white,
                                                 onPressed: () async => {
                                                       description =
                                                           (await getMovieDescription(
@@ -544,20 +498,30 @@ class _HomePageState extends State<HomePage> {
                                                 )),
                                           ),
                                           ButtonBar(children: <Widget>[
-                                            FlatButton(
-                                              child: const Text('Remove'),
-                                              onPressed: () {
-                                                Firestore.instance
-                                                    .document("favorites/" +
-                                                        document.documentID)
-                                                    .delete()
-                                                    .then((onValue) =>
-                                                        _bloc.addMessage(
-                                                            "deleted entry"))
-                                                    .catchError((error) => _bloc
-                                                        .addMessage(error));
-                                              },
-                                            ),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black26,
+                                                ),
+                                                child: IconButton(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 0, 0, 0),
+                                                  iconSize: 24,
+                                                  icon: Icon(
+                                                      Icons.delete_forever),
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    Firestore.instance
+                                                        .document("favorites/" +
+                                                            document.documentID)
+                                                        .delete()
+                                                        .then((onValue) =>
+                                                            _bloc.addMessage(
+                                                                "deleted entry"))
+                                                        .catchError((error) =>
+                                                            _bloc.addMessage(
+                                                                error));
+                                                  },
+                                                )),
                                           ]),
                                           // This gradient ensures that the toolbar icons are distinct
                                           // against the background image.
@@ -611,9 +575,9 @@ class _HomePageState extends State<HomePage> {
                             var document = snapshot.data.documents[index];
 
                             return new Dismissible(
-                                key: Key(document.data['id']),
+                                key: UniqueKey(),
                                 onDismissed: (direction) {
-                                  setState(() {});
+                                 
                                 },
                                 child: Card(
                                     semanticContainer: true,
@@ -624,78 +588,106 @@ class _HomePageState extends State<HomePage> {
                                     elevation: 5,
                                     margin: EdgeInsets.all(10),
                                     child: Stack(
+                                      alignment: Alignment.center,
                                       children: <Widget>[
-                                        Image.network(
-                                          document['Poster'],
+                                        new Positioned.fill(
+                                            child: CachedNetworkImage(
+                                          placeholder: (context, url) =>
+                                              CircularProgressIndicator(),
+                                          imageUrl: document['Poster'],
                                           color: Color.fromRGBO(
                                               255, 255, 255, 0.7),
                                           colorBlendMode: BlendMode.modulate,
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.cover,
                                           // width: context.size.width,
                                           // height: context.size.height / 4,
-                                        ),
+                                        )),
                                         // This gradient ensures that the toolbar icons are distinct
                                         // against the background image.
-                                        DecoratedBox(
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: <Widget>[
-                                                ListTile(
-                                                  contentPadding:
-                                                      EdgeInsets.fromLTRB(
-                                                          0, 0, 0, 0),
-                                                  leading: IconButton(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 0, 0, 0),
-                                                    iconSize: 24,
-                                                    icon: Icon(Icons.info),
-                                                    onPressed: () =>
-                                                        getMovieDescription(
-                                                            document[
-                                                                'imdbUrl']),
-                                                  ),
-                                                  title: Text(
-                                                    document['Title'],
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  subtitle:
-                                                      Text(document['Year']),
+                                        Column(children: <Widget>[
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                            leading: IconButton(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 0, 0),
+                                                iconSize: 32,
+                                                icon: Icon(Icons.info),
+                                                onPressed: () async => {
+                                                      description =
+                                                          (await getMovieDescription(
+                                                              document[
+                                                                  'imdbUrl'])),
+                                                      print(description.actors),
+                                                      showInfoDialog(
+                                                          context, description)
+                                                    }),
+                                            title: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
                                                 ),
-                                                ButtonBar(children: <Widget>[
-                                                  FlatButton(
-                                                    child: const Text('Remove'),
-                                                    onPressed: () {
-                                                      Firestore.instance
-                                                          .document("favorites/" +
-                                                              document
-                                                                  .documentID)
-                                                          .delete()
-                                                          .then((onValue) =>
-                                                              _bloc.addMessage(
-                                                                  "deleted entry"))
-                                                          .catchError((error) =>
-                                                              _bloc.addMessage(
-                                                                  error));
-                                                    },
+                                                child: Text(
+                                                  document['Title'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
                                                   ),
-                                                ])
-                                              ]),
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment(0.0, -1.0),
-                                              end: Alignment(0.0, -0.4),
-                                              colors: <Color>[
-                                                Color(0x60000000),
-                                                Color(0x00000000)
-                                              ],
+                                                )),
+                                            subtitle: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                ),
+                                                child: Text(
+                                                  document['Year'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                          ButtonBar(children: <Widget>[
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black26,
+                                                ),
+                                                child: IconButton(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 0, 0, 0),
+                                                  iconSize: 24,
+                                                  icon: Icon(
+                                                      Icons.delete_forever),
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    Firestore.instance
+                                                        .document(
+                                                            "alreadyWatched/" +
+                                                                document
+                                                                    .documentID)
+                                                        .delete()
+                                                        .then((onValue) =>
+                                                            _bloc.addMessage(
+                                                                "deleted entry"))
+                                                        .catchError((error) =>
+                                                            _bloc.addMessage(
+                                                                error));
+                                                  },
+                                                )),
+                                          ]),
+                                          // This gradient ensures that the toolbar icons are distinct
+                                          // against the background image.
+                                          const DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment(0.0, -1.0),
+                                                end: Alignment(0.0, -0.4),
+                                                colors: <Color>[
+                                                  Color(0x60000000),
+                                                  Color(0x00000000)
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ]),
                                       ],
                                     )));
                           });
@@ -713,71 +705,69 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
     _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
-    return MaterialApp(
-        title: "Watchlist",
-        home: Scaffold(
-            appBar: new AppBar(
-                centerTitle: true,
-                title: _appBarTitle,
-                actions: <Widget>[
-                  new IconButton(
-                    icon: _searchIcon,
-                    onPressed: _searchPressed,
-                  ),
-                ]),
-            body: StreamBuilder(
-                stream: tabBloc.getIndex,
-                initialData: 3,
-                builder: (BuildContext context, AsyncSnapshot snapshot2) {
-                  return IndexedStack(
-                    index: snapshot2.data,
-                    children: _children,
-                  );
-                }),
-
-            // define the bottom tab navigaation bar
-            bottomNavigationBar: StreamBuilder(
-                initialData: 0,
-                stream: tabBloc.getIndex,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  return BottomNavigationBar(
-                    onTap: onTabTapped, // new
-                    fixedColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                    currentIndex: snapshot.data, // new
-                    type: BottomNavigationBarType.fixed,
-                    items: [
-                      BottomNavigationBarItem(
-                        icon: new Icon(Icons.list, color: Colors.white),
-                        title: new Text(
-                          'To Watch',
-                          style: TextStyle(color: Colors.white),
+    return StreamBuilder<Brightness>(
+        stream: bloc.currentBrightness,
+        builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
+          return MaterialApp(
+              title: "Watchlist",
+              theme: ThemeData(
+                // This is the theme of the application.
+                brightness: snapshot.data,
+              ),
+              home: Scaffold(
+                  appBar: new AppBar(
+                      centerTitle: true,
+                      title: _appBarTitle,
+                      actions: <Widget>[
+                        new IconButton(
+                          icon: _searchIcon,
+                          onPressed: _searchPressed,
                         ),
-                      ),
-                      BottomNavigationBarItem(
-                        icon: new Icon(Icons.alarm, color: Colors.white),
-                        title: new Text(
-                          'Completed',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  );
-                })));
+                      ]),
+                  body: StreamBuilder(
+                      stream: tabBloc.getIndex,
+                      initialData: 3,
+                      builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                        return IndexedStack(
+                          index: snapshot2.data,
+                          children: _children,
+                        );
+                      }),
 
-    /* new Card(
-                child: selected != null
-                    ? new Column(children: [
-                        new ListTile(
-                            title: new Text(selected.name),
-                            trailing: new Text("Rating: ${selected.stars}/5"),
-                            subtitle: new Text(" ${selected.year}")),
-                        new Container(
-                            child: new Image(
-                                image: new NetworkImage(selected.imgURL)),
-                            width: 400.0,
-                            height: 300.0)
-                      ])
-                    : new Icon(Icons.cancel))),*/
+                  // define the bottom tab navigaation bar
+                  bottomNavigationBar: StreamBuilder(
+                      initialData: 0,
+                      stream: tabBloc.getIndex,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        return BottomNavigationBar(
+                          onTap: onTabTapped, // new
+                          unselectedItemColor: Colors.black,
+                          selectedItemColor: Colors.blue,
+                          currentIndex: snapshot.data, // new
+                          type: BottomNavigationBarType.fixed,
+                          items: [
+                            BottomNavigationBarItem(
+                              icon: new Icon(Icons.list),
+                              title: new Text(
+                                'To Watch',
+                              ),
+                            ),
+                            BottomNavigationBarItem(
+                              icon: new Icon(Icons.alarm),
+                              title: new Text(
+                                'Completed',
+                              ),
+                            ),
+                              BottomNavigationBarItem(
+                              icon: new Icon(Icons.alarm),
+                              title: new Text(
+                                'Settings',
+                              ),
+                            ),
+                          ],
+                        );
+                      })));
+        });
+
   }
 }

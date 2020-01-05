@@ -2,7 +2,6 @@
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 
 class Bloc {
@@ -26,6 +25,7 @@ class Bloc {
   void dispose() {
     snackBarSubject?.close();
     animationIndexController.close();
+    brightnessController.close();
   }
 
    // stream to control the theme of the app
@@ -33,4 +33,13 @@ class Bloc {
       BehaviorSubject<int>.seeded(1); //listen with multiple subjects
   Stream<int> get currentAnimIndex => animationIndexController.stream.asBroadcastStream();
 
+ // stream to control the theme of the app
+  BehaviorSubject<Brightness> brightnessController =
+      BehaviorSubject<Brightness>(); //listen with multiple subjects
+  Stream<Brightness> get currentBrightness => brightnessController.stream.asBroadcastStream();
+
+
 }
+
+
+final bloc = Bloc();
