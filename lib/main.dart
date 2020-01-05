@@ -410,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                             var document = snapshot.data.documents[index];
 
                             return new Dismissible(
-                              key: UniqueKey(),
+                                key: UniqueKey(),
                                 onDismissed: (direction) {
                                   setState(() {
                                     alreadyWatched.add(
@@ -510,16 +510,8 @@ class _HomePageState extends State<HomePage> {
                                                       Icons.delete_forever),
                                                   color: Colors.white,
                                                   onPressed: () {
-                                                    Firestore.instance
-                                                        .document("favorites/" +
-                                                            document.documentID)
-                                                        .delete()
-                                                        .then((onValue) =>
-                                                            _bloc.addMessage(
-                                                                "deleted entry"))
-                                                        .catchError((error) =>
-                                                            _bloc.addMessage(
-                                                                error));
+                                                    showAlertDialog(context,
+                                                        'favorites', document);
                                                   },
                                                 )),
                                           ]),
@@ -568,7 +560,7 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisSpacing: 2.0,
                                   mainAxisSpacing: 2.0),
                           itemCount: snapshot.data.documents.length,
-                          itemBuilder: (BuildContext context, int index) {
+                          itemBuilder: (BuildContext context2, int index) {
                             if (snapshot.data.documents.length == 0) {
                               return Text("start adding movies!");
                             }
@@ -576,9 +568,7 @@ class _HomePageState extends State<HomePage> {
 
                             return new Dismissible(
                                 key: UniqueKey(),
-                                onDismissed: (direction) {
-                                 
-                                },
+                                onDismissed: (direction) {},
                                 child: Card(
                                     semanticContainer: true,
                                     clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -592,7 +582,7 @@ class _HomePageState extends State<HomePage> {
                                       children: <Widget>[
                                         new Positioned.fill(
                                             child: CachedNetworkImage(
-                                          placeholder: (context, url) =>
+                                          placeholder: (context2, url) =>
                                               CircularProgressIndicator(),
                                           imageUrl: document['Poster'],
                                           color: Color.fromRGBO(
@@ -613,6 +603,7 @@ class _HomePageState extends State<HomePage> {
                                                     0, 0, 0, 0),
                                                 iconSize: 32,
                                                 icon: Icon(Icons.info),
+                                                color: Colors.white,
                                                 onPressed: () async => {
                                                       description =
                                                           (await getMovieDescription(
@@ -620,7 +611,7 @@ class _HomePageState extends State<HomePage> {
                                                                   'imdbUrl'])),
                                                       print(description.actors),
                                                       showInfoDialog(
-                                                          context, description)
+                                                          context2, description)
                                                     }),
                                             title: Container(
                                                 decoration: BoxDecoration(
@@ -658,18 +649,8 @@ class _HomePageState extends State<HomePage> {
                                                       Icons.delete_forever),
                                                   color: Colors.white,
                                                   onPressed: () {
-                                                    Firestore.instance
-                                                        .document(
-                                                            "alreadyWatched/" +
-                                                                document
-                                                                    .documentID)
-                                                        .delete()
-                                                        .then((onValue) =>
-                                                            _bloc.addMessage(
-                                                                "deleted entry"))
-                                                        .catchError((error) =>
-                                                            _bloc.addMessage(
-                                                                error));
+                                                    showAlertDialog(context2,
+                                                        'completed', document);
                                                   },
                                                 )),
                                           ]),
@@ -699,6 +680,51 @@ class _HomePageState extends State<HomePage> {
 
   void onTabTapped(int index) {
     tabBloc.updateIndex(index);
+  }
+
+  showAlertDialog(
+      BuildContext context, String type, DocumentSnapshot document) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed: () {
+        type == 'favorites'
+            ? Firestore.instance
+                .document("favorites/" + document.documentID)
+                .delete()
+                .then((onValue) => _bloc.addMessage("deleted entry"))
+                .catchError((error) => _bloc.addMessage(error))
+            : Firestore.instance
+                .document("alreadyWatched/" + document.documentID)
+                .delete()
+                .then((onValue) => _bloc.addMessage("deleted entry"))
+                .catchError((error) => _bloc.addMessage(error));
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("You will delete the movie from the DB."),
+      content: Text("Delete?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -758,8 +784,8 @@ class _HomePageState extends State<HomePage> {
                                 'Completed',
                               ),
                             ),
-                              BottomNavigationBarItem(
-                              icon: new Icon(Icons.alarm),
+                            BottomNavigationBarItem(
+                              icon: new Icon(Icons.settings),
                               title: new Text(
                                 'Settings',
                               ),
@@ -768,6 +794,5 @@ class _HomePageState extends State<HomePage> {
                         );
                       })));
         });
-
   }
 }

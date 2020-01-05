@@ -23,7 +23,7 @@ class ArbitrarySuggestionType {
     _imgURL = snapshot.value['Poster'];
     _year = snapshot.value['Year'];
     _imdbUrl = snapshot.value['imdbUrl'];
-    _added =  DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
+    _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
   }
 
   ArbitrarySuggestionType.fromDocument(DocumentSnapshot snapshot) {

@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 
   @override
   _LoginPageState createState() => _LoginPageState(
-         uiErrorUtils,
-         bloc,
+        uiErrorUtils,
+        bloc,
       );
 }
 
@@ -98,17 +98,18 @@ class _LoginPageState extends State<LoginPage> {
                                 .collection("users")
                                 .document(currentUser.user.uid)
                                 .get()
-                                .then((DocumentSnapshot result) =>{
-                                   print(result),
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => HomePage(
-                                                  title: result["fname"] +
-                                                      "'s Tasks",
-                                                  uuid: currentUser.user.uid,
-                                                )))})
-                                .catchError((err) =>bloc.addMessage(err)))
+                                .then((DocumentSnapshot result) => {
+                                      print(result),
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => HomePage(
+                                                    title: result["fname"] +
+                                                        "'s Tasks",
+                                                    uuid: currentUser.user.uid,
+                                                  )))
+                                    })
+                                .catchError((err) => bloc.addMessage(err)))
                             .catchError((err) => (bloc.addMessage(err)));
                       }
                     },
