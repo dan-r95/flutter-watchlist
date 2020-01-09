@@ -17,3 +17,5 @@ movie watchlist using imdb
 - alert dialog dismiss
 - clean UI
 - icons
+- add snackbar when login fails
+- add animation when loggin in

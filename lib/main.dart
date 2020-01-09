@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_watchlist/settings.dart';
@@ -17,9 +18,16 @@ import 'login.dart';
 import 'register.dart';
 import 'splash.dart';
 import 'tab_bloc.dart';
+import 'package:appcenter/appcenter.dart';
+import 'package:appcenter_analytics/appcenter_analytics.dart';
+import 'package:appcenter_crashes/appcenter_crashes.dart';
 
 Future<void> main() async {
   runApp(MyApp());
+  final ios = defaultTargetPlatform == TargetPlatform.iOS;
+  var app_secret = ios ? "iOSGuid" : "AndroidGuid";
+  await AppCenter.start(
+      app_secret, [AppCenterAnalytics.id, AppCenterCrashes.id]);
 }
 
 class MyApp extends StatelessWidget {
@@ -445,7 +453,9 @@ class _HomePageState extends State<HomePage> {
                                             child: CachedNetworkImage(
                                           placeholder: (context, url) =>
                                               CircularProgressIndicator(),
-                                          imageUrl: document['Poster'],
+                                          imageUrl: document['Poster'] == "N/A"
+                                              ? "https://moviereelist.com/wp-content/uploads/2019/07/poster-placeholder.jpg"
+                                              : document['Poster'],
                                           color: Color.fromRGBO(
                                               255, 255, 255, 0.7),
                                           colorBlendMode: BlendMode.modulate,
@@ -542,8 +552,10 @@ class _HomePageState extends State<HomePage> {
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    Firestore.instance.collection('alreadyWatched').snapshots(),
+                stream: Firestore.instance
+                    .collection('alreadyWatched')
+                    .orderBy("added", descending: true)
+                    .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError)
