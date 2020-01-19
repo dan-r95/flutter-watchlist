@@ -10,6 +10,11 @@ movie watchlist using imdb
 
 `flutter build apk --release && flutter install -d "SM A510F"`
 
+## Credits
+
+- FabBar: https://github.com/bizz84/bottom_bar_fab_flutter/
+- Login Logic:
+
 ## TODO
 
 - build for web

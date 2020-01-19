@@ -7,7 +7,7 @@ class Bloc {
   final PublishSubject<String> snackBarSubject = PublishSubject<String>();
 
   //  some function that gets data from network
-  Future<bool> getDataRequest() async {
+   getDataRequest() async {
     try {
       // get request code here
     } catch (error) {
@@ -19,7 +19,6 @@ class Bloc {
     this.snackBarSubject.add(msg);
   }
 
-  @override
   void dispose() {
     snackBarSubject?.close();
     animationIndexController.close();

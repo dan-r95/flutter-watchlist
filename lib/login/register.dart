@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'main.dart';
-import 'bloc.dart';
-import 'snackbar.dart';
+import 'package:flutter_watchlist/main.dart';
+import 'package:flutter_watchlist/common/bloc.dart';
+import 'package:flutter_watchlist/common/snackbar.dart';
+import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 class RegisterPage extends StatefulWidget {
   RegisterPage({Key key, this.bloc, this.uiErrorUtils}) : super(key: key);
