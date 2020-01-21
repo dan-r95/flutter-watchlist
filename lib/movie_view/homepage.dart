@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_watchlist/movie_view/delete_dialog.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -108,6 +109,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         loading = true;
       });
+      // trim whitespaces
+      query = query.trim();
       var response =
           await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
 
@@ -557,44 +560,12 @@ class _HomePageState extends State<HomePage> {
   showAlertDialog(
       BuildContext context, String type, DocumentSnapshot document) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("No"),
-      onPressed: () {
-        Navigator.of(context).pop(); // dismiss dialog
-      },
-    );
-    Widget continueButton = FlatButton(
-      child: Text("Yes"),
-      onPressed: () {
-        type == 'favorites'
-            ? Firestore.instance
-                .document("favorites/" + document.documentID)
-                .delete()
-                .then((onValue) => _bloc.addMessage("deleted entry"))
-                .catchError((error) => _bloc.addMessage(error))
-            : Firestore.instance
-                .document("alreadyWatched/" + document.documentID)
-                .delete()
-                .then((onValue) => _bloc.addMessage("deleted entry"))
-                .catchError((error) => _bloc.addMessage(error));
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("You will delete the movie from the DB."),
-      content: Text("Delete?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
 
     // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return alert;
+        return DeleteMovieDialog(bloc: bloc, document: document, type: type);
       },
     );
   }

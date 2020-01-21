@@ -17,7 +17,8 @@ flutter doctor
 
 echo "Installed flutter to `pwd`/flutter"
 
-sudo flutter doctor --android-licenses
+flutter doctor --android-licenses
+/Users/runner/Library/Android/sdk/tools/bin/sdkmanager --update
 
 git update-index --chmod=+x ../gradlew
 

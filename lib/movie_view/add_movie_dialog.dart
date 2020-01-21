@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
@@ -9,9 +10,14 @@ class AddMovieDialog extends StatelessWidget {
   final Bloc bloc;
   final List<ArbitrarySuggestionType> favorites;
 
-  const AddMovieDialog({Key key, @required this.suggestion, @required this.bloc,  @required this.favorites}) : super(key: key);
+  const AddMovieDialog(
+      {Key key,
+      @required this.suggestion,
+      @required this.bloc,
+      @required this.favorites})
+      : super(key: key);
 
-void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(ArbitrarySuggestionType item, String dbName) {
     print("will push");
     Firestore.instance
         .collection(dbName)
@@ -27,8 +33,6 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
     favorites.add(item);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -42,7 +46,15 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
             subtitle: Text(suggestion.year),
             onTap: () => print(suggestion.imgURL),
           ),
-          Image.network(suggestion.imgURL, fit: BoxFit.scaleDown),
+          CachedNetworkImage(
+            placeholder: (context2, url) => CircularProgressIndicator(),
+            imageUrl: suggestion.imgURL,
+
+            fit: BoxFit.cover,
+            // width: context.size.width,
+             height: MediaQuery.of(context).size.height /2,
+             // context.size.height / 4,
+          ),
           ButtonBar(
             children: <Widget>[
               IconButton(
@@ -54,6 +66,7 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
                     content: Text('added to favs!'),
                   ));*/
                     pushToDB(suggestion, 'favorites');
+                    Navigator.pop(context);
                     // setState(() {
                     //   if (this._searchIcon.icon == Icons.search) {
                     //     this._searchIcon = new Icon(Icons.close);
