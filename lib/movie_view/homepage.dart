@@ -20,6 +20,7 @@ import 'package:appcenter_analytics/appcenter_analytics.dart';
 import 'package:appcenter_crashes/appcenter_crashes.dart';
 import 'package:flutter_watchlist/movie_view/info_dialog.dart';
 import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(
@@ -101,26 +102,6 @@ class _HomePageState extends State<HomePage> {
   }
 */
 
-
-  Future<MovieDescription> getMovieDescription(String id) async {
-    final response =
-        await http.get("https://www.omdbapi.com/?i=$id&apikey=e83d3bc2");
-
-    print(response.body);
-    Map<String, dynamic> decoded = jsonDecode(response.body);
-    print(decoded);
-    if (decoded != null) {
-      MovieDescription desc = MovieDescription.fromMappedJson(decoded);
-      print(desc.title.toString());
-      // setState(() {
-      //suggestions = list;
-      // });
-
-      return desc;
-    }
-    return null;
-  }
-
   Future<List<ArbitrarySuggestionType>> updateSuggestions(String query) async {
     List<ArbitrarySuggestionType> list = new List<ArbitrarySuggestionType>();
     if (query.length > 2) {
@@ -198,7 +179,7 @@ class _HomePageState extends State<HomePage> {
 
   MovieDescription description;
 
-void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(ArbitrarySuggestionType item, String dbName) {
     print("will push");
     Firestore.instance
         .collection(dbName)
@@ -213,7 +194,6 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
         .catchError((err) => (bloc.addMessage(err)));
     favorites.add(item);
   }
-
 
   void _searchPressed() {
     setState(() {
@@ -254,20 +234,21 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
       barrierDismissible: true, // user must tap button!
 
       builder: (BuildContext context) {
-        return AddMovieDialog(suggestion:  suggestion, bloc: _bloc, favorites: favorites);
+        return AddMovieDialog(
+            suggestion: suggestion, bloc: _bloc, favorites: favorites);
       },
     );
   }
 
   //TODO use https://pub.dev/packages/flutter_typeahead
-  showInfoDialog(BuildContext context, MovieDescription description) {
-    print(description.title);
+  showInfoDialog(BuildContext context, String url) {
+    //print(description.title);
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
 
       builder: (BuildContext context) {
-          return InfoDialog(bloc: _bloc, description: description,favorites: favorites);
+        return InfoDialog(bloc: _bloc, url: url, favorites: favorites);
       },
     );
   }
@@ -360,14 +341,9 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
                                               iconSize: 32,
                                               icon: Icon(Icons.info),
                                               color: Colors.white,
-                                              onPressed: () async => {
-                                                    description =
-                                                        (await getMovieDescription(
-                                                            document[
-                                                                'imdbUrl'])),
-                                                    print(description.actors),
-                                                    showInfoDialog(
-                                                        context, description)
+                                              onPressed: () => {
+                                                    showInfoDialog(context,
+                                                        document['imdbUrl']),
                                                   }),
                                           title: Container(
                                               decoration: BoxDecoration(
@@ -505,14 +481,9 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
                                                 iconSize: 32,
                                                 icon: Icon(Icons.info),
                                                 color: Colors.white,
-                                                onPressed: () async => {
-                                                      description =
-                                                          (await getMovieDescription(
-                                                              document[
-                                                                  'imdbUrl'])),
-                                                      print(description.actors),
-                                                      showInfoDialog(
-                                                          context2, description)
+                                                onPressed: () => {
+                                                      showInfoDialog(context2,
+                                                          document['imdbUrl'])
                                                     }),
                                             title: Container(
                                                 decoration: BoxDecoration(

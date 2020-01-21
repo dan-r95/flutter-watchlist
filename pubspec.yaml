@@ -35,6 +35,8 @@ dependencies:
   appcenter:
   appcenter_analytics:
   appcenter_crashes:
+  firebase_core:  ^0.4.2+1
+  shimmer:
 
 dev_dependencies:
   flutter_test:
