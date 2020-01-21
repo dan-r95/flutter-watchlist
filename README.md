@@ -12,8 +12,9 @@ movie watchlist using imdb
 
 ## Credits
 
-- FabBar: https://github.com/bizz84/bottom_bar_fab_flutter/
-- Login Logic:
+- FabBar: <https://github.com/bizz84/bottom_bar_fab_flutter/>
+- Login Logic: <https://heartbeat.fritz.ai/firebase-user-authentication-in-flutter-1635fb175675>
+- Shimmer animation: <https://github.com/hnvn/flutter_shimmer>
 
 ## TODO
 
