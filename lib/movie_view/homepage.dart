@@ -16,12 +16,11 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
-import 'package:appcenter/appcenter.dart';
-import 'package:appcenter_analytics/appcenter_analytics.dart';
-import 'package:appcenter_crashes/appcenter_crashes.dart';
+// import 'package:appcenter/appcenter.dart';
+// import 'package:appcenter_analytics/appcenter_analytics.dart';
+// import 'package:appcenter_crashes/appcenter_crashes.dart';
 import 'package:flutter_watchlist/movie_view/info_dialog.dart';
 import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_watchlist/main.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
@@ -34,9 +33,11 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   initState() {
+    print("init state");
     FirebaseAuth.instance
         .currentUser()
         .then((currentUser) => {
+              print("Curr User: " + currentUser.toString()),
               if (currentUser == null)
                 {Navigator.pushReplacementNamed(context, "/login")}
               else
@@ -53,10 +54,14 @@ class _SplashPageState extends State<SplashPage> {
                                         title: result["fname"] + "'s Tasks",
                                         uuid: currentUser.uid,
                                       ))))
-                      .catchError((err) => bloc.addMessage(err))
+                      .catchError((err) => {
+                        print(err), bloc.addMessage(err)})
                 }
             })
-        .catchError((err) => (bloc.addMessage(err)));
+        .catchError((err) => {
+          print(err), 
+          bloc.addMessage(err)}
+          );
     super.initState();
 
     //  // this is all stuff to handle the fancy timer running animation
@@ -97,6 +102,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("build splash");
     uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(
         body: Center(

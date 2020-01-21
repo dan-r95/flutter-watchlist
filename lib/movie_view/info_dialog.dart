@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
-import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 

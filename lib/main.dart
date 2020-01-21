@@ -5,16 +5,17 @@ import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/login/register.dart';
 import 'package:flutter_watchlist/login/splash.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
-import 'package:appcenter/appcenter.dart';
-import 'package:appcenter_analytics/appcenter_analytics.dart';
-import 'package:appcenter_crashes/appcenter_crashes.dart';
+// import 'package:appcenter/appcenter.dart';
+// import 'package:appcenter_analytics/appcenter_analytics.dart';
+// import 'package:appcenter_crashes/appcenter_crashes.dart';
 
 Future<void> main() async {
+  print("before run App...");
   runApp(MyApp());
-  final ios = defaultTargetPlatform == TargetPlatform.iOS;
-  var app_secret = ios ? "iOSGuid" : "AndroidGuid";
-  await AppCenter.start(
-      app_secret, [AppCenterAnalytics.id, AppCenterCrashes.id]);
+  // final ios = defaultTargetPlatform == TargetPlatform.iOS;
+  // var app_secret = ios ? "iOSGuid" : "AndroidGuid";
+  // await AppCenter.start(
+  //     app_secret, [AppCenterAnalytics.id, AppCenterCrashes.id]);
 }
 
 class MyApp extends StatelessWidget {

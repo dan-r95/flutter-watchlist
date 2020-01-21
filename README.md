@@ -25,3 +25,4 @@ movie watchlist using imdb
 - icons
 - add snackbar when login fails
 - add animation when loggin in
+  
