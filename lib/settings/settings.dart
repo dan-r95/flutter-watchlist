@@ -7,8 +7,8 @@ import 'package:flutter_watchlist/login/login.dart';
 // provide a way to change the port, ip, username, password and theme and save it to the preferences
 // next time the app is openend, the preferences are read from storage
 class SettingsRoute extends StatefulWidget {
-  SettingsRoute({Key key}) : super(key: key);
-
+  SettingsRoute({Key key, this.title}) : super(key: key);
+  final String title;
   @override
   SettingsRouteState createState() => SettingsRouteState();
 }
@@ -54,6 +54,7 @@ class SettingsRouteState extends State<SettingsRoute> {
                   Divider(
                     thickness: 0,
                   ),
+                  Text("User: ${widget.title}"),
                   RaisedButton(
                       onPressed: () => {
                             FirebaseAuth.instance.signOut(),

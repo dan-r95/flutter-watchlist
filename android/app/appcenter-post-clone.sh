@@ -19,7 +19,7 @@ echo "Installed flutter to `pwd`/flutter"
 
 yes | flutter doctor --android-licenses
 
-git update-index --chmod=+x ../gradlew
+#git update-index --chmod=+x ../gradlew
 
 # build APK
 flutter build apk --release

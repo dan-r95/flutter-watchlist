@@ -4,6 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ],
+);
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.uiErrorUtils, this.bloc}) : super(key: key);
@@ -13,8 +21,8 @@ class LoginPage extends StatefulWidget {
 
   @override
   _LoginPageState createState() => _LoginPageState(
-        uiErrorUtils,
-        bloc,
+        uiErrorUtils: uiErrorUtils,
+        bloc: bloc,
       );
 }
 
@@ -22,19 +30,22 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   TextEditingController emailInputController;
   TextEditingController pwdInputController;
-  UiErrorUtils uiErrorUtils;
-  Bloc bloc;
+  UiErrorUtils _uiErrorUtils;
+  Bloc _bloc;
+
+  GoogleSignInAccount _currentUser;
 
   @override
   initState() {
     super.initState();
+    _bloc.addMessage("LOL");
     emailInputController = new TextEditingController();
     pwdInputController = new TextEditingController();
   }
 
-  _LoginPageState(this.uiErrorUtils, this.bloc) {
-    bloc = bloc ?? Bloc();
-    uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+  _LoginPageState({UiErrorUtils uiErrorUtils, Bloc bloc}) {
+    _bloc = bloc ?? Bloc();
+    _uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
   }
 
   String emailValidator(String value) {
@@ -56,73 +67,190 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Widget _signInButton() {
+    return OutlineButton(
+      splashColor: Colors.grey,
+      onPressed: () async {
+        await signInWithGoogle();
+      },
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+      highlightElevation: 0,
+      borderSide: BorderSide(color: Colors.grey),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image(image: AssetImage("assets/google_logo.png"), height: 35.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Text(
+                'Sign in with Google',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+        .signIn()
+        .catchError((err) => bloc.addMessage(err.toString()));
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    // assert(!user.isAnonymous);
+    // assert(await user.getIdToken() != null);
+
+    FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .then((currentUser) => Firestore.instance
+            .collection("users")
+            .document(currentUser.user.uid)
+            .get()
+            .then((DocumentSnapshot result) => {
+                  print(result),
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(
+                                title: result["fname"] + "'s Tasks",
+                                uuid: currentUser.user.uid,
+                              )))
+                })
+            .catchError((err) => _bloc.addMessage(err)))
+        .catchError((err) => (_bloc.addMessage(err)));
+  }
+
+  void signOutGoogle() async {
+    await _googleSignIn.signOut();
+
+    print("User Sign Out");
+  }
+
   @override
   Widget build(BuildContext context) {
-    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(
         appBar: AppBar(
           title: Text("Login"),
         ),
-        body: Container(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-                child: Form(
-              key: _loginFormKey,
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Email*', hintText: "john.doe@gmail.com"),
-                    controller: emailInputController,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: emailValidator,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Password*', hintText: "********"),
-                    controller: pwdInputController,
-                    obscureText: true,
-                    validator: pwdValidator,
-                  ),
-                  RaisedButton(
-                    child: Text("Login"),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      if (_loginFormKey.currentState.validate()) {
-                        FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: emailInputController.text,
-                                password: pwdInputController.text)
-                            .then((currentUser) => Firestore.instance
-                                .collection("users")
-                                .document(currentUser.user.uid)
-                                .get()
-                                .then((DocumentSnapshot result) => {
-                                      print(result),
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => HomePage(
-                                                    title: result["fname"] +
-                                                        "'s Tasks",
-                                                    uuid: currentUser.user.uid,
-                                                  )))
-                                    })
-                                .catchError((err) => bloc.addMessage(err)))
-                            .catchError((err) => (bloc.addMessage(err)));
-                      }
-                    },
-                  ),
-                  Text("Don't have an account yet?"),
-                  FlatButton(
-                    child: Text("Register here!"),
-                    onPressed: () {
-                      Navigator.pushNamed(context, "/register");
-                    },
-                  )
-                ],
-              ),
-            ))));
+        body: Builder(builder: (context) {
+          _uiErrorUtils.subscribeToSnackBarStream(
+              context, bloc.snackBarSubject);
+          return Container(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                  child: Form(
+                key: _loginFormKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: 'Email*', hintText: "john.doe@gmail.com"),
+                      controller: emailInputController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: emailValidator,
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: 'Password*', hintText: "********"),
+                      controller: pwdInputController,
+                      obscureText: true,
+                      validator: pwdValidator,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    _signInButton(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    RaisedButton(
+                      child: Text("Login"),
+                      color: Theme.of(context).primaryColor,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        if (_loginFormKey.currentState.validate()) {
+                          FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                  email: emailInputController.text.trim(),
+                                  password: pwdInputController.text.trim())
+                              .then((currentUser) => Firestore.instance
+                                  .collection("users")
+                                  .document(currentUser.user.uid)
+                                  .get()
+                                  .then((DocumentSnapshot result) => {
+                                        print(result),
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => HomePage(
+                                                      title: result["fname"] +
+                                                          "'s Tasks",
+                                                      uuid:
+                                                          currentUser.user.uid,
+                                                    )))
+                                      })
+                                  .catchError(
+                                      (err) => bloc.addMessage(err.toString())))
+                              .catchError(
+                                  (err) => (bloc.addMessage(err.toString())));
+                        }
+                      },
+                    ),
+                    Text("Don't have an account yet?"),
+                    FlatButton(
+                      child: Text("Register here!"),
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/register");
+                      },
+                    ),
+                    RaisedButton(
+                        child: Text("Or Continue without an account!"),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          FirebaseAuth.instance
+                              .signInAnonymously()
+                              .then((currentUser) => Firestore.instance
+                                  .collection("users")
+                                  .document(currentUser.user.uid)
+                                  .get()
+                                  .then((DocumentSnapshot result) => {
+                                        
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => HomePage(
+                                                      title: result.data ==
+                                                              null
+                                                          ? "Temp account"
+                                                          : result["fname"] +
+                                                              "'s Tasks",
+                                                      uuid:
+                                                          currentUser.user.uid,
+                                                    )))
+                                      })
+                                  .catchError(
+                                      (err) => bloc.addMessage(err.toString())))
+                              .catchError(
+                                  (err) => (bloc.addMessage(err.toString())));
+                        })
+                  ],
+                ),
+              )));
+        }));
   }
 }

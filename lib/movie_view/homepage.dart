@@ -66,16 +66,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    notesReference.reference().once().then((DataSnapshot snapshot) {
-      print('Connected to second database and read ${snapshot.value}');
-    });
+    // notesReference.reference().once().then((DataSnapshot snapshot) {
+    //   print('Connected to second database and read ${snapshot.value}');
+    // });
     favorites = new List();
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     // _onNoteChangedSubscription =
     //    notesReference.onChildChanged.listen(_onNoteUpdated);
 
     _children.addAll(
-        [_buildFavoritesList(), _buildCompletedList(), SettingsRoute()]);
+        [_buildFavoritesList(), _buildCompletedList(), SettingsRoute(title: widget.title)]);
   }
 
   @override
@@ -573,65 +573,61 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
     _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
-    return StreamBuilder<Brightness>(
-        stream: bloc.currentBrightness,
-        builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
-          return MaterialApp(
-              title: "Watchlist",
-              theme: ThemeData(
-                // This is the theme of the application.
-                brightness: snapshot.data,
-              ),
-              home: Scaffold(
-                  appBar: new AppBar(
-                      leading: new IconButton(
-                        icon: _searchIcon,
-                        onPressed: null,
-                      ),
-                      centerTitle: true,
-                      title: _appBarTitle,
-                      actions: <Widget>[
-                        new IconButton(
-                            icon: Icon(Icons.info),
-                            onPressed: () => tabBloc.updateIndex(2)),
-                      ]),
-                  body: StreamBuilder(
-                      stream: tabBloc.getIndex,
-                      initialData: 3,
-                      builder: (BuildContext context, AsyncSnapshot snapshot2) {
-                        return IndexedStack(
-                          index: snapshot2.data,
-                          children: _children,
-                        );
-                      }),
 
-                  // define the bottom tab navigaation bar
-                  bottomNavigationBar: StreamBuilder(
-                      initialData: 0,
-                      stream: tabBloc.getIndex,
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        return FABBottomAppBar(
-                          //centerItemText: 'A',
-                          color: Colors.grey,
-                          selectedColor: Colors.red,
-                          notchedShape: CircularNotchedRectangle(),
-                          onTabSelected: (i) => tabBloc.updateIndex(i),
-                          items: [
-                            FABBottomAppBarItem(
-                                iconData: Icons.movie, text: 'Watchlist'),
-                            FABBottomAppBarItem(
-                                iconData: Icons.done, text: 'Already Seen'),
-                            // FABBottomAppBarItem(
-                            //     iconData: Icons.settings, text: 'Settings'),
-                          ],
-                        );
-                      }),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.centerDocked,
-                  floatingActionButton: FloatingActionButton(
-                    child: Icon(Icons.add),
-                    onPressed: _searchPressed, // show search bar
-                  )));
-        });
+    return Scaffold(
+        appBar: new AppBar(
+            leading: new IconButton(
+              icon: _searchIcon,
+              onPressed: null,
+            ),
+            centerTitle: true,
+            title: _appBarTitle,
+            actions: <Widget>[
+              new IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () => tabBloc.updateIndex(2)),
+            ]),
+        body: Builder(builder: (context) {
+          _uiErrorUtils.subscribeToSnackBarStream(
+              context, bloc.snackBarSubject);
+          return StreamBuilder(
+              stream: tabBloc.getIndex,
+              initialData: 0,
+              builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                return IndexedStack(
+                  index: snapshot2.data,
+                  children: _children,
+                );
+              });
+        }),
+
+        // define the bottom tab navigaation bar
+        bottomNavigationBar: StreamBuilder(
+            initialData: 0,
+            stream: tabBloc.getIndex,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return FABBottomAppBar(
+                //centerItemText: 'A',
+                color: Colors.grey,
+                selectedColor: Colors.red,
+                notchedShape: CircularNotchedRectangle(),
+                onTabSelected: (i) => tabBloc.updateIndex(i),
+                items: [
+                  FABBottomAppBarItem(iconData: Icons.movie, text: 'Watchlist'),
+                  FABBottomAppBarItem(
+                      iconData: Icons.done, text: 'Already Seen'),
+                  // FABBottomAppBarItem(
+                  //     iconData: Icons.settings, text: 'Settings'),
+                ],
+              );
+            }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: _searchPressed, // show search bar
+        ));
+
   }
+
 }
+
