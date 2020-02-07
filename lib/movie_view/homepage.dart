@@ -51,17 +51,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String currentText = "";
 
-  List<ArbitrarySuggestionType> suggestions = [];
+  List<MovieSuggestion> suggestions = [];
 
   bool loading = false;
-  List<ArbitrarySuggestionType> favorites = [];
+  List<MovieSuggestion> favorites = [];
   StreamSubscription<Event> _onNoteAddedSubscription;
   StreamSubscription<Event> _onNoteChangedSubscription;
   final notesReference = FirebaseDatabase.instance.reference();
   UiErrorUtils _uiErrorUtils;
   Bloc _bloc;
 
-  List<ArbitrarySuggestionType> alreadyWatched = [];
+  List<MovieSuggestion> alreadyWatched = [];
 
   @override
   void initState() {
@@ -74,8 +74,11 @@ class _HomePageState extends State<HomePage> {
     // _onNoteChangedSubscription =
     //    notesReference.onChildChanged.listen(_onNoteUpdated);
 
-    _children.addAll(
-        [_buildFavoritesList(), _buildCompletedList(), SettingsRoute(title: widget.title)]);
+    _children.addAll([
+      _buildFavoritesList(),
+      _buildCompletedList(),
+      SettingsRoute(title: widget.title)
+    ]);
   }
 
   @override
@@ -87,7 +90,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onNoteAdded(Event event) {
     setState(() {
-      favorites.add(new ArbitrarySuggestionType.fromSnapshot(event.snapshot));
+      favorites.add(new MovieSuggestion.fromSnapshot(event.snapshot));
     });
   }
 
@@ -102,8 +105,8 @@ class _HomePageState extends State<HomePage> {
   }
 */
 
-  Future<List<ArbitrarySuggestionType>> updateSuggestions(String query) async {
-    List<ArbitrarySuggestionType> list = new List<ArbitrarySuggestionType>();
+  Future<List<MovieSuggestion>> updateSuggestions(String query) async {
+    List<MovieSuggestion> list = new List<MovieSuggestion>();
     if (query.length > 2) {
       setState(() {
         loading = true;
@@ -116,11 +119,11 @@ class _HomePageState extends State<HomePage> {
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
-      List<ArbitrarySuggestionType> listOtherSugg =
-          new List<ArbitrarySuggestionType>();
+      List<MovieSuggestion> listOtherSugg =
+          new List<MovieSuggestion>();
       if (decoded != null) {
         listOtherSugg = decoded
-            .map((m) => ArbitrarySuggestionType.fromMappedJson(m))
+            .map((m) => MovieSuggestion.fromMappedJson(m))
             .toList();
       }
       response =
@@ -131,8 +134,8 @@ class _HomePageState extends State<HomePage> {
       //print(decoded);
 
       if (decoded != null) {
-        ArbitrarySuggestionType item =
-            ArbitrarySuggestionType.fromMappedJson(decodedMap);
+        MovieSuggestion item =
+            MovieSuggestion.fromMappedJson(decodedMap);
         list.add(item);
         list.addAll(listOtherSugg);
 
@@ -146,11 +149,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   GlobalKey key =
-      new GlobalKey<AutoCompleteTextFieldState<ArbitrarySuggestionType>>();
+      new GlobalKey<AutoCompleteTextFieldState<MovieSuggestion>>();
 
-  AutoCompleteTextField<ArbitrarySuggestionType> textField;
+  AutoCompleteTextField<MovieSuggestion> textField;
 
-  ArbitrarySuggestionType selected;
+  MovieSuggestion selected;
 
   _HomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
     _filter.addListener(() {
@@ -181,11 +184,12 @@ class _HomePageState extends State<HomePage> {
 
   MovieDescription description;
 
-  void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(MovieSuggestion item, String dbName) {
     print("will push");
     Firestore.instance
-        .collection(dbName)
+        .collection("favorites")
         .add({
+          'user': widget.uuid,
           'Title': item.name,
           'Poster': item.imgURL,
           'Year': item.year,
@@ -193,7 +197,7 @@ class _HomePageState extends State<HomePage> {
           'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
         .then((result) => {})
-        .catchError((err) => (bloc.addMessage(err)));
+        .catchError((err) => (_bloc.addMessage(err)));
     favorites.add(item);
   }
 
@@ -209,7 +213,7 @@ class _HomePageState extends State<HomePage> {
           suggestionsCallback: (pattern) async {
             return await updateSuggestions(pattern);
           },
-          itemBuilder: (context, ArbitrarySuggestionType suggestion) {
+          itemBuilder: (context, MovieSuggestion suggestion) {
             return ListTile(
               leading: Icon(Icons.movie),
               title: Text(suggestion.name),
@@ -230,7 +234,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   //TODO use https://pub.dev/packages/flutter_typeahead
-  showAddDialog(BuildContext context, ArbitrarySuggestionType suggestion) {
+  showAddDialog(BuildContext context, MovieSuggestion suggestion) {
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
@@ -261,7 +265,9 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
-                    .collection('favorites')
+                    .collection(widget.uuid)
+                    .document("favorites")
+                    .collection("favorites")
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -291,12 +297,12 @@ class _HomePageState extends State<HomePage> {
                               onDismissed: (direction) {
                                 setState(() {
                                   alreadyWatched.add(
-                                      ArbitrarySuggestionType.fromDocument(
+                                      MovieSuggestion.fromDocument(
                                           document));
                                 });
                                 print(alreadyWatched.length.toString());
                                 pushToDB(
-                                    ArbitrarySuggestionType.fromDocument(
+                                    MovieSuggestion.fromDocument(
                                         document),
                                     'alreadyWatched');
                                 Firestore.instance
@@ -421,6 +427,7 @@ class _HomePageState extends State<HomePage> {
             child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
                     .collection('alreadyWatched')
+                    .where('user', isEqualTo: widget.uuid)
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -626,8 +633,5 @@ class _HomePageState extends State<HomePage> {
           child: Icon(Icons.add),
           onPressed: _searchPressed, // show search bar
         ));
-
   }
-
 }
-

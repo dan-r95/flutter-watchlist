@@ -1,9 +1,35 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>flutter_watchlist</title>
 </head>
+
 <body>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-auth.js"></script>
+
+  <!--<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-analytics.js"></script>-->
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwH",
+      authDomain: "flutter-watchlist.firebaseapp.com",
+      databaseURL: "https://flutter-watchlist.firebaseio.com",
+      projectId: "flutter-watchlist",
+      storageBucket: "flutter-watchlist.appspot.com",
+      messagingSenderId: "220852966414",
+      appId: "1:220852966414:web:4916c4b790d8b390cad85f",
+      measurementId: "G-W2YH6JWLEN"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    //firebase.analytics();
+  </script>
+  <!-- Other firebase SDKs/config here -->
+  <script src="main.dart.js"></script>
 </body>
+
 </html>

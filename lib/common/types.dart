@@ -1,7 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ArbitrarySuggestionType {
+class MovieSuggestion {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
   String _imdbUrl;
   String _name, _imgURL;
@@ -9,15 +9,15 @@ class ArbitrarySuggestionType {
   String _year;
   String _id;
   DateTime _added;
-  ArbitrarySuggestionType(this._stars, this._name, this._imgURL);
+  MovieSuggestion(this._stars, this._name, this._imgURL);
 
-  ArbitrarySuggestionType.fromMappedJson(Map<String, dynamic> json)
+  MovieSuggestion.fromMappedJson(Map<String, dynamic> json)
       : _imdbUrl = json['imdbID'],
         _name = json['Title'],
         _imgURL = json['Poster'],
         _year = json['Year'];
 
-  ArbitrarySuggestionType.fromSnapshot(DataSnapshot snapshot) {
+  MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
     _id = snapshot.key;
     _name = snapshot.value['Title'];
     _imgURL = snapshot.value['Poster'];
@@ -26,7 +26,7 @@ class ArbitrarySuggestionType {
     _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
   }
 
-  ArbitrarySuggestionType.fromDocument(DocumentSnapshot snapshot) {
+  MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
     _id = snapshot.data['id'] as String;
     _name = snapshot.data['Title'];
     _imgURL = snapshot.data['Poster'];

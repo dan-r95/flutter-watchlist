@@ -5,9 +5,9 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 
 class AddMovieDialog extends StatelessWidget {
-  final ArbitrarySuggestionType suggestion;
+  final MovieSuggestion suggestion;
   final Bloc bloc;
-  final List<ArbitrarySuggestionType> favorites;
+  final List<MovieSuggestion> favorites;
 
   const AddMovieDialog(
       {Key key,
@@ -16,7 +16,7 @@ class AddMovieDialog extends StatelessWidget {
       @required this.favorites})
       : super(key: key);
 
-  void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(MovieSuggestion item, String dbName) {
     print("will push");
     Firestore.instance
         .collection(dbName)
