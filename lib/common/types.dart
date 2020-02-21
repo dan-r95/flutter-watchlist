@@ -1,6 +1,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+Map<int, String> companyList = {
+  8: "Netflix",
+  10: "Amazon",
+  29: "Sky"
+};
+
 class MovieSuggestion {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
   String _imdbUrl;

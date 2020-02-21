@@ -8,26 +8,29 @@ class AddMovieDialog extends StatelessWidget {
   final MovieSuggestion suggestion;
   final Bloc bloc;
   final List<MovieSuggestion> favorites;
+  final String uuid;
 
   const AddMovieDialog(
       {Key key,
       @required this.suggestion,
+      @required this.uuid,
       @required this.bloc,
       @required this.favorites})
       : super(key: key);
 
-  void pushToDB(MovieSuggestion item, String dbName) {
+  void pushToDB(MovieSuggestion item, String dbName, String uuid) {
     print("will push");
     Firestore.instance
         .collection(dbName)
         .add({
+          'user': uuid,
           'Title': item.name,
           'Poster': item.imgURL,
           'Year': item.year,
           'imdbUrl': item.imdbUrl,
           'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
-        .then((result) => {})
+        .then((result) => { print(result)})
         .catchError((err) => (bloc.addMessage(err)));
     favorites.add(item);
   }
@@ -51,8 +54,8 @@ class AddMovieDialog extends StatelessWidget {
 
             fit: BoxFit.cover,
             // width: context.size.width,
-             height: MediaQuery.of(context).size.height /2,
-             // context.size.height / 4,
+            height: MediaQuery.of(context).size.height / 2,
+            // context.size.height / 4,
           ),
           ButtonBar(
             children: <Widget>[
@@ -64,7 +67,7 @@ class AddMovieDialog extends StatelessWidget {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('added to favs!'),
                   ));*/
-                    pushToDB(suggestion, 'favorites');
+                    pushToDB(suggestion, 'favorites', this.uuid);
                     Navigator.pop(context);
                     // setState(() {
                     //   if (this._searchIcon.icon == Icons.search) {

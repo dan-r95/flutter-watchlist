@@ -10,17 +10,21 @@ class JustWatchManager {
     return JustWatchResponse.fromJson(jsonDecode(response.body));
   }
 
-  getAvailability(int id) async {
+  Future<JustWatchResponse> getAvailability(int id) async {
     JustWatchResponse movieResponse = await getMovie(id);
-    for (var company in movieResponse.offers) {
-      if (company.providerId == 10 ||
-          company.providerId == 8 ||
-          company.providerId == 29)
-        print("available on: ${company.urls}, id:, ${company.providerId}");
+    print(movieResponse.toString());
+    if (movieResponse.offers != null) {
+      for (var company in movieResponse.offers) {
+        if (company.providerId == 10 ||
+            company.providerId == 8 ||
+            company.providerId == 29)
+          print("available on: ${company.urls}, id:, ${company.providerId}");
+      }
     }
+    return movieResponse;
   }
 
-  searchTitle(String query) async {
+  Future<JustWatchResponse> searchTitle(String query) async {
     var encoded = jsonEncode({
       "age_certifications": [],
       "content_types": [],
@@ -35,18 +39,23 @@ class JustWatchManager {
       "release_year_until": null,
       "scoring_filter_types": null,
       "timeline_type": null,
-      "q": null,
+      "query": query,
       "person_id": null,
       "sort_by": null,
       "sort_asc": null,
-      "titles_per_provider": 44,
+      "titles_per_provider": 5,
       "page": 1,
       "page_size": 2
     });
     var response = await http.post(
-        "https://apis.justwatch.com/content/titles/popular/locale/de_DE",
+        "https://apis.justwatch.com/content/titles/en_US/popular",
         body: encoded);
-    return JustWatchMovie.fromJson(jsonDecode(response.body)['items']);
+    var movieWithIt =
+        JustWatchMovie.fromJson(jsonDecode(response.body)['items'][0]);
+        print("offers: ");
+    print(jsonDecode(response.body)['items']);
+
+    return getAvailability(movieWithIt.id);
   }
 }
 

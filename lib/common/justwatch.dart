@@ -187,7 +187,7 @@ class Offers {
   String dateProviderId;
   String dateCreated;
   double lastChangeRetailPrice;
-  int lastChangeDifference;
+  double lastChangeDifference;
   double lastChangePercent;
   String lastChangeDate;
   String lastChangeDateProviderId;
@@ -221,12 +221,17 @@ class Offers {
     dateProviderId = json['date_provider_id'];
     dateCreated = json['date_created'];
     lastChangeRetailPrice = json['last_change_retail_price'];
-    lastChangeDifference = json['last_change_difference'];
+    lastChangeDifference =
+        double.tryParse(json['last_change_difference'].toString());
     lastChangePercent = json['last_change_percent'];
     lastChangeDate = json['last_change_date'];
     lastChangeDateProviderId = json['last_change_date_provider_id'];
-    audioLanguages = json['audio_languages'].cast<String>();
-    subtitleLanguages = json['subtitle_languages'].cast<String>();
+    audioLanguages = json['audio_languages'] != null
+        ? json['audio_languages'].cast<String>()
+        : null;
+    subtitleLanguages = json['subtitle_languages'] != null
+        ? json['subtitle_languages'].cast<String>()
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -314,7 +319,7 @@ class Scoring {
 
   Scoring.fromJson(Map<String, dynamic> json) {
     providerType = json['provider_type'];
-    value = json['value'];
+    value = double.tryParse(json['value'].toString());
   }
 
   Map<String, dynamic> toJson() {

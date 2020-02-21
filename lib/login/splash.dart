@@ -38,7 +38,7 @@ class _SplashPageState extends State<SplashPage>
   @override
   initState() {
     print("init state");
-    FirebaseAuth.instance.signOut();
+    //FirebaseAuth.instance.signOut();
     FirebaseAuth.instance
         .currentUser()
         .then((currentUser) => {
@@ -97,7 +97,7 @@ class _SplashPageState extends State<SplashPage>
 
       //  });
     });
-
+  uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     controller.forward();
   }
 
@@ -105,16 +105,14 @@ class _SplashPageState extends State<SplashPage>
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    timerAnim.cancel();
-    controller.stop();
+    timerAnim?.cancel();
+    controller?.stop();
   }
 
   @override
   Widget build(BuildContext context) {
     print("build splash");
-    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     return Scaffold(body: Builder(builder: (context) {
-      uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
       return Center(
         child: Container(
           child: StreamBuilder<int>(

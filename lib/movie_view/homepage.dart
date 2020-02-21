@@ -16,6 +16,7 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
+import 'package:flare_flutter/flare_actor.dart';
 // import 'package:appcenter/appcenter.dart';
 // import 'package:appcenter_analytics/appcenter_analytics.dart';
 // import 'package:appcenter_crashes/appcenter_crashes.dart';
@@ -119,12 +120,10 @@ class _HomePageState extends State<HomePage> {
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
-      List<MovieSuggestion> listOtherSugg =
-          new List<MovieSuggestion>();
+      List<MovieSuggestion> listOtherSugg = new List<MovieSuggestion>();
       if (decoded != null) {
-        listOtherSugg = decoded
-            .map((m) => MovieSuggestion.fromMappedJson(m))
-            .toList();
+        listOtherSugg =
+            decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
       }
       response =
           await http.get("https://www.omdbapi.com/?t=$query&apikey=e83d3bc2");
@@ -134,8 +133,7 @@ class _HomePageState extends State<HomePage> {
       //print(decoded);
 
       if (decoded != null) {
-        MovieSuggestion item =
-            MovieSuggestion.fromMappedJson(decodedMap);
+        MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
         list.add(item);
         list.addAll(listOtherSugg);
 
@@ -148,8 +146,7 @@ class _HomePageState extends State<HomePage> {
     return list;
   }
 
-  GlobalKey key =
-      new GlobalKey<AutoCompleteTextFieldState<MovieSuggestion>>();
+  GlobalKey key = new GlobalKey<AutoCompleteTextFieldState<MovieSuggestion>>();
 
   AutoCompleteTextField<MovieSuggestion> textField;
 
@@ -186,6 +183,7 @@ class _HomePageState extends State<HomePage> {
 
   void pushToDB(MovieSuggestion item, String dbName) {
     print("will push");
+    print(widget.uuid);
     Firestore.instance
         .collection("favorites")
         .add({
@@ -196,7 +194,7 @@ class _HomePageState extends State<HomePage> {
           'imdbUrl': item.imdbUrl,
           'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
-        .then((result) => {})
+        .then((result) => {print(result)})
         .catchError((err) => (_bloc.addMessage(err)));
     favorites.add(item);
   }
@@ -241,7 +239,11 @@ class _HomePageState extends State<HomePage> {
 
       builder: (BuildContext context) {
         return AddMovieDialog(
-            suggestion: suggestion, bloc: _bloc, favorites: favorites);
+          suggestion: suggestion,
+          bloc: _bloc,
+          favorites: favorites,
+          uuid: widget.uuid,
+        );
       },
     );
   }
@@ -265,9 +267,8 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
-                    .collection(widget.uuid)
-                    .document("favorites")
                     .collection("favorites")
+                    .where("user", isEqualTo: widget.uuid)
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -275,9 +276,21 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.hasError)
                     return new Text('Error: ${snapshot.error}');
                   switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return new Text('Loading...');
+                     case ConnectionState.waiting:
+                      return Container(
+                        height: 200,
+                        width: 200,
+                        child: FlareActor("assets/animations/loading.flr",
+                            animation: "roll"),
+                      );
                     default:
+                      if (snapshot.data.documents.length == 0) {
+                        return  Container(
+                        height: 200,
+                        width: 200,
+                        child:  FlareActor("assets/animations/loading.flr",
+                            animation: "roll"));
+                      }
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate:
@@ -297,13 +310,10 @@ class _HomePageState extends State<HomePage> {
                               onDismissed: (direction) {
                                 setState(() {
                                   alreadyWatched.add(
-                                      MovieSuggestion.fromDocument(
-                                          document));
+                                      MovieSuggestion.fromDocument(document));
                                 });
                                 print(alreadyWatched.length.toString());
-                                pushToDB(
-                                    MovieSuggestion.fromDocument(
-                                        document),
+                                pushToDB(MovieSuggestion.fromDocument(document),
                                     'alreadyWatched');
                                 Firestore.instance
                                     .collection('favorites')
@@ -436,8 +446,20 @@ class _HomePageState extends State<HomePage> {
                     return new Text('Error: ${snapshot.error}');
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return new Text('Loading...');
+                      return Container(
+                        height: 200,
+                        width: 200,
+                        child: FlareActor("assets/animations/loading.flr",
+                            animation: "roll"),
+                      );
                     default:
+                      if (snapshot.data.documents.length == 0) {
+                        return  Container(
+                        height: 200,
+                        width: 200,
+                        child:  FlareActor("assets/animations/loading.flr",
+                            animation: "roll"));
+                      }
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate:

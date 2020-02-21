@@ -63,6 +63,7 @@ class JustWatchMovie {
 }
 
 class Language {
+  Language();
   Language.fromJson(Map<String, dynamic> json) {}
 
   Map<String, dynamic> toJson() {}
@@ -109,13 +110,13 @@ class Offers {
     if (json['subtitle_languages'] != null) {
       subtitleLanguages = new List<Language>();
       json['subtitle_languages'].forEach((v) {
-        subtitleLanguages.add(new Language.fromJson(v));
+        subtitleLanguages.add(Language());
       });
     }
     if (json['audio_languages'] != null) {
       audioLanguages = new List<Language>();
       json['audio_languages'].forEach((v) {
-        audioLanguages.add(new Language.fromJson(v));
+        audioLanguages.add(Language());
       });
     }
     presentationType = json['presentation_type'];
