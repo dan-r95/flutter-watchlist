@@ -1,17 +1,14 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/justwatch.dart';
-import 'package:flutter_watchlist/common/justwatch_movie.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_watchlist/api/justwatchManager.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class InfoDialog extends StatelessWidget {
   final String url;
@@ -25,23 +22,7 @@ class InfoDialog extends StatelessWidget {
       @required this.favorites})
       : super(key: key);
 
-  void pushToDB(MovieSuggestion item, String dbName, String uuid) {
-    print("will push");
-    print("will push");
-    Firestore.instance
-        .collection(dbName)
-        .add({
-          'user': uuid,
-          'Title': item.name,
-          'Poster': item.imgURL,
-          'Year': item.year,
-          'imdbUrl': item.imdbUrl,
-          'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
-        })
-        .then((result) => {print(result)})
-        .catchError((err) => (bloc.addMessage(err)));
-    favorites.add(item);
-  }
+  
 
   Future<MovieDescription> getMovieDescription(String id) async {
     final response =
@@ -166,7 +147,7 @@ class InfoDialog extends StatelessWidget {
                             //       MediaQuery.of(context).size.width * 0.9,
                             // );
                           } else {
-                            Shimmer.fromColors(
+                            return Shimmer.fromColors(
                                 baseColor: Colors.grey[300],
                                 highlightColor: Colors.grey[100],
                                 enabled: _enabled,

@@ -44,11 +44,10 @@ class _SplashPageState extends State<SplashPage>
     // print(user);
     // here you write the codes to input the data into firestore
 
-     final AuthResult result = (await _auth.signInWithEmailAndPassword(
+    final AuthResult result = (await _auth.signInWithEmailAndPassword(
         email: "d.rossburg@googlemail.com", password: "12345678"));
     print("signed in " + result.user.email);
-   print(result.user);
-
+    print(result.user);
   }
 
   @override
@@ -56,7 +55,7 @@ class _SplashPageState extends State<SplashPage>
     print("init state");
     print(_auth.app.name);
     //getUser();
-   
+
     _auth
         .currentUser()
         .then((currentUser) => {
@@ -122,10 +121,9 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     timerAnim?.cancel();
     controller?.stop();
+    super.dispose();
   }
 
   @override
