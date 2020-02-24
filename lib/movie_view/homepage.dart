@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_watchlist/movie_view/delete_dialog.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +16,12 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
-import 'package:appcenter/appcenter.dart';
-import 'package:appcenter_analytics/appcenter_analytics.dart';
-import 'package:appcenter_crashes/appcenter_crashes.dart';
+import 'package:flare_flutter/flare_actor.dart';
+// import 'package:appcenter/appcenter.dart';
+// import 'package:appcenter_analytics/appcenter_analytics.dart';
+// import 'package:appcenter_crashes/appcenter_crashes.dart';
 import 'package:flutter_watchlist/movie_view/info_dialog.dart';
 import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(
@@ -51,31 +52,34 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String currentText = "";
 
-  List<ArbitrarySuggestionType> suggestions = [];
+  List<MovieSuggestion> suggestions = [];
 
   bool loading = false;
-  List<ArbitrarySuggestionType> favorites = [];
+  List<MovieSuggestion> favorites = [];
   StreamSubscription<Event> _onNoteAddedSubscription;
   StreamSubscription<Event> _onNoteChangedSubscription;
   final notesReference = FirebaseDatabase.instance.reference();
   UiErrorUtils _uiErrorUtils;
   Bloc _bloc;
 
-  List<ArbitrarySuggestionType> alreadyWatched = [];
+  List<MovieSuggestion> alreadyWatched = [];
 
   @override
   void initState() {
     super.initState();
-    notesReference.reference().once().then((DataSnapshot snapshot) {
-      print('Connected to second database and read ${snapshot.value}');
-    });
+    // notesReference.reference().once().then((DataSnapshot snapshot) {
+    //   print('Connected to second database and read ${snapshot.value}');
+    // });
     favorites = new List();
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     // _onNoteChangedSubscription =
     //    notesReference.onChildChanged.listen(_onNoteUpdated);
 
-    _children.addAll(
-        [_buildFavoritesList(), _buildCompletedList(), SettingsRoute()]);
+    _children.addAll([
+      _buildFavoritesList(),
+      _buildCompletedList(),
+      SettingsRoute(title: widget.title)
+    ]);
   }
 
   @override
@@ -87,7 +91,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onNoteAdded(Event event) {
     setState(() {
-      favorites.add(new ArbitrarySuggestionType.fromSnapshot(event.snapshot));
+      favorites.add(new MovieSuggestion.fromSnapshot(event.snapshot));
     });
   }
 
@@ -102,24 +106,24 @@ class _HomePageState extends State<HomePage> {
   }
 */
 
-  Future<List<ArbitrarySuggestionType>> updateSuggestions(String query) async {
-    List<ArbitrarySuggestionType> list = new List<ArbitrarySuggestionType>();
+  Future<List<MovieSuggestion>> updateSuggestions(String query) async {
+    List<MovieSuggestion> list = new List<MovieSuggestion>();
     if (query.length > 2) {
       setState(() {
         loading = true;
       });
+      // trim whitespaces
+      query = query.trim();
       var response =
           await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
 
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
-      List<ArbitrarySuggestionType> listOtherSugg =
-          new List<ArbitrarySuggestionType>();
+      List<MovieSuggestion> listOtherSugg = new List<MovieSuggestion>();
       if (decoded != null) {
-        listOtherSugg = decoded
-            .map((m) => ArbitrarySuggestionType.fromMappedJson(m))
-            .toList();
+        listOtherSugg =
+            decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
       }
       response =
           await http.get("https://www.omdbapi.com/?t=$query&apikey=e83d3bc2");
@@ -129,8 +133,7 @@ class _HomePageState extends State<HomePage> {
       //print(decoded);
 
       if (decoded != null) {
-        ArbitrarySuggestionType item =
-            ArbitrarySuggestionType.fromMappedJson(decodedMap);
+        MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
         list.add(item);
         list.addAll(listOtherSugg);
 
@@ -143,12 +146,11 @@ class _HomePageState extends State<HomePage> {
     return list;
   }
 
-  GlobalKey key =
-      new GlobalKey<AutoCompleteTextFieldState<ArbitrarySuggestionType>>();
+  GlobalKey key = new GlobalKey<AutoCompleteTextFieldState<MovieSuggestion>>();
 
-  AutoCompleteTextField<ArbitrarySuggestionType> textField;
+  AutoCompleteTextField<MovieSuggestion> textField;
 
-  ArbitrarySuggestionType selected;
+  MovieSuggestion selected;
 
   _HomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
     _filter.addListener(() {
@@ -179,19 +181,21 @@ class _HomePageState extends State<HomePage> {
 
   MovieDescription description;
 
-  void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(MovieSuggestion item, String dbName) {
     print("will push");
+    print(widget.uuid);
     Firestore.instance
-        .collection(dbName)
+        .collection("favorites")
         .add({
+          'user': widget.uuid,
           'Title': item.name,
           'Poster': item.imgURL,
           'Year': item.year,
           'imdbUrl': item.imdbUrl,
           'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
-        .then((result) => {})
-        .catchError((err) => (bloc.addMessage(err)));
+        .then((result) => {print(result)})
+        .catchError((err) => (_bloc.addMessage(err)));
     favorites.add(item);
   }
 
@@ -207,7 +211,7 @@ class _HomePageState extends State<HomePage> {
           suggestionsCallback: (pattern) async {
             return await updateSuggestions(pattern);
           },
-          itemBuilder: (context, ArbitrarySuggestionType suggestion) {
+          itemBuilder: (context, MovieSuggestion suggestion) {
             return ListTile(
               leading: Icon(Icons.movie),
               title: Text(suggestion.name),
@@ -228,14 +232,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   //TODO use https://pub.dev/packages/flutter_typeahead
-  showAddDialog(BuildContext context, ArbitrarySuggestionType suggestion) {
+  showAddDialog(BuildContext context, MovieSuggestion suggestion) {
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
 
       builder: (BuildContext context) {
         return AddMovieDialog(
-            suggestion: suggestion, bloc: _bloc, favorites: favorites);
+          suggestion: suggestion,
+          bloc: _bloc,
+          favorites: favorites,
+          uuid: widget.uuid,
+        );
       },
     );
   }
@@ -259,7 +267,8 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
-                    .collection('favorites')
+                    .collection("favorites")
+                    .where("user", isEqualTo: widget.uuid)
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -268,8 +277,20 @@ class _HomePageState extends State<HomePage> {
                     return new Text('Error: ${snapshot.error}');
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return new Text('Loading...');
+                      return Container(
+                        height: 200,
+                        width: 200,
+                        child: FlareActor("assets/animations/loading.flr",
+                            animation: "roll"),
+                      );
                     default:
+                      if (snapshot.data.documents.length == 0) {
+                        return Container(
+                            height: 200,
+                            width: 200,
+                            child: FlareActor("assets/animations/loading.flr",
+                                animation: "roll"));
+                      }
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate:
@@ -289,13 +310,10 @@ class _HomePageState extends State<HomePage> {
                               onDismissed: (direction) {
                                 setState(() {
                                   alreadyWatched.add(
-                                      ArbitrarySuggestionType.fromDocument(
-                                          document));
+                                      MovieSuggestion.fromDocument(document));
                                 });
                                 print(alreadyWatched.length.toString());
-                                pushToDB(
-                                    ArbitrarySuggestionType.fromDocument(
-                                        document),
+                                pushToDB(MovieSuggestion.fromDocument(document),
                                     'alreadyWatched');
                                 Firestore.instance
                                     .collection('favorites')
@@ -419,6 +437,7 @@ class _HomePageState extends State<HomePage> {
             child: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
                     .collection('alreadyWatched')
+                    .where('user', isEqualTo: widget.uuid)
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -427,8 +446,20 @@ class _HomePageState extends State<HomePage> {
                     return new Text('Error: ${snapshot.error}');
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return new Text('Loading...');
+                      return Container(
+                        height: 200,
+                        width: 200,
+                        child: FlareActor("assets/animations/loading.flr",
+                            animation: "roll"),
+                      );
                     default:
+                      if (snapshot.data.documents.length == 0) {
+                        return Container(
+                            height: 200,
+                            width: 200,
+                            child: FlareActor("assets/animations/loading.flr",
+                                animation: "roll"));
+                      }
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate:
@@ -557,44 +588,12 @@ class _HomePageState extends State<HomePage> {
   showAlertDialog(
       BuildContext context, String type, DocumentSnapshot document) {
     // set up the buttons
-    Widget cancelButton = FlatButton(
-      child: Text("No"),
-      onPressed: () {
-        Navigator.of(context).pop(); // dismiss dialog
-      },
-    );
-    Widget continueButton = FlatButton(
-      child: Text("Yes"),
-      onPressed: () {
-        type == 'favorites'
-            ? Firestore.instance
-                .document("favorites/" + document.documentID)
-                .delete()
-                .then((onValue) => _bloc.addMessage("deleted entry"))
-                .catchError((error) => _bloc.addMessage(error))
-            : Firestore.instance
-                .document("alreadyWatched/" + document.documentID)
-                .delete()
-                .then((onValue) => _bloc.addMessage("deleted entry"))
-                .catchError((error) => _bloc.addMessage(error));
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text("You will delete the movie from the DB."),
-      content: Text("Delete?"),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
 
     // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return alert;
+        return DeleteMovieDialog(bloc: bloc, document: document, type: type);
       },
     );
   }
@@ -603,65 +602,64 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
     _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
-    return StreamBuilder<Brightness>(
-        stream: bloc.currentBrightness,
-        builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
-          return MaterialApp(
-              title: "Watchlist",
-              theme: ThemeData(
-                // This is the theme of the application.
-                brightness: snapshot.data,
-              ),
-              home: Scaffold(
-                  appBar: new AppBar(
-                      leading: new IconButton(
-                        icon: _searchIcon,
-                        onPressed: null,
-                      ),
-                      centerTitle: true,
-                      title: _appBarTitle,
-                      actions: <Widget>[
-                        new IconButton(
-                            icon: Icon(Icons.info),
-                            onPressed: () => tabBloc.updateIndex(2)),
-                      ]),
-                  body: StreamBuilder(
-                      stream: tabBloc.getIndex,
-                      initialData: 3,
-                      builder: (BuildContext context, AsyncSnapshot snapshot2) {
-                        return IndexedStack(
-                          index: snapshot2.data,
-                          children: _children,
-                        );
-                      }),
 
-                  // define the bottom tab navigaation bar
-                  bottomNavigationBar: StreamBuilder(
-                      initialData: 0,
-                      stream: tabBloc.getIndex,
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        return FABBottomAppBar(
-                          //centerItemText: 'A',
-                          color: Colors.grey,
-                          selectedColor: Colors.red,
-                          notchedShape: CircularNotchedRectangle(),
-                          onTabSelected: (i) => tabBloc.updateIndex(i),
-                          items: [
-                            FABBottomAppBarItem(
-                                iconData: Icons.movie, text: 'Watchlist'),
-                            FABBottomAppBarItem(
-                                iconData: Icons.done, text: 'Already Seen'),
-                            // FABBottomAppBarItem(
-                            //     iconData: Icons.settings, text: 'Settings'),
-                          ],
-                        );
-                      }),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.centerDocked,
-                  floatingActionButton: FloatingActionButton(
-                    child: Icon(Icons.add),
-                    onPressed: _searchPressed, // show search bar
-                  )));
-        });
+    return Scaffold(
+        appBar: new AppBar(
+            leading: new IconButton(
+              icon: _searchIcon,
+              onPressed: null,
+            ),
+            centerTitle: true,
+            title: _appBarTitle,
+            actions: <Widget>[
+              new IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () => tabBloc.updateIndex(2)),
+            ]),
+        body: Container(
+            margin: MediaQuery.of(context).size.width > 1400
+                ? EdgeInsets.fromLTRB(200, 0, 30, 200)
+                : EdgeInsets.all(0),
+            child: Builder(
+              builder: (context) {
+                _uiErrorUtils.subscribeToSnackBarStream(
+                    context, bloc.snackBarSubject);
+                return StreamBuilder(
+                    stream: tabBloc.getIndex,
+                    initialData: 0,
+                    builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                      return IndexedStack(
+                        index: snapshot2.data,
+                        children: _children,
+                      );
+                    });
+              },
+            )),
+
+        // define the bottom tab navigaation bar
+        bottomNavigationBar: StreamBuilder(
+            initialData: 0,
+            stream: tabBloc.getIndex,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return FABBottomAppBar(
+                //centerItemText: 'A',
+                color: Colors.grey,
+                selectedColor: Colors.red,
+                notchedShape: CircularNotchedRectangle(),
+                onTabSelected: (i) => tabBloc.updateIndex(i),
+                items: [
+                  FABBottomAppBarItem(iconData: Icons.movie, text: 'Watchlist'),
+                  FABBottomAppBarItem(
+                      iconData: Icons.done, text: 'Already Seen'),
+                  // FABBottomAppBarItem(
+                  //     iconData: Icons.settings, text: 'Settings'),
+                ],
+              );
+            }),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: _searchPressed, // show search bar
+        ));
   }
 }

@@ -1,33 +1,39 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
-import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 class AddMovieDialog extends StatelessWidget {
-  final ArbitrarySuggestionType suggestion;
+  final MovieSuggestion suggestion;
   final Bloc bloc;
-  final List<ArbitrarySuggestionType> favorites;
+  final List<MovieSuggestion> favorites;
+  final String uuid;
 
-  const AddMovieDialog({Key key, @required this.suggestion, @required this.bloc,  @required this.favorites}) : super(key: key);
+  const AddMovieDialog(
+      {Key key,
+      @required this.suggestion,
+      @required this.uuid,
+      @required this.bloc,
+      @required this.favorites})
+      : super(key: key);
 
-void pushToDB(ArbitrarySuggestionType item, String dbName) {
+  void pushToDB(MovieSuggestion item, String dbName, String uuid) {
     print("will push");
     Firestore.instance
         .collection(dbName)
         .add({
+          'user': uuid,
           'Title': item.name,
           'Poster': item.imgURL,
           'Year': item.year,
           'imdbUrl': item.imdbUrl,
           'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
         })
-        .then((result) => {})
+        .then((result) => { print(result)})
         .catchError((err) => (bloc.addMessage(err)));
     favorites.add(item);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +48,15 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
             subtitle: Text(suggestion.year),
             onTap: () => print(suggestion.imgURL),
           ),
-          Image.network(suggestion.imgURL, fit: BoxFit.scaleDown),
+          CachedNetworkImage(
+            placeholder: (context2, url) => CircularProgressIndicator(),
+            imageUrl: suggestion.imgURL,
+
+            fit: BoxFit.cover,
+            // width: context.size.width,
+            height: MediaQuery.of(context).size.height / 2,
+            // context.size.height / 4,
+          ),
           ButtonBar(
             children: <Widget>[
               IconButton(
@@ -53,7 +67,8 @@ void pushToDB(ArbitrarySuggestionType item, String dbName) {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('added to favs!'),
                   ));*/
-                    pushToDB(suggestion, 'favorites');
+                    pushToDB(suggestion, 'favorites', this.uuid);
+                    Navigator.pop(context);
                     // setState(() {
                     //   if (this._searchIcon.icon == Icons.search) {
                     //     this._searchIcon = new Icon(Icons.close);
