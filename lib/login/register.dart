@@ -71,7 +71,9 @@ class _RegisterPageState extends State<RegisterPage> {
           _uiErrorUtils.subscribeToSnackBarStream(
               context, bloc.snackBarSubject);
           return Container(
-              padding: const EdgeInsets.all(20.0),
+                margin: MediaQuery.of(context).size.width > 1400
+                ? EdgeInsets.fromLTRB(200, 0, 200, 0)
+                : EdgeInsets.all(0),
               child: SingleChildScrollView(
                   child: Form(
                 key: _registerFormKey,

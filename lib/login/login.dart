@@ -150,7 +150,9 @@ class _LoginPageState extends State<LoginPage> {
           _uiErrorUtils.subscribeToSnackBarStream(
               context, bloc.snackBarSubject);
           return Container(
-              padding: const EdgeInsets.all(20.0),
+              margin: MediaQuery.of(context).size.width > 1400
+                  ? EdgeInsets.fromLTRB(200, 0,200, 0)
+                  : EdgeInsets.all(0),
               child: SingleChildScrollView(
                   child: Form(
                 key: _loginFormKey,
@@ -229,13 +231,11 @@ class _LoginPageState extends State<LoginPage> {
                                   .document(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
-                                        
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => HomePage(
-                                                      title: result.data ==
-                                                              null
+                                                      title: result.data == null
                                                           ? "Temp account"
                                                           : result["fname"] +
                                                               "'s Tasks",

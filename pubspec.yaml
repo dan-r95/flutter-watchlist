@@ -23,8 +23,8 @@ dependencies:
   http:
   firebase_database:
   rxdart:
-  firebase_auth:
-  cloud_firestore:
+  firebase_auth: ^0.15.4
+  cloud_firestore: ^0.13.3
   flutter_typeahead:
   cached_network_image:
   shared_preferences:
@@ -36,7 +36,6 @@ dependencies:
   #appcenter:
   #appcenter_analytics:
   #appcenter_crashes:
-  firebase_core:  ^0.4.2+1
   shimmer:
   google_sign_in: ^4.1.1
   android_intent:

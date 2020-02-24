@@ -276,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                   if (snapshot.hasError)
                     return new Text('Error: ${snapshot.error}');
                   switch (snapshot.connectionState) {
-                     case ConnectionState.waiting:
+                    case ConnectionState.waiting:
                       return Container(
                         height: 200,
                         width: 200,
@@ -285,11 +285,11 @@ class _HomePageState extends State<HomePage> {
                       );
                     default:
                       if (snapshot.data.documents.length == 0) {
-                        return  Container(
-                        height: 200,
-                        width: 200,
-                        child:  FlareActor("assets/animations/loading.flr",
-                            animation: "roll"));
+                        return Container(
+                            height: 200,
+                            width: 200,
+                            child: FlareActor("assets/animations/loading.flr",
+                                animation: "roll"));
                       }
                       return new GridView.builder(
                           shrinkWrap: true,
@@ -454,11 +454,11 @@ class _HomePageState extends State<HomePage> {
                       );
                     default:
                       if (snapshot.data.documents.length == 0) {
-                        return  Container(
-                        height: 200,
-                        width: 200,
-                        child:  FlareActor("assets/animations/loading.flr",
-                            animation: "roll"));
+                        return Container(
+                            height: 200,
+                            width: 200,
+                            child: FlareActor("assets/animations/loading.flr",
+                                animation: "roll"));
                       }
                       return new GridView.builder(
                           shrinkWrap: true,
@@ -616,19 +616,25 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.info),
                   onPressed: () => tabBloc.updateIndex(2)),
             ]),
-        body: Builder(builder: (context) {
-          _uiErrorUtils.subscribeToSnackBarStream(
-              context, bloc.snackBarSubject);
-          return StreamBuilder(
-              stream: tabBloc.getIndex,
-              initialData: 0,
-              builder: (BuildContext context, AsyncSnapshot snapshot2) {
-                return IndexedStack(
-                  index: snapshot2.data,
-                  children: _children,
-                );
-              });
-        }),
+        body: Container(
+            margin: MediaQuery.of(context).size.width > 1400
+                ? EdgeInsets.fromLTRB(200, 0, 30, 200)
+                : EdgeInsets.all(0),
+            child: Builder(
+              builder: (context) {
+                _uiErrorUtils.subscribeToSnackBarStream(
+                    context, bloc.snackBarSubject);
+                return StreamBuilder(
+                    stream: tabBloc.getIndex,
+                    initialData: 0,
+                    builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                      return IndexedStack(
+                        index: snapshot2.data,
+                        children: _children,
+                      );
+                    });
+              },
+            )),
 
         // define the bottom tab navigaation bar
         bottomNavigationBar: StreamBuilder(

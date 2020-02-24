@@ -17,6 +17,8 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   UiErrorUtils uiErrorUtils;
   Bloc bloc;
 
@@ -35,11 +37,27 @@ class _SplashPageState extends State<SplashPage>
   List<Animation<Color>> colorAnimations = [];
 
   List<Color> colors = [Colors.green, Colors.red, Colors.white, Colors.blue];
+
+  void getUser() async {
+    // print("get user");
+    // final FirebaseUser user = await _auth.currentUser();
+    // print(user);
+    // here you write the codes to input the data into firestore
+
+     final AuthResult result = (await _auth.signInWithEmailAndPassword(
+        email: "d.rossburg@googlemail.com", password: "12345678"));
+    print("signed in " + result.user.email);
+   print(result.user);
+
+  }
+
   @override
   initState() {
     print("init state");
-    //FirebaseAuth.instance.signOut();
-    FirebaseAuth.instance
+    print(_auth.app.name);
+    //getUser();
+   
+    _auth
         .currentUser()
         .then((currentUser) => {
               print("Curr User: " + currentUser.toString()),
@@ -63,6 +81,7 @@ class _SplashPageState extends State<SplashPage>
                 }
             })
         .catchError((err) => {print(err), bloc.addMessage(err)});
+    print("before init state");
     super.initState();
 
     //  // this is all stuff to handle the fancy timer running animation
@@ -97,7 +116,7 @@ class _SplashPageState extends State<SplashPage>
 
       //  });
     });
-  uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
+    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
     controller.forward();
   }
 
@@ -113,18 +132,17 @@ class _SplashPageState extends State<SplashPage>
   Widget build(BuildContext context) {
     print("build splash");
     return Scaffold(body: Builder(builder: (context) {
-      return Center(
-        child: Container(
-          child: StreamBuilder<int>(
-              stream: bloc.currentAnimIndex,
-              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-                return CircularProgressIndicator(
-                  //strokeWidth: 5.0,
-                  valueColor: colorAnimations[snapshot.data],
-                );
-              }),
-        ),
-      );
+      return Center(child: Container(child: CircularProgressIndicator()));
+      // child: StreamBuilder<int>(
+      //     stream: bloc.currentAnimIndex,
+      //     builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+      //       return CircularProgressIndicator(
+      //         //strokeWidth: 5.0,
+      //         valueColor: colorAnimations[snapshot.data],
+      //       );
+      //     }),
+      //),
+      // );
     }));
   }
 }
