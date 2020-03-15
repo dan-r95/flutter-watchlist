@@ -61,8 +61,8 @@ class _HomePageState extends State<HomePage> {
     // });
     favorites = new List();
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
-    // _onNoteChangedSubscription =
-    //    notesReference.onChildChanged.listen(_onNoteUpdated);
+    _onNoteChangedSubscription =
+       notesReference.onChildChanged.listen(_onNoteUpdated);
 
     _children.addAll([
       FavoritesList(widget.uuid, bloc),
@@ -84,16 +84,16 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-/*
+
   void _onNoteUpdated(Event event) {
     var oldNoteValue =
         favorites.singleWhere((note) => note.id == event.snapshot.key);
     setState(() {
       favorites[favorites.indexOf(oldNoteValue)] =
-          new ArbitrarySuggestionType.fromSnapshot(event.snapshot);
+          new MovieSuggestion.fromSnapshot(event.snapshot);
     });
   }
-*/
+
 
   Future<List<MovieSuggestion>> updateSuggestions(String query) async {
     List<MovieSuggestion> list = new List<MovieSuggestion>();
@@ -183,10 +183,13 @@ class _HomePageState extends State<HomePage> {
             return await updateSuggestions(pattern);
           },
           itemBuilder: (context, MovieSuggestion suggestion) {
-            return ListTile(
-              leading: Icon(Icons.movie),
-              title: Text(suggestion.name),
-              subtitle: Text('${suggestion.year} / ${suggestion.stars}'),
+            return Listener(
+              child: ListTile(
+                leading: Icon(Icons.movie),
+                title: Text(suggestion.name),
+                subtitle: Text('${suggestion.year} / ${suggestion.stars}'),
+              ),
+              onPointerDown: (_) => showAddDialog(context, suggestion),
             );
           },
           onSuggestionSelected: (suggestion) {

@@ -43,7 +43,7 @@ class Bloc {
   // stream to control the theme of the app
   BehaviorSubject<List<MovieSuggestion>> alreadyWatchedListController =
       BehaviorSubject<List<MovieSuggestion>>.seeded(
-          List<MovieSuggestion>()); //listen with multiple subjects
+          new List<MovieSuggestion>()); //listen with multiple subjects
   Stream<List<MovieSuggestion>> get alreadyWatchedList =>
       alreadyWatchedListController.stream.asBroadcastStream();
   StreamSink<List<MovieSuggestion>> get writeToalreadyWatched =>
@@ -51,7 +51,7 @@ class Bloc {
 
   // stream to control the theme of the app
   BehaviorSubject<List<MovieSuggestion>> favoritesListController =
-      BehaviorSubject<List<MovieSuggestion>>(); //listen with multiple subjects
+      BehaviorSubject<List<MovieSuggestion>>.seeded(new List<MovieSuggestion>()); //listen with multiple subjects
   Stream<List<MovieSuggestion>> get favoritesList =>
       favoritesListController.stream.asBroadcastStream();
 

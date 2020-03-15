@@ -79,7 +79,7 @@ class InfoDialog extends StatelessWidget {
                           if (!snapshot.hasData) {
                             return CircularProgressIndicator();
                           }
-                          if (snapshot.hasData) {
+                          else if (snapshot.hasData && snapshot.data.offers != null &&  snapshot.data.offers.length > 0) {
                             snapshot.data.offers = snapshot.data.offers
                                 .where((element) => (element.providerId == 8 ||
                                     element.providerId == 10 ||

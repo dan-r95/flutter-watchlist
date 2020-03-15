@@ -7,17 +7,19 @@ import 'package:flutter_watchlist/login/splash.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 import 'common/bloc.dart';
-// import 'package:appcenter/appcenter.dart';
-// import 'package:appcenter_analytics/appcenter_analytics.dart';
-// import 'package:appcenter_crashes/appcenter_crashes.dart';
+import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 Future<void> main() async {
   print("before run App...");
   runApp(MyApp());
-  // final ios = defaultTargetPlatform == TargetPlatform.iOS;
-  // var app_secret = ios ? "iOSGuid" : "AndroidGuid";
-  // await AppCenter.start(
-  //     app_secret, [AppCenterAnalytics.id, AppCenterCrashes.id]);
+  await AppCenter.startAsync(
+    appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
+    appSecretIOS: 'xxxx',
+    enableAnalytics: true, // Defaults to true
+    enableCrashes: true, // Defaults to true
+    enableDistribute: false, // Defaults to false
+    usePrivateDistributeTrack: false, // Defaults to false
+  );
 }
 
 class MyApp extends StatelessWidget {
