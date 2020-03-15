@@ -47,7 +47,7 @@ class InfoDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      scrollable: true,
+      //scrollable: true,
       title: Text("All the details"),
       content: SingleChildScrollView(
           scrollDirection: Axis.vertical,
