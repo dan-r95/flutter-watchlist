@@ -10,12 +10,12 @@ set -x
 
 cd ..
 git clone -b beta https://github.com/flutter/flutter.git
-export PATH=`pwd`/flutter/bin:$PATH
+export PATH=$(pwd)/flutter/bin:$PATH
 
 flutter channel stable
 flutter doctor
 
-echo "Installed flutter to `pwd`/flutter"
+echo "Installed flutter to $(pwd)/flutter"
 
 yes | flutter doctor --android-licenses
 
@@ -28,7 +28,8 @@ flutter build apk --release
 #flutter build appbundle
 
 # copy the APK where AppCenter will find it
-mkdir -p android/app/build/outputs/apk/; mv build/app/outputs/apk/release/app-release.apk $_
+mkdir -p android/app/build/outputs/apk/
+mv build/app/outputs/apk/release/app-release.apk $_
 
 # copy the AAB where AppCenter will find it
 #mkdir -p android/app/build/outputs/bundle/; mv build/app/outputs/bundle/release/app.aab $_

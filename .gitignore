@@ -69,5 +69,5 @@
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 debug.keystore
-android/app/google-services.json
+!android/app/google-services.json
 docs/assets/assets/animations/Win64OpenSSL-1_1_1d.exe
