@@ -1,5 +1,7 @@
 # flutter-watchlist
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/7de6b1e4-4478-48d6-bef9-b4ae3a7ac2d4/branches/android/badge)](https://appcenter.ms)
+
 movie watchlist using imdb
 
 `flutter run -d chrome`
