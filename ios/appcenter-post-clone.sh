@@ -15,4 +15,6 @@ flutter doctor
 
 echo "Installed flutter to `pwd`/flutter"
 
+pod install
+
 flutter build ios --release --no-codesign
