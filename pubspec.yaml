@@ -41,6 +41,7 @@ dependencies:
   android_intent:
   url_launcher: 
   flutter_appcenter_bundle: 
+  characters: #for fixing windows crash
 dev_dependencies:
   flutter_test:
     sdk: flutter

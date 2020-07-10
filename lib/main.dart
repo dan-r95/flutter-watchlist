@@ -12,14 +12,14 @@ import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 Future<void> main() async {
   print("before run App...");
   runApp(MyApp());
-  await AppCenter.startAsync(
-    appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
-    appSecretIOS: 'xxxx',
-    enableAnalytics: true, // Defaults to true
-    enableCrashes: true, // Defaults to true
-    enableDistribute: false, // Defaults to false
-    usePrivateDistributeTrack: false, // Defaults to false
-  );
+  // await AppCenter.startAsync(
+  //   appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
+  //   appSecretIOS: 'xxxx',
+  //   enableAnalytics: true, // Defaults to true
+  //   enableCrashes: true, // Defaults to true
+  //   enableDistribute: false, // Defaults to false
+  //   usePrivateDistributeTrack: false, // Defaults to false
+  // );
 }
 
 class MyApp extends StatelessWidget {
