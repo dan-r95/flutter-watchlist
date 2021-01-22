@@ -21,7 +21,7 @@ class _FavoritesListState extends State<FavoritesList> {
         child: Container(
             padding: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance
+                stream: FirebaseFirestore.instance
                     .collection("favorites")
                     .where("user", isEqualTo: this.widget.uuid)
                     .orderBy("added", descending: true)
@@ -39,7 +39,7 @@ class _FavoritesListState extends State<FavoritesList> {
                             animation: "roll"),
                       );
                     default:
-                      if (snapshot.data.documents.length == 0) {
+                      if (snapshot.data.docs.length == 0) {
                         return Container(
                             height: 200,
                             width: 200,
@@ -57,12 +57,12 @@ class _FavoritesListState extends State<FavoritesList> {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 2.0,
                                   mainAxisSpacing: 2.0),
-                          itemCount: snapshot.data.documents.length,
+                          itemCount: snapshot.data.docs.length,
                           itemBuilder: (BuildContext context, int index) {
-                            if (snapshot.data.documents.length == 0) {
+                            if (snapshot.data.docs.length == 0) {
                               return Text("start adding movies!");
                             }
-                            var document = snapshot.data.documents[index];
+                            var document = snapshot.data.docs[index];
 
                             return new Dismissible(
                               key: UniqueKey(),
@@ -75,11 +75,11 @@ class _FavoritesListState extends State<FavoritesList> {
 
                                 pushToDB(MovieSuggestion.fromDocument(document),
                                     'alreadyWatched', widget.uuid);
-                                Firestore.instance
+                                FirebaseFirestore.instance
                                     .collection('favorites')
-                                    .document(document.documentID)
+                                    .doc(document.id)
                                     .delete();
-                                Scaffold.of(context).showSnackBar(SnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Text("added to already watched")));
                               },
                               child: Card(

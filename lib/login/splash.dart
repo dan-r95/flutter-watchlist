@@ -44,7 +44,7 @@ class _SplashPageState extends State<SplashPage>
     // print(user);
     // here you write the codes to input the data into firestore
 
-    final AuthResult result = (await _auth.signInWithEmailAndPassword(
+    final UserCredential result = (await _auth.signInWithEmailAndPassword(
         email: "d.rossburg@googlemail.com", password: "12345678"));
     print("signed in " + result.user.email);
     print(result.user);
@@ -56,17 +56,15 @@ class _SplashPageState extends State<SplashPage>
     print(_auth.app.name);
     //getUser();
 
-    _auth
-        .currentUser()
-        .then((currentUser) => {
-              print("Curr User: " + currentUser.toString()),
-              if (currentUser == null)
-                {Navigator.pushReplacementNamed(context, "/login")}
+    
+     
+              if ( _auth.currentUser == null)
+                {Navigator.pushReplacementNamed(context, "/login");}
               else
                 {
-                  Firestore.instance
+                  FirebaseFirestore.instance
                       .collection("users")
-                      .document(currentUser.uid)
+                      .doc(_auth.currentUser.uid)
                       .get()
                       .then((DocumentSnapshot result) =>
                           Navigator.pushReplacement(
@@ -74,12 +72,12 @@ class _SplashPageState extends State<SplashPage>
                               MaterialPageRoute(
                                   builder: (context) => HomePage(
                                         title: result["fname"] + "'s Tasks",
-                                        uuid: currentUser.uid,
+                                        uuid: _auth.currentUser.uid,
                                       ))))
-                      .catchError((err) => {print(err), bloc.addMessage(err)})
+                      .catchError((err) => {print(err), bloc.addMessage(err)});
                 }
-            })
-        .catchError((err) => {print(err), bloc.addMessage(err)});
+           
+  
     print("before init state");
     super.initState();
 

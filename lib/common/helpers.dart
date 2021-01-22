@@ -59,7 +59,7 @@ showAlertDialog(BuildContext context, String type, DocumentSnapshot document) {
 void pushToDB(MovieSuggestion item, String dbName, String uuid) {
   print("will push");
   print("will push");
-  Firestore.instance
+  FirebaseFirestore.instance
       .collection(dbName)
       .add({
         'user': uuid,

@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 class UiErrorUtils {
   // opens snackbar
   void openSnackBar(BuildContext context, String message) async {
-    Scaffold.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
       ),

@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
@@ -68,7 +67,7 @@ class AddMovieDialog extends StatelessWidget {
         ]))
       ])),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('Close'),
           onPressed: () {
             Navigator.of(context).pop();

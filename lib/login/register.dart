@@ -131,10 +131,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 .createUserWithEmailAndPassword(
                                     email: emailInputController.text,
                                     password: pwdInputController.text)
-                                .then((currentUser) => Firestore.instance
+                                .then((currentUser) => FirebaseFirestore.instance
                                     .collection("users")
-                                    .document(currentUser.user.uid)
-                                    .setData({
+                                    .doc(currentUser.user.uid)
+                                    .set({
                                       "uid": currentUser.user.uid,
                                       "fname": firstNameInputController.text,
                                       "surname": lastNameInputController.text,
@@ -171,7 +171,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     title: Text("Error"),
                                     content: Text("The passwords do not match"),
                                     actions: <Widget>[
-                                      FlatButton(
+                                      TextButton(
                                         child: Text("Close"),
                                         onPressed: () {
                                           Navigator.of(context).pop();
@@ -185,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     Text("Already have an account?"),
-                    FlatButton(
+                    TextButton(
                       child: Text("Login here!"),
                       onPressed: () {
                         Navigator.pop(context);

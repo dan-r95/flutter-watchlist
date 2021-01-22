@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
+    final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,
       idToken: googleSignInAuthentication.idToken,
     );
@@ -116,9 +116,9 @@ class _LoginPageState extends State<LoginPage> {
 
     FirebaseAuth.instance
         .signInWithCredential(credential)
-        .then((currentUser) => Firestore.instance
+        .then((currentUser) => FirebaseFirestore.instance
             .collection("users")
-            .document(currentUser.user.uid)
+            .doc(currentUser.user.uid)
             .get()
             .then((DocumentSnapshot result) => {
                   print(result),
@@ -189,9 +189,9 @@ class _LoginPageState extends State<LoginPage> {
                               .signInWithEmailAndPassword(
                                   email: emailInputController.text.trim(),
                                   password: pwdInputController.text.trim())
-                              .then((currentUser) => Firestore.instance
+                              .then((currentUser) => FirebaseFirestore.instance
                                   .collection("users")
-                                  .document(currentUser.user.uid)
+                                  .doc(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
                                         print(result),
@@ -213,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     Text("Don't have an account yet?"),
-                    FlatButton(
+                    TextButton(
                       child: Text("Register here!"),
                       onPressed: () {
                         Navigator.pushNamed(context, "/register");
@@ -226,9 +226,9 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           FirebaseAuth.instance
                               .signInAnonymously()
-                              .then((currentUser) => Firestore.instance
+                              .then((currentUser) => FirebaseFirestore.instance
                                   .collection("users")
-                                  .document(currentUser.user.uid)
+                                  .doc(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
                                         Navigator.pushReplacement(

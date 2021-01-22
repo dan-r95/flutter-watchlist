@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/login/login.dart';
@@ -9,17 +10,30 @@ import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'common/bloc.dart';
 import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
+var firebaseConfig = {
+  "apiKey": "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
+  "authDomain": "flutter-watchlist.firebaseapp.com",
+  "databaseURL": "https://flutter-watchlist.firebaseio.com",
+  "projectId": "flutter-watchlist",
+  "storageBucket": "flutter-watchlist.appspot.com",
+  "messagingSenderId": "220852966414",
+  "appId": "1:220852966414:web:4916c4b790d8b390cad85f",
+  "measurementId": "G-W2YH6JWLEN"
+};
+
 Future<void> main() async {
   print("before run App...");
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
-  // await AppCenter.startAsync(
-  //   appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
-  //   appSecretIOS: 'xxxx',
-  //   enableAnalytics: true, // Defaults to true
-  //   enableCrashes: true, // Defaults to true
-  //   enableDistribute: false, // Defaults to false
-  //   usePrivateDistributeTrack: false, // Defaults to false
-  // );
+  await AppCenter.startAsync(
+    appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
+    appSecretIOS: 'xxxx',
+    enableAnalytics: true, // Defaults to true
+    enableCrashes: true, // Defaults to true
+    enableDistribute: false, // Defaults to false
+    usePrivateDistributeTrack: false, // Defaults to false
+  );
 }
 
 class MyApp extends StatelessWidget {

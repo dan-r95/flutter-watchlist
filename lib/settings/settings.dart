@@ -28,7 +28,7 @@ class SettingsRouteState extends State<SettingsRoute> {
   }
 
   void showDialog(String str) {
-    Scaffold.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(str)),
     );
   }
@@ -55,7 +55,7 @@ class SettingsRouteState extends State<SettingsRoute> {
                     thickness: 0,
                   ),
                   Text("User: ${widget.title}"),
-                  RaisedButton(
+                  ElevatedButton(
                       onPressed: () => {
                             FirebaseAuth.instance.signOut(),
                             Navigator.pushReplacement(
@@ -64,7 +64,7 @@ class SettingsRouteState extends State<SettingsRoute> {
                                     builder: (context) => LoginPage()))
                           },
                       child: Text("Logout")),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () => {
                       bloc.brightnessController.value == Brightness.dark
                           ? {
@@ -86,7 +86,7 @@ class SettingsRouteState extends State<SettingsRoute> {
                     },
                     child: Text("Change theme"),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () => {
                       prefs
                           .clear()

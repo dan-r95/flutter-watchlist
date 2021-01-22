@@ -64,7 +64,7 @@ class JustWatchMovie {
 
 class Language {
   Language();
-  Language.fromJson(Map<String, dynamic> json) {}
+  Language.fromJson(Map<String, dynamic> json);
 
   Map<String, dynamic> toJson() {}
 }
