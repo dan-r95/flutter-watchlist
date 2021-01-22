@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core : ^0.5.0
+  firebase_core : ^0.7.0
   autocomplete_textfield:
   http:
   firebase_database:
@@ -34,9 +34,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: 
   # app center related
-  #appcenter:
-  #appcenter_analytics:
-  #appcenter_crashes:
+  appcenter:
+  appcenter_analytics:
+  appcenter_crashes:
   shimmer:
   google_sign_in: 
   android_intent:
