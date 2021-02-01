@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,16 +26,44 @@ var firebaseConfig = {
 Future<void> main() async {
   print("before run App...");
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-  await AppCenter.startAsync(
-    appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
-    appSecretIOS: 'xxxx',
-    enableAnalytics: true, // Defaults to true
-    enableCrashes: true, // Defaults to true
-    enableDistribute: false, // Defaults to false
-    usePrivateDistributeTrack: false, // Defaults to false
-  );
+ if (!kIsWeb) { // not running on web
+    await AppCenter.startAsync(
+      appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
+      appSecretIOS: 'xxxx',
+      enableAnalytics: true, // Defaults to true
+      enableCrashes: true, // Defaults to true
+      enableDistribute: false, // Defaults to false
+      usePrivateDistributeTrack: false, // Defaults to false
+    );
+  }
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  // Create the initialization Future outside of `build`:
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return Text("Sorry, something went wrong! Restart app?");
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MyApp();
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return CircularProgressIndicator();
+      },
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {

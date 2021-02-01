@@ -95,6 +95,16 @@ class SettingsRouteState extends State<SettingsRoute> {
                           .catchError((onError) => showDialog(onError))
                     },
                     child: Text("Clear preferences"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {
+                      showAboutDialog(
+                          context: context,
+                          applicationName: "Watchlist",
+                          applicationVersion: "0.1",
+                          applicationLegalese: "MIT License")
+                    },
+                    child: Text("About"),
                   )
                 ])));
   }
