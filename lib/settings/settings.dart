@@ -39,73 +39,72 @@ class SettingsRouteState extends State<SettingsRoute> {
   Widget build(BuildContext context) {
     // set up the AlertDialog
 
-    return SingleChildScrollView(
-        child: Container(
-            margin: EdgeInsets.all(10),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Settings",
-                    style: TextStyle(fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
-                  Divider(
-                    thickness: 0,
-                  ),
-                  Text("User: ${widget.title}"),
-                  ElevatedButton(
-                      onPressed: () => {
-                            FirebaseAuth.instance.signOut(),
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()))
-                          },
-                      child: Text("Logout")),
-                  ElevatedButton(
-                    onPressed: () => {
-                      bloc.brightnessController.value == Brightness.dark
-                          ? {
-                              prefs
-                                  .setString('theme', 'light')
-                                  .then((bool success) {
-                                showDialog("Changed the theme");
-                                bloc.brightnessController.add(Brightness.light);
-                              }),
-                            }
-                          : {
-                              prefs
-                                  .setString('theme', 'dark')
-                                  .then((bool success) {
-                                showDialog("Changed the theme");
-                                bloc.brightnessController.add(Brightness.dark);
-                              }),
-                            }
-                    },
-                    child: Text("Change theme"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => {
-                      prefs
-                          .clear()
-                          .then((onValue) =>
-                              showDialog("Cleared all preferences"))
-                          .catchError((onError) => showDialog(onError))
-                    },
-                    child: Text("Clear preferences"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => {
-                      showAboutDialog(
-                          context: context,
-                          applicationName: "Watchlist",
-                          applicationVersion: "0.1",
-                          applicationLegalese: "MIT License")
-                    },
-                    child: Text("About"),
-                  )
-                ])));
+    return Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                "Settings",
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+              Divider(
+                thickness: 0,
+              ),
+              Text(
+                "User: ${widget.title}",
+                style: TextStyle(fontSize: 24),
+              ),
+              ElevatedButton(
+                  onPressed: () => {
+                        FirebaseAuth.instance.signOut(),
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()))
+                      },
+                  child: Text("Logout")),
+              ElevatedButton(
+                onPressed: () => {
+                  bloc.brightnessController.value == Brightness.dark
+                      ? {
+                          prefs
+                              .setString('theme', 'light')
+                              .then((bool success) {
+                            showDialog("Changed the theme");
+                            bloc.brightnessController.add(Brightness.light);
+                          }),
+                        }
+                      : {
+                          prefs.setString('theme', 'dark').then((bool success) {
+                            showDialog("Changed the theme");
+                            bloc.brightnessController.add(Brightness.dark);
+                          }),
+                        }
+                },
+                child: Text("Change theme"),
+              ),
+              ElevatedButton(
+                onPressed: () => {
+                  prefs
+                      .clear()
+                      .then((onValue) => showDialog("Cleared all preferences"))
+                      .catchError((onError) => showDialog(onError))
+                },
+                child: Text("Clear preferences"),
+              ),
+              ElevatedButton(
+                onPressed: () => {
+                  showAboutDialog(
+                      context: context,
+                      applicationName: "Watchlist",
+                      applicationVersion: "0.1",
+                      applicationLegalese: "MIT License")
+                },
+                child: Text("About"),
+              )
+            ]));
   }
 }

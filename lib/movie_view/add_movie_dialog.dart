@@ -18,8 +18,6 @@ class AddMovieDialog extends StatelessWidget {
       @required this.favorites})
       : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -34,9 +32,10 @@ class AddMovieDialog extends StatelessWidget {
             onTap: () => print(suggestion.imgURL),
           ),
           CachedNetworkImage(
-            placeholder: (context2, url) => CircularProgressIndicator(),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
             imageUrl: suggestion.imgURL,
-
+            errorWidget: (context, url, error) => new Icon(Icons.error),
             fit: BoxFit.cover,
             // width: context.size.width,
             height: MediaQuery.of(context).size.height / 2,

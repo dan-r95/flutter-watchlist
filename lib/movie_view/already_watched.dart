@@ -138,7 +138,7 @@ class AlreadyWatchedList extends StatelessWidget {
                                                   iconSize: 24,
                                                   icon: Icon(
                                                       Icons.delete_forever),
-                                                  color: Colors.white,
+                                                  color: Colors.red,
                                                   onPressed: () {
                                                     showAlertDialog(context2,
                                                         'completed', document);

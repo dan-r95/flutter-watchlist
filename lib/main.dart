@@ -26,7 +26,8 @@ var firebaseConfig = {
 Future<void> main() async {
   print("before run App...");
   WidgetsFlutterBinding.ensureInitialized();
- if (!kIsWeb) { // not running on web
+  if (!kIsWeb) {
+    // not running on web
     await AppCenter.startAsync(
       appSecretAndroid: '9ad0404e-6929-4ab4-9dd4-3198c8e96786',
       appSecretIOS: 'xxxx',

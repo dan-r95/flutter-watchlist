@@ -71,9 +71,9 @@ class _RegisterPageState extends State<RegisterPage> {
           _uiErrorUtils.subscribeToSnackBarStream(
               context, bloc.snackBarSubject);
           return Container(
-                margin: MediaQuery.of(context).size.width > 1400
-                ? EdgeInsets.fromLTRB(200, 0, 200, 0)
-                : EdgeInsets.all(0),
+              margin: MediaQuery.of(context).size.width > 1400
+                  ? EdgeInsets.fromLTRB(200, 0, 200, 0)
+                  : EdgeInsets.all(0),
               child: SingleChildScrollView(
                   child: Form(
                 key: _registerFormKey,
@@ -87,6 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         if (value.length < 3) {
                           return "Please enter a valid first name.";
                         }
+                        return "";
                       },
                     ),
                     TextFormField(
@@ -97,6 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           if (value.length < 3) {
                             return "Please enter a valid last name.";
                           }
+                          return "";
                         }),
                     TextFormField(
                       decoration: InputDecoration(
@@ -131,7 +133,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 .createUserWithEmailAndPassword(
                                     email: emailInputController.text,
                                     password: pwdInputController.text)
-                                .then((currentUser) => FirebaseFirestore.instance
+                                .then((currentUser) => FirebaseFirestore
+                                    .instance
                                     .collection("users")
                                     .doc(currentUser.user.uid)
                                     .set({

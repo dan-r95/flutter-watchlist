@@ -59,10 +59,10 @@ class _HomePageState extends State<HomePage> {
     // notesReference.reference().once().then((DataSnapshot snapshot) {
     //   print('Connected to second database and read ${snapshot.value}');
     // });
-    favorites = new List();
+    favorites = [];
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     _onNoteChangedSubscription =
-       notesReference.onChildChanged.listen(_onNoteUpdated);
+        notesReference.onChildChanged.listen(_onNoteUpdated);
 
     _children.addAll([
       FavoritesList(widget.uuid, bloc),
@@ -84,7 +84,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
   void _onNoteUpdated(Event event) {
     var oldNoteValue =
         favorites.singleWhere((note) => note.id == event.snapshot.key);
@@ -94,9 +93,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-
   Future<List<MovieSuggestion>> updateSuggestions(String query) async {
-    List<MovieSuggestion> list = new List<MovieSuggestion>();
+    List<MovieSuggestion> list = [];
     if (query.length > 2) {
       setState(() {
         loading = true;
@@ -109,7 +107,7 @@ class _HomePageState extends State<HomePage> {
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
-      List<MovieSuggestion> listOtherSugg = new List<MovieSuggestion>();
+      List<MovieSuggestion> listOtherSugg = [];
       if (decoded != null) {
         listOtherSugg =
             decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
@@ -163,8 +161,8 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _filter = new TextEditingController();
   //final dio = new Dio();
   String _searchText = "";
-  List names = new List();
-  List filteredNames = new List();
+  List names = [];
+  List filteredNames = [];
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Watchlist');
 

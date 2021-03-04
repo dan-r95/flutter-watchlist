@@ -5,6 +5,7 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_watchlist/common/tab_bloc.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
               context, bloc.snackBarSubject);
           return Container(
               margin: MediaQuery.of(context).size.width > 1400
-                  ? EdgeInsets.fromLTRB(200, 0,200, 0)
+                  ? EdgeInsets.fromLTRB(200, 0, 200, 0)
                   : EdgeInsets.all(0),
               child: SingleChildScrollView(
                   child: Form(
@@ -194,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                   .doc(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
-                                        print(result),
+                                        tabBloc.updateIndex(0),
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(

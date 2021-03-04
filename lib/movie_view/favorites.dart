@@ -79,8 +79,10 @@ class _FavoritesListState extends State<FavoritesList> {
                                     .collection('favorites')
                                     .doc(document.id)
                                     .delete();
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text("added to already watched")));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text("added to already watched")));
                               },
                               child: Card(
                                   semanticContainer: true,
@@ -109,78 +111,84 @@ class _FavoritesListState extends State<FavoritesList> {
                                       )),
                                       // This gradient ensures that the toolbar icons are distinct
                                       // against the background image.
-                                      Column(children: <Widget>[
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                          leading: IconButton(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 0, 0, 0),
-                                              iconSize: 32,
-                                              icon: Icon(Icons.info),
-                                              color: Colors.white,
-                                              onPressed: () => {
-                                                    showInfoDialog(
-                                                        context,
-                                                        document['imdbUrl'],
-                                                        bloc),
-                                                  }),
-                                          title: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black45,
-                                              ),
-                                              child: Text(
-                                                document['Title'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                          subtitle: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black45,
-                                              ),
-                                              child: Text(
-                                                document['Year'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                        ButtonBar(children: <Widget>[
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black26,
-                                              ),
-                                              child: IconButton(
+                                      Column(
+                                        children: <Widget>[
+                                          ListTile(
+                                            contentPadding:
+                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                            leading: IconButton(
                                                 padding: EdgeInsets.fromLTRB(
                                                     0, 0, 0, 0),
-                                                iconSize: 24,
-                                                icon:
-                                                    Icon(Icons.delete_forever),
+                                                iconSize: 26,
+                                                icon: Icon(Icons.info),
                                                 color: Colors.white,
-                                                onPressed: () {
-                                                  showAlertDialog(context,
-                                                      'favorites', document);
-                                                },
-                                              )),
-                                        ]),
-                                        // This gradient ensures that the toolbar icons are distinct
-                                        // against the background image.
-                                        const DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment(0.0, -1.0),
-                                              end: Alignment(0.0, -0.4),
-                                              colors: <Color>[
-                                                Color(0x60000000),
-                                                Color(0x00000000)
-                                              ],
+                                                onPressed: () => {
+                                                      showInfoDialog(
+                                                          context,
+                                                          document['imdbUrl'],
+                                                          bloc),
+                                                    }),
+                                            title: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                ),
+                                                child: Text(
+                                                  document['Title'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                            subtitle: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black45,
+                                                ),
+                                                child: Text(
+                                                  document['Year'],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                          ),
+                                          ButtonBar(children: <Widget>[
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black26,
+                                                ),
+                                                child: IconButton(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 0, 0, 0),
+                                                  iconSize: 24,
+                                                  icon: Icon(
+                                                      Icons.delete_forever),
+                                                  color: Colors.red,
+                                                  onPressed: () {
+                                                    showAlertDialog(context,
+                                                        'favorites', document);
+                                                  },
+                                                )),
+                                          ]),
+                                          // This gradient ensures that the toolbar icons are distinct
+                                          // against the background image.
+                                          const DecoratedBox(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment(0.0, -1.0),
+                                                end: Alignment(0.0, -0.4),
+                                                colors: <Color>[
+                                                  Color(0x60000000),
+                                                  Color(0x00000000)
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ]),
+                                        ],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                      ),
                                     ],
                                   )),
                               background: Container(

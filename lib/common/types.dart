@@ -1,11 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Map<int, String> companyList = {
-  8: "Netflix",
-  10: "Amazon",
-  29: "Sky"
-};
+Map<int, String> companyList = {8: "Netflix", 10: "Amazon", 29: "Sky"};
 
 class MovieSuggestion {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
@@ -24,12 +20,14 @@ class MovieSuggestion {
         _year = json['Year'];
 
   MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
-    _id = snapshot.key;
-    _name = snapshot.value['Title'];
-    _imgURL = snapshot.value['Poster'];
-    _year = snapshot.value['Year'];
-    _imdbUrl = snapshot.value['imdbUrl'];
-    _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
+    if (snapshot.value is List) {
+      _id = snapshot.key;
+      _name = snapshot.value['Title'];
+      _imgURL = snapshot.value['Poster'];
+      _year = snapshot.value['Year'];
+      _imdbUrl = snapshot.value['imdbUrl'];
+      _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
+    }
   }
 
   MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
