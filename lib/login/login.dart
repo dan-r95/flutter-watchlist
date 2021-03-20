@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () async {
-        await signInWithGoogle();
+        // await signInWithGoogle();
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
@@ -100,46 +100,46 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount googleSignInAccount = await _googleSignIn
-        .signIn()
-        .catchError((err) => bloc.addMessage(err.toString()));
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+  // Future<void> signInWithGoogle() async {
+  //   final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+  //       .signIn()
+  //       .catchError((err) => bloc.addMessage(err.toString()));
+  //   final GoogleSignInAuthentication googleSignInAuthentication =
+  //       await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
+  //   final AuthCredential credential = GoogleAuthProvider.credential(
+  //     accessToken: googleSignInAuthentication.accessToken,
+  //     idToken: googleSignInAuthentication.idToken,
+  //   );
 
-    // assert(!user.isAnonymous);
-    // assert(await user.getIdToken() != null);
+  //   // assert(!user.isAnonymous);
+  //   // assert(await user.getIdToken() != null);
 
-    FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((currentUser) => FirebaseFirestore.instance
-            .collection("users")
-            .doc(currentUser.user.uid)
-            .get()
-            .then((DocumentSnapshot result) => {
-                  print(result),
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(
-                                title: result["fname"] + "'s Tasks",
-                                uuid: currentUser.user.uid,
-                              )))
-                })
-            .catchError((err) => _bloc.addMessage(err)))
-        .catchError((err) => (_bloc.addMessage(err)));
-  }
+  //   FirebaseAuth.instance
+  //       .sign(credential)
+  //       .then((currentUser) => FirebaseFirestore.instance
+  //           .collection("users")
+  //           .doc(currentUser.user.uid)
+  //           .get()
+  //           .then((DocumentSnapshot result) => {
+  //                 print(result),
+  //                 Navigator.pushReplacement(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (context) => HomePage(
+  //                               title: result["fname"] + "'s Tasks",
+  //                               uuid: currentUser.user.uid,
+  //                             )))
+  //               })
+  //           .catchError((err) => _bloc.addMessage(err)))
+  //       .catchError((err) => (_bloc.addMessage(err)));
+  // }
 
-  void signOutGoogle() async {
-    await _googleSignIn.signOut();
+  // void signOutGoogle() async {
+  //   await _googleSignIn.signOut();
 
-    print("User Sign Out");
-  }
+  //   print("User Sign Out");
+  // }
 
   @override
   Widget build(BuildContext context) {

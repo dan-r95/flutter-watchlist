@@ -5,8 +5,8 @@ import 'dart:convert';
 
 class JustWatchManager {
   getMovie(int id) async {
-    var response = await http.get(
-        "https://apis.justwatch.com/content/titles/movie/$id/locale/de_DE");
+    var response = await http.get(new Uri.https("https://apis.justwatch.com/",
+        "content/titles/movie/$id/locale/de_DE"));
     return JustWatchResponse.fromJson(jsonDecode(response.body));
   }
 
@@ -48,11 +48,12 @@ class JustWatchManager {
       "page_size": 2
     });
     var response = await http.post(
-        "https://apis.justwatch.com/content/titles/en_US/popular",
+        new Uri.https(
+            "https://apis.justwatch.com", "content/titles/en_US/popular"),
         body: encoded);
     var movieWithIt =
         JustWatchMovie.fromJson(jsonDecode(response.body)['items'][0]);
-        print("offers: ");
+    print("offers: ");
     print(jsonDecode(response.body)['items']);
 
     return getAvailability(movieWithIt.id);

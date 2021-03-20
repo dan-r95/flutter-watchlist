@@ -79,9 +79,9 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.0' // Add this line
     implementation 'com.google.firebase:firebase-firestore:21.2.1'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
-    def appCenterSdkVersion = '4.1.0'
-    implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
-    implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+    //def appCenterSdkVersion = '4.1.0'
+    //implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
+    //implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 }
 
 apply plugin: 'com.google.gms.google-services' 

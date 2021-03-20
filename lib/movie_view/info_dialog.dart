@@ -21,11 +21,9 @@ class InfoDialog extends StatelessWidget {
       @required this.favorites})
       : super(key: key);
 
-  
-
   Future<MovieDescription> getMovieDescription(String id) async {
-    final response =
-        await http.get("https://www.omdbapi.com/?i=$id&apikey=e83d3bc2");
+    final response = await http.get(
+        new Uri.https("https://www.omdbapi.com/", "?i=$id&apikey=e83d3bc2"));
 
     print(response.body);
     Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -77,8 +75,9 @@ class InfoDialog extends StatelessWidget {
                             AsyncSnapshot<JustWatchResponse> snapshot) {
                           if (!snapshot.hasData) {
                             return CircularProgressIndicator();
-                          }
-                          else if (snapshot.hasData && snapshot.data.offers != null &&  snapshot.data.offers.length > 0) {
+                          } else if (snapshot.hasData &&
+                              snapshot.data.offers != null &&
+                              snapshot.data.offers.length > 0) {
                             snapshot.data.offers = snapshot.data.offers
                                 .where((element) => (element.providerId == 8 ||
                                     element.providerId == 10 ||

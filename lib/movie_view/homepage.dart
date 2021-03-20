@@ -101,8 +101,8 @@ class _HomePageState extends State<HomePage> {
       });
       // trim whitespaces
       query = query.trim();
-      var response =
-          await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
+      var response = await http.get(new Uri.https(
+          "https://www.omdbapi.com/", "?s=$query&apikey=e83d3bc2"));
 
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
@@ -112,8 +112,8 @@ class _HomePageState extends State<HomePage> {
         listOtherSugg =
             decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
       }
-      response =
-          await http.get("https://www.omdbapi.com/?t=$query&apikey=e83d3bc2");
+      response = await http.get(new Uri.https(
+          "https://www.omdbapi.com/", "?t=$query&apikey=e83d3bc2"));
 
       //print(response.body);
       Map<String, dynamic> decodedMap = jsonDecode(response.body);

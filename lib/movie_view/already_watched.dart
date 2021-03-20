@@ -5,7 +5,6 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
 
 class AlreadyWatchedList extends StatelessWidget {
-
   String uuid;
   Bloc bloc;
   AlreadyWatchedList(this.uuid, this.bloc);
@@ -101,8 +100,10 @@ class AlreadyWatchedList extends StatelessWidget {
                                                 icon: Icon(Icons.info),
                                                 color: Colors.white,
                                                 onPressed: () => {
-                                                      showInfoDialog(context2,
-                                                          document['imdbUrl'], bloc)
+                                                      showInfoDialog(
+                                                          context2,
+                                                          document['imdbUrl'],
+                                                          bloc)
                                                     }),
                                             title: Container(
                                                 decoration: BoxDecoration(
@@ -166,5 +167,4 @@ class AlreadyWatchedList extends StatelessWidget {
                   }
                 })));
   }
-
 }

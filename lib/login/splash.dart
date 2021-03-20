@@ -44,40 +44,36 @@ class _SplashPageState extends State<SplashPage>
     // print(user);
     // here you write the codes to input the data into firestore
 
-    final UserCredential result = (await _auth.signInWithEmailAndPassword(
-        email: "d.rossburg@googlemail.com", password: "12345678"));
-    print("signed in " + result.user.email);
-    print(result.user);
+    final User result = (await _auth.signInWithEmailAndPassword(
+            email: "d.rossburg@googlemail.com", password: "12345678"))
+        .user;
+    print("signed in " + result.email);
+    print(result.displayName);
   }
 
   @override
   initState() {
     print("init state");
-    print(_auth.app.name);
+    //print(_auth.name);
     //getUser();
 
-    
-     
-              if ( _auth.currentUser == null)
-                {Navigator.pushReplacementNamed(context, "/login");}
-              else
-                {
-                  FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(_auth.currentUser.uid)
-                      .get()
-                      .then((DocumentSnapshot result) =>
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage(
-                                        title: result["fname"] + "'s Tasks",
-                                        uuid: _auth.currentUser.uid,
-                                      ))))
-                      .catchError((err) => {print(err), bloc.addMessage(err)});
-                }
-           
-  
+    if (_auth.currentUser == null) {
+      Navigator.pushReplacementNamed(context, "/login");
+    } else {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(_auth.currentUser.uid)
+          .get()
+          .then((DocumentSnapshot result) => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomePage(
+                        title: result["fname"] + "'s Tasks",
+                        uuid: _auth.currentUser.uid,
+                      ))))
+          .catchError((err) => {print(err), bloc.addMessage(err)});
+    }
+
     print("before init state");
     super.initState();
 
