@@ -56,7 +56,7 @@ class JustWatchResponse {
         : null;
     poster = json['poster'];
     if (json['backdrops'] != null) {
-      backdrops = new List<Backdrops>();
+      backdrops = [];
       json['backdrops'].forEach((v) {
         backdrops.add(new Backdrops.fromJson(v));
       });
@@ -68,31 +68,31 @@ class JustWatchResponse {
     originalTitle = json['original_title'];
     localizedReleaseDate = json['localized_release_date'];
     if (json['offers'] != null) {
-      offers = new List<Offers>();
+      offers = [];
       json['offers'].forEach((v) {
         offers.add(new Offers.fromJson(v));
       });
     }
     if (json['clips'] != null) {
-      clips = new List<Clips>();
+      clips = [];
       json['clips'].forEach((v) {
         clips.add(new Clips.fromJson(v));
       });
     }
     if (json['scoring'] != null) {
-      scoring = new List<Scoring>();
+      scoring = [];
       json['scoring'].forEach((v) {
         scoring.add(new Scoring.fromJson(v));
       });
     }
     if (json['credits'] != null) {
-      credits = new List<Credits>();
+      credits =[];
       json['credits'].forEach((v) {
         credits.add(new Credits.fromJson(v));
       });
     }
     if (json['external_ids'] != null) {
-      externalIds = new List<ExternalIds>();
+      externalIds = [];
       json['external_ids'].forEach((v) {
         externalIds.add(new ExternalIds.fromJson(v));
       });

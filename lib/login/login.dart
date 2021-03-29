@@ -5,6 +5,7 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_watchlist/common/tab_bloc.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
@@ -71,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
     return OutlineButton(
       splashColor: Colors.grey,
       onPressed: () async {
-        await signInWithGoogle();
+        // await signInWithGoogle();
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
       highlightElevation: 0,
@@ -99,46 +100,46 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount googleSignInAccount = await _googleSignIn
-        .signIn()
-        .catchError((err) => bloc.addMessage(err.toString()));
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+  // Future<void> signInWithGoogle() async {
+  //   final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+  //       .signIn()
+  //       .catchError((err) => bloc.addMessage(err.toString()));
+  //   final GoogleSignInAuthentication googleSignInAuthentication =
+  //       await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
+  //   final AuthCredential credential = GoogleAuthProvider.credential(
+  //     accessToken: googleSignInAuthentication.accessToken,
+  //     idToken: googleSignInAuthentication.idToken,
+  //   );
 
-    // assert(!user.isAnonymous);
-    // assert(await user.getIdToken() != null);
+  //   // assert(!user.isAnonymous);
+  //   // assert(await user.getIdToken() != null);
 
-    FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((currentUser) => Firestore.instance
-            .collection("users")
-            .document(currentUser.user.uid)
-            .get()
-            .then((DocumentSnapshot result) => {
-                  print(result),
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(
-                                title: result["fname"] + "'s Tasks",
-                                uuid: currentUser.user.uid,
-                              )))
-                })
-            .catchError((err) => _bloc.addMessage(err)))
-        .catchError((err) => (_bloc.addMessage(err)));
-  }
+  //   FirebaseAuth.instance
+  //       .sign(credential)
+  //       .then((currentUser) => FirebaseFirestore.instance
+  //           .collection("users")
+  //           .doc(currentUser.user.uid)
+  //           .get()
+  //           .then((DocumentSnapshot result) => {
+  //                 print(result),
+  //                 Navigator.pushReplacement(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                         builder: (context) => HomePage(
+  //                               title: result["fname"] + "'s Tasks",
+  //                               uuid: currentUser.user.uid,
+  //                             )))
+  //               })
+  //           .catchError((err) => _bloc.addMessage(err)))
+  //       .catchError((err) => (_bloc.addMessage(err)));
+  // }
 
-  void signOutGoogle() async {
-    await _googleSignIn.signOut();
+  // void signOutGoogle() async {
+  //   await _googleSignIn.signOut();
 
-    print("User Sign Out");
-  }
+  //   print("User Sign Out");
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
               context, bloc.snackBarSubject);
           return Container(
               margin: MediaQuery.of(context).size.width > 1400
-                  ? EdgeInsets.fromLTRB(200, 0,200, 0)
+                  ? EdgeInsets.fromLTRB(200, 0, 200, 0)
                   : EdgeInsets.all(0),
               child: SingleChildScrollView(
                   child: Form(
@@ -189,12 +190,12 @@ class _LoginPageState extends State<LoginPage> {
                               .signInWithEmailAndPassword(
                                   email: emailInputController.text.trim(),
                                   password: pwdInputController.text.trim())
-                              .then((currentUser) => Firestore.instance
+                              .then((currentUser) => FirebaseFirestore.instance
                                   .collection("users")
-                                  .document(currentUser.user.uid)
+                                  .doc(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
-                                        print(result),
+                                        tabBloc.updateIndex(0),
                                         Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
@@ -213,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     Text("Don't have an account yet?"),
-                    FlatButton(
+                    TextButton(
                       child: Text("Register here!"),
                       onPressed: () {
                         Navigator.pushNamed(context, "/register");
@@ -226,9 +227,9 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           FirebaseAuth.instance
                               .signInAnonymously()
-                              .then((currentUser) => Firestore.instance
+                              .then((currentUser) => FirebaseFirestore.instance
                                   .collection("users")
-                                  .document(currentUser.user.uid)
+                                  .doc(currentUser.user.uid)
                                   .get()
                                   .then((DocumentSnapshot result) => {
                                         Navigator.pushReplacement(

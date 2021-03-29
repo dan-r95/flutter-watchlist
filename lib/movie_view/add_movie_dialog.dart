@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
+import 'package:flutter_watchlist/common/helpers.dart';
 import 'package:flutter_watchlist/common/types.dart';
 
 class AddMovieDialog extends StatelessWidget {
@@ -18,23 +18,6 @@ class AddMovieDialog extends StatelessWidget {
       @required this.favorites})
       : super(key: key);
 
-  void pushToDB(MovieSuggestion item, String dbName, String uuid) {
-    print("will push");
-    Firestore.instance
-        .collection(dbName)
-        .add({
-          'user': uuid,
-          'Title': item.name,
-          'Poster': item.imgURL,
-          'Year': item.year,
-          'imdbUrl': item.imdbUrl,
-          'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
-        })
-        .then((result) => { print(result)})
-        .catchError((err) => (bloc.addMessage(err)));
-    favorites.add(item);
-  }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -49,9 +32,10 @@ class AddMovieDialog extends StatelessWidget {
             onTap: () => print(suggestion.imgURL),
           ),
           CachedNetworkImage(
-            placeholder: (context2, url) => CircularProgressIndicator(),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
             imageUrl: suggestion.imgURL,
-
+            errorWidget: (context, url, error) => new Icon(Icons.error),
             fit: BoxFit.cover,
             // width: context.size.width,
             height: MediaQuery.of(context).size.height / 2,
@@ -82,7 +66,7 @@ class AddMovieDialog extends StatelessWidget {
         ]))
       ])),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('Close'),
           onPressed: () {
             Navigator.of(context).pop();
