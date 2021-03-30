@@ -184,71 +184,75 @@ class _LoginPageState extends State<LoginPage> {
                       child: Text("Login"),
                       color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
-                      onPressed: () {
-                        if (_loginFormKey.currentState.validate()) {
-                          FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                                  email: emailInputController.text.trim(),
-                                  password: pwdInputController.text.trim())
-                              .then((currentUser) => FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(currentUser.user.uid)
-                                  .get()
-                                  .then((DocumentSnapshot result) => {
-                                        tabBloc.updateIndex(0),
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => HomePage(
-                                                      title: result["fname"] +
-                                                          "'s Tasks",
-                                                      uuid:
-                                                          currentUser.user.uid,
-                                                    )))
-                                      })
-                                  .catchError(
-                                      (err) => bloc.addMessage(err.toString())))
-                              .catchError(
-                                  (err) => (bloc.addMessage(err.toString())));
-                        }
+                      onPressed: () => {
+                        if (_loginFormKey.currentState.validate())
+                          {
+                            FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                                    email: emailInputController.text.trim(),
+                                    password: pwdInputController.text.trim())
+                                .then((currentUser) => FirebaseFirestore
+                                    .instance
+                                    .collection("users")
+                                    .doc(currentUser.user.uid)
+                                    .get()
+                                    .then((DocumentSnapshot result) => {
+                                          tabBloc.updateIndex(0),
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      HomePage(
+                                                        title: result["fname"] +
+                                                            "'s Tasks",
+                                                        uuid: currentUser
+                                                            .user.uid,
+                                                      )))
+                                        })
+                                    .catchError((err) =>
+                                        bloc.addMessage(err.toString())))
+                                .catchError(
+                                    (err) => (bloc.addMessage(err.toString())))
+                          }
                       },
                     ),
                     Text("Don't have an account yet?"),
                     TextButton(
                       child: Text("Register here!"),
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/register");
-                      },
+                      onPressed: () =>
+                          {Navigator.pushNamed(context, "/register")},
                     ),
                     RaisedButton(
                         child: Text("Or Continue without an account!"),
                         color: Theme.of(context).primaryColor,
                         textColor: Colors.white,
-                        onPressed: () {
-                          FirebaseAuth.instance
-                              .signInAnonymously()
-                              .then((currentUser) => FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(currentUser.user.uid)
-                                  .get()
-                                  .then((DocumentSnapshot result) => {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => HomePage(
-                                                      title: result.data == null
-                                                          ? "Temp account"
-                                                          : result["fname"] +
-                                                              "'s Tasks",
-                                                      uuid:
-                                                          currentUser.user.uid,
-                                                    )))
-                                      })
-                                  .catchError(
-                                      (err) => bloc.addMessage(err.toString())))
-                              .catchError(
-                                  (err) => (bloc.addMessage(err.toString())));
-                        })
+                        onPressed: () => {
+                              FirebaseAuth.instance
+                                  .signInAnonymously()
+                                  .then(
+                                      (currentUser) =>
+                                          FirebaseFirestore.instance
+                                              .collection("users")
+                                              .doc(currentUser.user.uid)
+                                              .get()
+                                              .then(
+                                                  (DocumentSnapshot result) => {
+                                                        Navigator
+                                                            .pushReplacement(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            HomePage(
+                                                                              title: result.data == null ? "Temp account" : result["fname"] + "'s Tasks",
+                                                                              uuid: currentUser.user.uid,
+                                                                            )))
+                                                      })
+                                              .catchError((err) => bloc
+                                                  .addMessage(err.toString())))
+                                  .catchError((err) =>
+                                      (bloc.addMessage(err.toString())))
+                            })
                   ],
                 ),
               )));

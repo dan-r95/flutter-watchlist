@@ -64,13 +64,20 @@ class _SplashPageState extends State<SplashPage>
           .collection("users")
           .doc(_auth.currentUser.uid)
           .get()
-          .then((DocumentSnapshot result) => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomePage(
-                        title: result["fname"] + "'s Tasks",
-                        uuid: _auth.currentUser.uid,
-                      ))))
+          .then((DocumentSnapshot result) => {
+                if (!result.exists)
+                  {Navigator.pushReplacementNamed(context, "/login")}
+                else
+                  {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  title: result["fname"] + "'s Tasks",
+                                  uuid: _auth.currentUser.uid,
+                                )))
+                  }
+              })
           .catchError((err) => {print(err), bloc.addMessage(err)});
     }
 
