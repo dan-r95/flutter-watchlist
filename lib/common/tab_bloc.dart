@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 
-/**
- * BloC pattern class containing streams and stream controllers which control the behaviour of 
- * tabbed navigation, switching between tabs
- */
+///
+/// BloC pattern class containing streams and stream controllers which control the behaviour of
+/// tabbed navigation, switching between tabs
+///
 class TabProvider {
   int _currentIndex = 0;
 

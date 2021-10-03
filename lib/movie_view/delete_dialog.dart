@@ -16,23 +16,25 @@ class DeleteMovieDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget cancelButton = FlatButton(
+    Widget cancelButton = TextButton(
       child: Text("No"),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
     );
-    Widget continueButton = FlatButton(
+    Widget continueButton = TextButton(
       child: Text("Yes"),
       onPressed: () {
         type == 'favorites'
-            ? Firestore.instance
-                .document("favorites/" + document.documentID)
+            ? FirebaseFirestore.instance
+                .collection("favorites")
+                .doc(document.id)
                 .delete()
                 .then((onValue) => bloc.addMessage("deleted entry"))
                 .catchError((error) => bloc.addMessage(error))
-            : Firestore.instance
-                .document("alreadyWatched/" + document.documentID)
+            : FirebaseFirestore.instance
+                .collection("alreadyWatched")
+                .doc(document.id)
                 .delete()
                 .then((onValue) => bloc.addMessage("deleted entry"))
                 .catchError((error) => bloc.addMessage(error));

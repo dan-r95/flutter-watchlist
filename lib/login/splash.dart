@@ -44,43 +44,43 @@ class _SplashPageState extends State<SplashPage>
     // print(user);
     // here you write the codes to input the data into firestore
 
-     final AuthResult result = (await _auth.signInWithEmailAndPassword(
-        email: "d.rossburg@googlemail.com", password: "12345678"));
-    print("signed in " + result.user.email);
-   print(result.user);
-
+    final User result = (await _auth.signInWithEmailAndPassword(
+            email: "d.rossburg@googlemail.com", password: "12345678"))
+        .user;
+    print("signed in " + result.email);
+    print(result.displayName);
   }
 
   @override
   initState() {
     print("init state");
-    print(_auth.app.name);
+    //print(_auth.name);
     //getUser();
-   
-    _auth
-        .currentUser()
-        .then((currentUser) => {
-              print("Curr User: " + currentUser.toString()),
-              if (currentUser == null)
-                {Navigator.pushReplacementNamed(context, "/login")}
-              else
-                {
-                  Firestore.instance
-                      .collection("users")
-                      .document(currentUser.uid)
-                      .get()
-                      .then((DocumentSnapshot result) =>
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage(
-                                        title: result["fname"] + "'s Tasks",
-                                        uuid: currentUser.uid,
-                                      ))))
-                      .catchError((err) => {print(err), bloc.addMessage(err)})
-                }
-            })
-        .catchError((err) => {print(err), bloc.addMessage(err)});
+
+    if (_auth.currentUser == null) {
+      Navigator.pushReplacementNamed(context, "/login");
+    } else {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(_auth.currentUser.uid)
+          .get()
+          .then((DocumentSnapshot result) => {
+                if (!result.exists)
+                  {Navigator.pushReplacementNamed(context, "/login")}
+                else
+                  {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePage(
+                                  title: result["fname"] + "'s Tasks",
+                                  uuid: _auth.currentUser.uid,
+                                )))
+                  }
+              })
+          .catchError((err) => {print(err), bloc.addMessage(err)});
+    }
+
     print("before init state");
     super.initState();
 
@@ -122,10 +122,9 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     timerAnim?.cancel();
     controller?.stop();
+    super.dispose();
   }
 
   @override

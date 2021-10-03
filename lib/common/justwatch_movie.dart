@@ -33,7 +33,7 @@ class JustWatchMovie {
     objectType = json['object_type'];
     originalTitle = json['original_title'];
     if (json['offers'] != null) {
-      offers = new List<Offers>();
+      offers = [];
       json['offers'].forEach((v) {
         offers.add(new Offers.fromJson(v));
       });
@@ -64,7 +64,7 @@ class JustWatchMovie {
 
 class Language {
   Language();
-  Language.fromJson(Map<String, dynamic> json) {}
+  Language.fromJson(Map<String, dynamic> json);
 
   Map<String, dynamic> toJson() {}
 }
@@ -108,13 +108,13 @@ class Offers {
     currency = json['currency'];
     urls = json['urls'] != null ? new Urls.fromJson(json['urls']) : null;
     if (json['subtitle_languages'] != null) {
-      subtitleLanguages = new List<Language>();
+      subtitleLanguages = [];
       json['subtitle_languages'].forEach((v) {
         subtitleLanguages.add(Language());
       });
     }
     if (json['audio_languages'] != null) {
-      audioLanguages = new List<Language>();
+      audioLanguages = [];
       json['audio_languages'].forEach((v) {
         audioLanguages.add(Language());
       });

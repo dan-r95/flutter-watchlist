@@ -1,26 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_watchlist/movie_view/delete_dialog.dart';
+import 'package:flutter_watchlist/movie_view/already_watched.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flutter_watchlist/movie_view/favorites.dart';
 import 'package:flutter_watchlist/settings/settings.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
-import 'package:flare_flutter/flare_actor.dart';
 // import 'package:appcenter/appcenter.dart';
 // import 'package:appcenter_analytics/appcenter_analytics.dart';
 // import 'package:appcenter_crashes/appcenter_crashes.dart';
-import 'package:flutter_watchlist/movie_view/info_dialog.dart';
 import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,14 +25,6 @@ class HomePage extends StatefulWidget {
       {Key key, this.title, this.app, this.uiErrorUtils, this.bloc, this.uuid})
       : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
   final String title;
   final String uuid;
   final FirebaseApp app;
@@ -70,23 +59,23 @@ class _HomePageState extends State<HomePage> {
     // notesReference.reference().once().then((DataSnapshot snapshot) {
     //   print('Connected to second database and read ${snapshot.value}');
     // });
-    favorites = new List();
+    favorites = [];
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
-    // _onNoteChangedSubscription =
-    //    notesReference.onChildChanged.listen(_onNoteUpdated);
+    _onNoteChangedSubscription =
+        notesReference.onChildChanged.listen(_onNoteUpdated);
 
     _children.addAll([
-      _buildFavoritesList(),
-      _buildCompletedList(),
+      FavoritesList(widget.uuid, bloc),
+      AlreadyWatchedList(widget.uuid, bloc),
       SettingsRoute(title: widget.title)
     ]);
   }
 
   @override
   void dispose() {
-    _onNoteAddedSubscription.cancel();
+    _onNoteAddedSubscription?.cancel();
     super.dispose();
-    _onNoteChangedSubscription.cancel();
+    _onNoteChangedSubscription?.cancel();
   }
 
   void _onNoteAdded(Event event) {
@@ -95,38 +84,36 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-/*
   void _onNoteUpdated(Event event) {
     var oldNoteValue =
         favorites.singleWhere((note) => note.id == event.snapshot.key);
     setState(() {
       favorites[favorites.indexOf(oldNoteValue)] =
-          new ArbitrarySuggestionType.fromSnapshot(event.snapshot);
+          new MovieSuggestion.fromSnapshot(event.snapshot);
     });
   }
-*/
 
   Future<List<MovieSuggestion>> updateSuggestions(String query) async {
-    List<MovieSuggestion> list = new List<MovieSuggestion>();
+    List<MovieSuggestion> list = [];
     if (query.length > 2) {
       setState(() {
         loading = true;
       });
       // trim whitespaces
       query = query.trim();
-      var response =
-          await http.get("https://www.omdbapi.com/?s=$query&apikey=e83d3bc2");
+      var response = await http.get(
+          new Uri.https("omdbapi.com", "", {"s": query, "apikey": "e83d3bc2"}));
 
       //print(response.body);
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
-      List<MovieSuggestion> listOtherSugg = new List<MovieSuggestion>();
+      List<MovieSuggestion> listOtherSugg = [];
       if (decoded != null) {
         listOtherSugg =
             decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
       }
-      response =
-          await http.get("https://www.omdbapi.com/?t=$query&apikey=e83d3bc2");
+      response = await http.get(
+          new Uri.https("omdbapi.com", "", {"t": query, "apikey": "e83d3bc2"}));
 
       //print(response.body);
       Map<String, dynamic> decodedMap = jsonDecode(response.body);
@@ -174,30 +161,12 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _filter = new TextEditingController();
   //final dio = new Dio();
   String _searchText = "";
-  List names = new List();
-  List filteredNames = new List();
+  List names = [];
+  List filteredNames = [];
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Watchlist');
 
   MovieDescription description;
-
-  void pushToDB(MovieSuggestion item, String dbName) {
-    print("will push");
-    print(widget.uuid);
-    Firestore.instance
-        .collection("favorites")
-        .add({
-          'user': widget.uuid,
-          'Title': item.name,
-          'Poster': item.imgURL,
-          'Year': item.year,
-          'imdbUrl': item.imdbUrl,
-          'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
-        })
-        .then((result) => {print(result)})
-        .catchError((err) => (_bloc.addMessage(err)));
-    favorites.add(item);
-  }
 
   void _searchPressed() {
     setState(() {
@@ -212,13 +181,17 @@ class _HomePageState extends State<HomePage> {
             return await updateSuggestions(pattern);
           },
           itemBuilder: (context, MovieSuggestion suggestion) {
-            return ListTile(
-              leading: Icon(Icons.movie),
-              title: Text(suggestion.name),
-              subtitle: Text('${suggestion.year} / ${suggestion.stars}'),
+            return Listener(
+              child: ListTile(
+                leading: Icon(Icons.movie),
+                title: Text(suggestion.name),
+                subtitle: Text('${suggestion.year} / ${suggestion.stars}'),
+              ),
+              onPointerDown: (_) => showAddDialog(context, suggestion),
             );
           },
           onSuggestionSelected: (suggestion) {
+            print("selected");
             showAddDialog(context, suggestion);
           },
         );
@@ -248,354 +221,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //TODO use https://pub.dev/packages/flutter_typeahead
-  showInfoDialog(BuildContext context, String url) {
-    //print(description.title);
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-
-      builder: (BuildContext context) {
-        return InfoDialog(bloc: _bloc, url: url, favorites: favorites);
-      },
-    );
-  }
-
-  Widget _buildFavoritesList() {
-    return Center(
-        child: Container(
-            padding: const EdgeInsets.all(10.0),
-            child: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance
-                    .collection("favorites")
-                    .where("user", isEqualTo: widget.uuid)
-                    .orderBy("added", descending: true)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError)
-                    return new Text('Error: ${snapshot.error}');
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Container(
-                        height: 200,
-                        width: 200,
-                        child: FlareActor("assets/animations/loading.flr",
-                            animation: "roll"),
-                      );
-                    default:
-                      if (snapshot.data.documents.length == 0) {
-                        return Container(
-                            height: 200,
-                            width: 200,
-                            child: FlareActor("assets/animations/loading.flr",
-                                animation: "roll"));
-                      }
-                      return new GridView.builder(
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 2.0,
-                                  mainAxisSpacing: 2.0),
-                          itemCount: snapshot.data.documents.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (snapshot.data.documents.length == 0) {
-                              return Text("start adding movies!");
-                            }
-                            var document = snapshot.data.documents[index];
-
-                            return new Dismissible(
-                              key: UniqueKey(),
-                              onDismissed: (direction) {
-                                setState(() {
-                                  alreadyWatched.add(
-                                      MovieSuggestion.fromDocument(document));
-                                });
-                                print(alreadyWatched.length.toString());
-                                pushToDB(MovieSuggestion.fromDocument(document),
-                                    'alreadyWatched');
-                                Firestore.instance
-                                    .collection('favorites')
-                                    .document(document.documentID)
-                                    .delete();
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text("added to already watched")));
-                              },
-                              child: Card(
-                                  semanticContainer: true,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  elevation: 5,
-                                  margin: EdgeInsets.all(10),
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: <Widget>[
-                                      new Positioned.fill(
-                                          child: CachedNetworkImage(
-                                        placeholder: (context, url) =>
-                                            CircularProgressIndicator(),
-                                        imageUrl: document['Poster'] == "N/A"
-                                            ? "https://moviereelist.com/wp-content/uploads/2019/07/poster-placeholder.jpg"
-                                            : document['Poster'],
-                                        color:
-                                            Color.fromRGBO(255, 255, 255, 0.7),
-                                        colorBlendMode: BlendMode.modulate,
-                                        fit: BoxFit.cover,
-                                        // width: context.size.width,
-                                        // height: context.size.height / 4,
-                                      )),
-                                      // This gradient ensures that the toolbar icons are distinct
-                                      // against the background image.
-                                      Column(children: <Widget>[
-                                        ListTile(
-                                          contentPadding:
-                                              EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                          leading: IconButton(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 0, 0, 0),
-                                              iconSize: 32,
-                                              icon: Icon(Icons.info),
-                                              color: Colors.white,
-                                              onPressed: () => {
-                                                    showInfoDialog(context,
-                                                        document['imdbUrl']),
-                                                  }),
-                                          title: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black45,
-                                              ),
-                                              child: Text(
-                                                document['Title'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                          subtitle: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black45,
-                                              ),
-                                              child: Text(
-                                                document['Year'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
-                                                ),
-                                              )),
-                                        ),
-                                        ButtonBar(children: <Widget>[
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black26,
-                                              ),
-                                              child: IconButton(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 0, 0),
-                                                iconSize: 24,
-                                                icon:
-                                                    Icon(Icons.delete_forever),
-                                                color: Colors.white,
-                                                onPressed: () {
-                                                  showAlertDialog(context,
-                                                      'favorites', document);
-                                                },
-                                              )),
-                                        ]),
-                                        // This gradient ensures that the toolbar icons are distinct
-                                        // against the background image.
-                                        const DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              begin: Alignment(0.0, -1.0),
-                                              end: Alignment(0.0, -0.4),
-                                              colors: <Color>[
-                                                Color(0x60000000),
-                                                Color(0x00000000)
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                    ],
-                                  )),
-                              background: Container(
-                                  color: Colors.green,
-                                  child: Icon(Icons.check)),
-                            );
-                          });
-                  }
-                })));
-  }
-
-  Widget _buildCompletedList() {
-    return Center(
-        child: Container(
-            padding: const EdgeInsets.all(10.0),
-            child: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance
-                    .collection('alreadyWatched')
-                    .where('user', isEqualTo: widget.uuid)
-                    .orderBy("added", descending: true)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError)
-                    return new Text('Error: ${snapshot.error}');
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Container(
-                        height: 200,
-                        width: 200,
-                        child: FlareActor("assets/animations/loading.flr",
-                            animation: "roll"),
-                      );
-                    default:
-                      if (snapshot.data.documents.length == 0) {
-                        return Container(
-                            height: 200,
-                            width: 200,
-                            child: FlareActor("assets/animations/loading.flr",
-                                animation: "roll"));
-                      }
-                      return new GridView.builder(
-                          shrinkWrap: true,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 2.0,
-                                  mainAxisSpacing: 2.0),
-                          itemCount: snapshot.data.documents.length,
-                          itemBuilder: (BuildContext context2, int index) {
-                            if (snapshot.data.documents.length == 0) {
-                              return Text("start adding movies!");
-                            }
-                            var document = snapshot.data.documents[index];
-
-                            return new Dismissible(
-                                key: UniqueKey(),
-                                onDismissed: (direction) {},
-                                child: Card(
-                                    semanticContainer: true,
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    elevation: 5,
-                                    margin: EdgeInsets.all(10),
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: <Widget>[
-                                        new Positioned.fill(
-                                            child: CachedNetworkImage(
-                                          placeholder: (context2, url) =>
-                                              CircularProgressIndicator(),
-                                          imageUrl: document['Poster'],
-                                          color: Color.fromRGBO(
-                                              255, 255, 255, 0.7),
-                                          colorBlendMode: BlendMode.modulate,
-                                          fit: BoxFit.cover,
-                                          // width: context.size.width,
-                                          // height: context.size.height / 4,
-                                        )),
-                                        // This gradient ensures that the toolbar icons are distinct
-                                        // against the background image.
-                                        Column(children: <Widget>[
-                                          ListTile(
-                                            contentPadding:
-                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                            leading: IconButton(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 0, 0),
-                                                iconSize: 32,
-                                                icon: Icon(Icons.info),
-                                                color: Colors.white,
-                                                onPressed: () => {
-                                                      showInfoDialog(context2,
-                                                          document['imdbUrl'])
-                                                    }),
-                                            title: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black45,
-                                                ),
-                                                child: Text(
-                                                  document['Title'],
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
-                                                )),
-                                            subtitle: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black45,
-                                                ),
-                                                child: Text(
-                                                  document['Year'],
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white,
-                                                  ),
-                                                )),
-                                          ),
-                                          ButtonBar(children: <Widget>[
-                                            Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black26,
-                                                ),
-                                                child: IconButton(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 0, 0, 0),
-                                                  iconSize: 24,
-                                                  icon: Icon(
-                                                      Icons.delete_forever),
-                                                  color: Colors.white,
-                                                  onPressed: () {
-                                                    showAlertDialog(context2,
-                                                        'completed', document);
-                                                  },
-                                                )),
-                                          ]),
-                                          // This gradient ensures that the toolbar icons are distinct
-                                          // against the background image.
-                                          const DecoratedBox(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment(0.0, -1.0),
-                                                end: Alignment(0.0, -0.4),
-                                                colors: <Color>[
-                                                  Color(0x60000000),
-                                                  Color(0x00000000)
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ]),
-                                      ],
-                                    )));
-                          });
-                  }
-                })));
-  }
-
   List<Widget> _children = [];
 
   void onTabTapped(int index) {
     tabBloc.updateIndex(index);
-  }
-
-  showAlertDialog(
-      BuildContext context, String type, DocumentSnapshot document) {
-    // set up the buttons
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return DeleteMovieDialog(bloc: bloc, document: document, type: type);
-      },
-    );
   }
 
   @override
