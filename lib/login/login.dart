@@ -6,6 +6,7 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
+import 'package:flutter_watchlist/build_info.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>[
@@ -252,7 +253,8 @@ class _LoginPageState extends State<LoginPage> {
                                                   .addMessage(err.toString())))
                                   .catchError((err) =>
                                       (bloc.addMessage(err.toString())))
-                            })
+                            }),
+                    Text(buildTime),
                   ],
                 ),
               )));
