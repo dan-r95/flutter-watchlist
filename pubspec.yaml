@@ -21,12 +21,12 @@ dependencies:
     sdk: flutter
   autocomplete_textfield:
   http:
-  firebase_database: ^6.1.0
+  firebase_database: ^8.0.0
   rxdart:
   firebase_core: ^1.0.1
-  firebase_auth: ^1.0.1
+  firebase_auth: ^3.1.2
   #firebase_analytics:
-  cloud_firestore: ^1.0.1
+  cloud_firestore: ^2.5.3
   flutter_typeahead:
   cached_network_image:
   shared_preferences:
