@@ -31,12 +31,13 @@ class MovieSuggestion {
   }
 
   MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
-    _id = snapshot.data()['id'] as String;
-    _name = snapshot.data()['Title'];
-    _imgURL = snapshot.data()['Poster'];
-    _year = snapshot.data()['Year'];
-    _imdbUrl = snapshot.data()['imdbUrl'];
-    _added = DateTime.fromMillisecondsSinceEpoch(snapshot.data()['added']);
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    _id = data['id'] as String;
+    _name = data['Title'];
+    _imgURL = data['Poster'];
+    _year = data['Year'];
+    _imdbUrl = data['imdbUrl'];
+    _added = DateTime.fromMillisecondsSinceEpoch(data['added']);
   }
 
   String get id => _id;
