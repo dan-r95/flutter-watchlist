@@ -1,8 +1,9 @@
 name: Gh-Pages
-
+# borrowed from https://github.com/bluefireteam/flutter-gh-pages
 on:
   push:
     branches: [ android ]
+
 
 jobs:
   build:
@@ -11,12 +12,30 @@ jobs:
     steps:
       - uses: actions/checkout@v2 # Only works with v2
       - uses: subosito/flutter-action@v1
-      - name: ls 
-        run: ls -a
+      - run: flutter config --enable-web
         shell: bash
+        working-directory: .
+      - run: flutter pub get
+        shell: bash
+        working-directory: .
+      - run: flutter build web --release --base-href /flutter-watchlist/
+        shell: bash
+        working-directory: .
       - name: Substitute in service worker
-        run: sed -i 's+"/"+""+g' flutter_service_worker.js
+        run: cd build/web && sed -i 's+"/"+""+g' flutter_service_worker.js && cd ../..
         shell: bash
-      - uses: bluefireteam/flutter-gh-pages@v7
-        with:
-          baseHref: /flutter-watchlist/
+      - run: git config user.name github-actions
+        shell: bash
+        working-directory: .
+      - run: git config user.email github-actions@github.com
+        shell: bash
+        working-directory: .
+      - run: git --work-tree build/web add --all
+        shell: bash
+        working-directory: .
+      - run: git commit -m "Automatic deployment by github-actions"
+        shell: bash
+        working-directory: .
+      - run: git push origin HEAD:gh-pages --force
+        shell: bash
+        working-directory: .
