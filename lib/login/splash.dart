@@ -47,16 +47,10 @@ class _SplashPageState extends State<SplashPage>
     final User result = (await _auth.signInWithEmailAndPassword(
             email: "d.rossburg@googlemail.com", password: "12345678"))
         .user;
-    print("signed in " + result.email);
-    print(result.displayName);
   }
 
   @override
   initState() {
-    print("init state");
-    //print(_auth.name);
-    //getUser();
-
     if (_auth.currentUser == null) {
       Navigator.pushReplacementNamed(context, "/login");
     } else {
@@ -81,7 +75,6 @@ class _SplashPageState extends State<SplashPage>
           .catchError((err) => {print(err), bloc.addMessage(err)});
     }
 
-    print("before init state");
     super.initState();
 
     //  // this is all stuff to handle the fancy timer running animation
@@ -129,7 +122,6 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
-    print("build splash");
     return Scaffold(body: Builder(builder: (context) {
       return Center(child: Container(child: CircularProgressIndicator()));
       // child: StreamBuilder<int>(

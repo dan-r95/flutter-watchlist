@@ -31,12 +31,9 @@ class InfoDialog extends StatelessWidget {
       "language": "de-DE"
     })); // "www.omdbapi.com/", "?i=$id&apikey=e83d3bc2"));
 
-    print(response.body);
     Map<String, dynamic> decoded = jsonDecode(response.body);
-    print(decoded);
     if (decoded != null) {
       Movie desc = Movie.fromJson(decoded);
-      print(desc.title.toString());
       // setState(() {
       //suggestions = list;
       // });

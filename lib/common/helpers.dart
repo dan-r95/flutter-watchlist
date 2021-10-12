@@ -25,7 +25,6 @@ void launchYT(url) async {
           action: 'ACTION_SEARCH',
           arguments: {"query": url},
           data: 'com.google.android.youtube');
-      print(intent.toString());
       await intent.launch();
     } catch (error) {}
   }
@@ -58,8 +57,6 @@ showAlertDialog(BuildContext context, String type, DocumentSnapshot document) {
 }
 
 void pushToDB(MovieSuggestion item, String dbName, String uuid) {
-  print("will push");
-  print("will push");
   FirebaseFirestore.instance
       .collection(dbName)
       .add({
