@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2 # Only works with v2
       - uses: subosito/flutter-action@v1
+      - name: ls 
+        run: ls -a
+        shell: bash
+      - name: Substitute in service worker
+        run: sed -i 's+"/"+""+g' flutter_service_worker.js
+        shell: bash
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           baseHref: /flutter-watchlist/
