@@ -72,7 +72,7 @@ class _SplashPageState extends State<SplashPage>
                                 )))
                   }
               })
-          .catchError((err) => {print(err), bloc.addMessage(err)});
+          .catchError((err) => {bloc.addMessage(err)});
     }
 
     super.initState();

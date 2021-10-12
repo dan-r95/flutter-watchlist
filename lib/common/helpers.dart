@@ -67,7 +67,7 @@ void pushToDB(MovieSuggestion item, String dbName, String uuid) {
         'imdbUrl': item.imdbUrl,
         'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
       })
-      .then((result) => {print(result)})
+      .then((result) => {})
       .catchError((err) => (bloc.addMessage(err)));
   List<MovieSuggestion> list = bloc.favoritesListController.value;
   list.add(item);
