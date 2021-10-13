@@ -18,7 +18,7 @@ jobs:
       - run: flutter pub get
         shell: bash
         working-directory: .
-      - run: .github/workflows/writeDate.sh
+      - run: sudo .github/workflows/writeDate.sh
         shell: bash
         working-directory: .
       - run: flutter build web --release --base-href /flutter-watchlist/
