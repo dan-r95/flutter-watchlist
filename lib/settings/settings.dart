@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_watchlist/login/login.dart';
+import 'package:flutter_watchlist/build_info.dart';
 
 // provide a way to change the port, ip, username, password and theme and save it to the preferences
 // next time the app is openend, the preferences are read from storage
@@ -53,10 +54,10 @@ class SettingsRouteState extends State<SettingsRoute> {
               Divider(
                 thickness: 0,
               ),
-              Text(
+              /*   Text(
                 "User: ${widget.title}",
                 style: TextStyle(fontSize: 24),
-              ),
+              ), */
               ElevatedButton(
                   onPressed: () => {
                         FirebaseAuth.instance.signOut(),
@@ -104,7 +105,9 @@ class SettingsRouteState extends State<SettingsRoute> {
                       applicationLegalese: "MIT License")
                 },
                 child: Text("About"),
-              )
+              ),
+              Text(buildTime),
+              Text(buildCommit),
             ]));
   }
 }

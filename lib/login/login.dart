@@ -223,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () =>
                           {Navigator.pushNamed(context, "/register")},
                     ),
-                    ElevatedButton(
+                    /* ElevatedButton(
                         child: Text("Or Continue without an account!"),
                         onPressed: () => {
                               FirebaseAuth.instance
@@ -251,8 +251,9 @@ class _LoginPageState extends State<LoginPage> {
                                                   .addMessage(err.toString())))
                                   .catchError((err) =>
                                       (bloc.addMessage(err.toString())))
-                            }),
+                            }), */
                     Text(buildTime),
+                    Text(buildCommit),
                   ],
                 ),
               )));
