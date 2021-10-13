@@ -101,46 +101,46 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Future<void> signInWithGoogle() async {
-  //   final GoogleSignInAccount googleSignInAccount = await _googleSignIn
-  //       .signIn()
-  //       .catchError((err) => bloc.addMessage(err.toString()));
-  //   final GoogleSignInAuthentication googleSignInAuthentication =
-  //       await googleSignInAccount.authentication;
+  Future<void> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+        .signIn()
+        .catchError((err) => bloc.addMessage(err.toString()));
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
-  //   final AuthCredential credential = GoogleAuthProvider.credential(
-  //     accessToken: googleSignInAuthentication.accessToken,
-  //     idToken: googleSignInAuthentication.idToken,
-  //   );
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
 
-  //   // assert(!user.isAnonymous);
-  //   // assert(await user.getIdToken() != null);
+    // assert(!user.isAnonymous);
+    // assert(await user.getIdToken() != null);
 
-  //   FirebaseAuth.instance
-  //       .sign(credential)
-  //       .then((currentUser) => FirebaseFirestore.instance
-  //           .collection("users")
-  //           .doc(currentUser.user.uid)
-  //           .get()
-  //           .then((DocumentSnapshot result) => {
-  //                 print(result),
-  //                 Navigator.pushReplacement(
-  //                     context,
-  //                     MaterialPageRoute(
-  //                         builder: (context) => HomePage(
-  //                               title: result["fname"] + "'s Tasks",
-  //                               uuid: currentUser.user.uid,
-  //                             )))
-  //               })
-  //           .catchError((err) => _bloc.addMessage(err)))
-  //       .catchError((err) => (_bloc.addMessage(err)));
-  // }
+    FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .then((currentUser) => FirebaseFirestore.instance
+            .collection("users")
+            .doc(currentUser.user.uid)
+            .get()
+            .then((DocumentSnapshot result) => {
+                  print(result),
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(
+                                title: result["fname"] + "'s Tasks",
+                                uuid: currentUser.user.uid,
+                              )))
+                })
+            .catchError((err) => _bloc.addMessage(err)))
+        .catchError((err) => (_bloc.addMessage(err)));
+  }
 
-  // void signOutGoogle() async {
-  //   await _googleSignIn.signOut();
+  void signOutGoogle() async {
+    await _googleSignIn.signOut();
 
-  //   print("User Sign Out");
-  // }
+    print("User Sign Out");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,20 +160,24 @@ class _LoginPageState extends State<LoginPage> {
                 key: _loginFormKey,
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
-                      decoration: InputDecoration(
-                          labelText: 'Email*', hintText: "john.doe@gmail.com"),
-                      controller: emailInputController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: emailValidator,
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                          labelText: 'Password*', hintText: "********"),
-                      controller: pwdInputController,
-                      obscureText: true,
-                      validator: pwdValidator,
-                    ),
+                    AutofillGroup(
+                        child: Column(children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(
+                            labelText: 'Email*',
+                            hintText: "john.doe@gmail.com"),
+                        controller: emailInputController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: emailValidator,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                            labelText: 'Password*', hintText: "********"),
+                        controller: pwdInputController,
+                        obscureText: true,
+                        validator: pwdValidator,
+                      )
+                    ])),
                     SizedBox(
                       height: 15,
                     ),
