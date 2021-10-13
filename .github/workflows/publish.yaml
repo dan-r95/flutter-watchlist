@@ -24,9 +24,9 @@ jobs:
       - run: flutter build web --release --base-href /flutter-watchlist/
         shell: bash
         working-directory: .
-      - name: Substitute in service worker
-        run: cd build/web && sed -i 's+"/"+""+g' flutter_service_worker.js && cd ../..
-        shell: bash
+      #- name: Substitute in service worker
+      #  run: cd build/web && sed -i 's+"/"+""+g' flutter_service_worker.js && cd ../..
+      #  shell: bash
       - run: git config user.name github-actions
         shell: bash
         working-directory: .
