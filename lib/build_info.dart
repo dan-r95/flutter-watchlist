@@ -1,2 +1,1 @@
-const buildTime = "03.09.2021 20:11";
-const buildCommit = "xxx";
+const buildTime = 'Mi, 13. Okt 2021 20:03:35'; const buildCommit = 'bdbd21a / android';
