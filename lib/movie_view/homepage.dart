@@ -191,7 +191,6 @@ class _HomePageState extends State<HomePage> {
             );
           },
           onSuggestionSelected: (suggestion) {
-            print("selected");
             showAddDialog(context, suggestion);
           },
         );

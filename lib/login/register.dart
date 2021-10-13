@@ -83,6 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       decoration: InputDecoration(
                           labelText: 'First Name*', hintText: "John"),
                       controller: firstNameInputController,
+                      autofillHints: [AutofillHints.name],
                       validator: (value) {
                         if (value.length < 3) {
                           return "Please enter a valid first name.";
@@ -94,6 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         decoration: InputDecoration(
                             labelText: 'Last Name*', hintText: "Doe"),
                         controller: lastNameInputController,
+                        autofillHints: [AutofillHints.familyName],
                         validator: (value) {
                           if (value.length < 3) {
                             return "Please enter a valid last name.";
@@ -106,6 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: emailInputController,
                       keyboardType: TextInputType.emailAddress,
                       validator: emailValidator,
+                      autofillHints: [AutofillHints.email],
                     ),
                     TextFormField(
                       decoration: InputDecoration(
@@ -121,10 +124,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText: true,
                       validator: pwdValidator,
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text("Register"),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
                       onPressed: () {
                         if (_registerFormKey.currentState.validate()) {
                           if (pwdInputController.text ==

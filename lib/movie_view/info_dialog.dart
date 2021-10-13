@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_watchlist/common/bloc.dart';
-import 'package:flutter_watchlist/common/justwatch.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/api/justwatchManager.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
@@ -254,7 +253,7 @@ class InfoDialog extends StatelessWidget {
             // ]))
           ])),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('Close'),
           onPressed: () {
             Navigator.of(context).pop();

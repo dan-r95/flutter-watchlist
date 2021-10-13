@@ -40,7 +40,6 @@ class AlreadyWatchedList extends StatelessWidget {
                             child: FlareActor("assets/animations/loading.flr",
                                 animation: "roll"));
                       }
-                      print(MediaQuery.of(context).size.width);
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate: MediaQuery.of(context).size.width > 1000

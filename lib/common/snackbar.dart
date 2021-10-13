@@ -15,7 +15,6 @@ class UiErrorUtils {
   void subscribeToSnackBarStream(
       BuildContext context, PublishSubject<String> stream) {
     stream.listen((String message) {
-      print("new msg!");
       openSnackBar(context, message);
     });
   }

@@ -24,7 +24,6 @@ var firebaseConfig = {
 };
 
 Future<void> main() async {
-  print("before run App...");
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     // not running on web

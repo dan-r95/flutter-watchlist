@@ -70,14 +70,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _signInButton() {
-    return OutlineButton(
-      splashColor: Colors.grey,
+    return OutlinedButton(
       onPressed: () async {
         await signInWithGoogle();
       },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-      highlightElevation: 0,
-      borderSide: BorderSide(color: Colors.grey),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: Row(
@@ -169,6 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                         controller: emailInputController,
                         keyboardType: TextInputType.emailAddress,
                         validator: emailValidator,
+                        autofillHints: [AutofillHints.email],
                       ),
                       TextFormField(
                         decoration: InputDecoration(
@@ -176,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                         controller: pwdInputController,
                         obscureText: true,
                         validator: pwdValidator,
+                        autofillHints: [AutofillHints.password],
                       )
                     ])),
                     SizedBox(
@@ -185,10 +183,8 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       height: 15,
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text("Login"),
-                      color: Theme.of(context).primaryColor,
-                      textColor: Colors.white,
                       onPressed: () => {
                         if (_loginFormKey.currentState.validate())
                           {
@@ -227,10 +223,8 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () =>
                           {Navigator.pushNamed(context, "/register")},
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                         child: Text("Or Continue without an account!"),
-                        color: Theme.of(context).primaryColor,
-                        textColor: Colors.white,
                         onPressed: () => {
                               FirebaseAuth.instance
                                   .signInAnonymously()
