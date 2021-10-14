@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image(image: AssetImage("assets/google_logo.png"), height: 35.0),
+            Image(image: AssetImage("assets/google_logo.png"), height: 25.0),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount googleSignInAccount = await _googleSignIn
+    final GoogleSignInAccount googleSignInAccount = await GoogleSignIn()
         .signIn()
         .catchError((err) => bloc.addMessage(err.toString()));
     final GoogleSignInAuthentication googleSignInAuthentication =
@@ -133,9 +133,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void signOutGoogle() async {
-    await _googleSignIn.signOut();
-
-    print("User Sign Out");
+    await GoogleSignIn().signOut();
   }
 
   @override
@@ -166,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: emailValidator,
                         autofillHints: [AutofillHints.email],
+                        autofocus: true,
                       ),
                       TextFormField(
                         decoration: InputDecoration(
