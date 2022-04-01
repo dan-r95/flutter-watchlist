@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:android_intent_plus/android_intent.dart';
 
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
@@ -19,7 +16,7 @@ void launchURL(url) async {
 }
 
 void launchYT(url) async {
-  if (Platform.isAndroid) {
+  /* if (Platform.isAndroid) {
     try {
       final AndroidIntent intent = AndroidIntent(
           action: 'ACTION_SEARCH',
@@ -27,7 +24,8 @@ void launchYT(url) async {
           data: 'com.google.android.youtube');
       await intent.launch();
     } catch (error) {}
-  }
+  }*/
+  //TODO: replace with url launcher action
 }
 
 //TODO use https://pub.dev/packages/flutter_typeahead

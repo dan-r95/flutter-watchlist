@@ -2,13 +2,15 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+//import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
+
 import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/login/register.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
-import 'package:flutterfire_ui/auth.dart';
-import 'common/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
+import 'package:flutter_watchlist/common/bloc.dart';
 
 var firebaseConfig = {
   "apiKey": "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
@@ -23,6 +25,9 @@ var firebaseConfig = {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   if (!kIsWeb) {
     // not running on web
     // await AppCenter.startAsync(
@@ -39,7 +44,7 @@ Future<void> main() async {
     const EmailProviderConfiguration(),
     const PhoneProviderConfiguration(),
     const GoogleProviderConfiguration(clientId: "null"),
-    const AppleProviderConfiguration(),
+    //const AppleProviderConfiguration(),
   ]);
 
   runApp(App());
@@ -90,15 +95,6 @@ class MyApp extends StatelessWidget {
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 brightness: snapshot.data,
-                // This is the theme of your application.
-                //
-                // Try running your application with "flutter run". You'll see the
-                // application has a blue toolbar. Then, without quitting the app, try
-                // changing the primarySwatch below to Colors.green and then invoke
-                // "hot reload" (press "r" in the console where you ran "flutter run",
-                // or simply save your changes to "hot reload" in a Flutter IDE).
-                // Notice that the counter didn't reset back to zero; the application
-                // is not restarted.
                 primarySwatch: Colors.blue,
               ),
               initialRoute: auth.currentUser == null ? '/' : '/profile',
@@ -111,7 +107,7 @@ class MyApp extends StatelessWidget {
                     // no providerConfigs property - global configuration will be used instead
                     actions: [
                       AuthStateChangeAction<SignedIn>((context, state) {
-                        Navigator.pushReplacementNamed(context, '/profile');
+                        Navigator.pushReplacementNamed(context, '/home');
                       }),
                     ],
                   );

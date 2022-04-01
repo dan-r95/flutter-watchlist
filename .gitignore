@@ -73,3 +73,4 @@ debug.keystore
 docs/assets/assets/animations/Win64OpenSSL-1_1_1d.exe
 
 .flutter-plugins-dependencies
+pubspec.lock
