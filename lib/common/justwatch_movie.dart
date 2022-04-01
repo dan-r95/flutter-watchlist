@@ -12,17 +12,17 @@ class JustWatchMovie {
   int seasonNumber;
 
   JustWatchMovie(
-      {this.id,
-      this.title,
-      this.fullPath,
-      this.poster,
-      this.originalReleaseYear,
-      this.objectType,
-      this.originalTitle,
-      this.offers,
-      this.showId,
-      this.showTitle,
-      this.seasonNumber});
+      {required this.id,
+      required this.title,
+      required this.fullPath,
+      required this.poster,
+      required this.originalReleaseYear,
+      required this.objectType,
+      required this.originalTitle,
+      required this.offers,
+      required this.showId,
+      required this.showTitle,
+      required this.seasonNumber});
 
   JustWatchMovie.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -86,20 +86,20 @@ class Offers {
   String country;
 
   Offers(
-      {this.type,
-      this.monetizationType,
-      this.providerId,
-      this.currency,
-      this.urls,
-      this.subtitleLanguages,
-      this.audioLanguages,
-      this.presentationType,
-      this.elementCount,
-      this.newElementCount,
-      this.dateCreatedProviderId,
-      this.dateCreated,
-      this.dateCreatedTimestamp,
-      this.country});
+      {required this.type,
+      required this.monetizationType,
+      required this.providerId,
+      required this.currency,
+      required this.urls,
+      required this.subtitleLanguages,
+      required this.audioLanguages,
+      required this.presentationType,
+      required this.elementCount,
+      required this.newElementCount,
+      required this.dateCreatedProviderId,
+      required this.dateCreated,
+      required this.dateCreatedTimestamp,
+      required this.country});
 
   Offers.fromJson(Map<String, dynamic> json) {
     type = json['type'];
@@ -165,12 +165,12 @@ class Urls {
   String deeplinkTvos;
 
   Urls(
-      {this.standardWeb,
-      this.deeplinkAndroid,
-      this.deeplinkIos,
-      this.deeplinkAndroidTv,
-      this.deeplinkFireTv,
-      this.deeplinkTvos});
+      {required this.standardWeb,
+      required this.deeplinkAndroid,
+      required this.deeplinkIos,
+      required this.deeplinkAndroidTv,
+      required this.deeplinkFireTv,
+      required this.deeplinkTvos});
 
   Urls.fromJson(Map<String, dynamic> json) {
     standardWeb = json['standard_web'];

@@ -39,7 +39,7 @@ class _FavoritesListState extends State<FavoritesList> {
                             animation: "roll"),
                       );
                     default:
-                      if (snapshot.data.docs.length == 0) {
+                      if (snapshot.data?.docs.length == 0) {
                         return Container(
                             height: 200,
                             width: 200,
@@ -57,12 +57,12 @@ class _FavoritesListState extends State<FavoritesList> {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 2.0,
                                   mainAxisSpacing: 2.0),
-                          itemCount: snapshot.data.docs.length,
+                          itemCount: snapshot.data?.docs.length,
                           itemBuilder: (BuildContext context, int index) {
-                            if (snapshot.data.docs.length == 0) {
+                            if (snapshot.data?.docs.length == 0) {
                               return Text("start adding movies!");
                             }
-                            var document = snapshot.data.docs[index];
+                            var document = snapshot.data?.docs[index];
 
                             return new Dismissible(
                               key: UniqueKey(),
@@ -70,14 +70,16 @@ class _FavoritesListState extends State<FavoritesList> {
                                 List<MovieSuggestion> list =
                                     bloc.alreadyWatchedListController.value;
                                 list.add(
-                                    MovieSuggestion.fromDocument(document));
+                                    MovieSuggestion.fromDocument(document!));
                                 bloc.writeToalreadyWatched.add(list);
 
-                                pushToDB(MovieSuggestion.fromDocument(document),
-                                    'alreadyWatched', widget.uuid);
+                                pushToDB(
+                                    MovieSuggestion.fromDocument(document!),
+                                    'alreadyWatched',
+                                    widget.uuid);
                                 FirebaseFirestore.instance
                                     .collection('favorites')
-                                    .doc(document.id)
+                                    .doc(document?.id)
                                     .delete();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -99,9 +101,9 @@ class _FavoritesListState extends State<FavoritesList> {
                                           child: Image.network(
                                         // placeholder: (context, url) =>
                                         //     CircularProgressIndicator(),
-                                        document['Poster'] == "N/A"
+                                        document?['Poster'] == "N/A"
                                             ? "https://moviereelist.com/wp-content/uploads/2019/07/poster-placeholder.jpg"
-                                            : document['Poster'],
+                                            : document?['Poster'],
                                         color:
                                             Color.fromRGBO(255, 255, 255, 0.7),
                                         colorBlendMode: BlendMode.modulate,
@@ -125,7 +127,7 @@ class _FavoritesListState extends State<FavoritesList> {
                                                 onPressed: () => {
                                                       showInfoDialog(
                                                           context,
-                                                          document['imdbUrl'],
+                                                          document?['imdbUrl'],
                                                           bloc),
                                                     }),
                                             title: Container(
@@ -133,7 +135,7 @@ class _FavoritesListState extends State<FavoritesList> {
                                                   color: Colors.black45,
                                                 ),
                                                 child: Text(
-                                                  document['Title'],
+                                                  document?['Title'],
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
@@ -144,7 +146,7 @@ class _FavoritesListState extends State<FavoritesList> {
                                                   color: Colors.black45,
                                                 ),
                                                 child: Text(
-                                                  document['Year'],
+                                                  document?['Year'],
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,
@@ -165,7 +167,7 @@ class _FavoritesListState extends State<FavoritesList> {
                                                   color: Colors.red,
                                                   onPressed: () {
                                                     showAlertDialog(context,
-                                                        'favorites', document);
+                                                        'favorites', document!);
                                                   },
                                                 )),
                                           ]),

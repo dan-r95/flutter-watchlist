@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/login/register.dart';
-import 'package:flutter_watchlist/login/splash.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'common/bloc.dart';
@@ -40,7 +38,7 @@ Future<void> main() async {
   FlutterFireUIAuth.configureProviders([
     const EmailProviderConfiguration(),
     const PhoneProviderConfiguration(),
-    const GoogleProviderConfiguration(clientId: null),
+    const GoogleProviderConfiguration(clientId: "null"),
     const AppleProviderConfiguration(),
   ]);
 
@@ -77,7 +75,7 @@ class App extends StatelessWidget {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
   // final FirebaseApp app;
 
   @override
@@ -105,7 +103,7 @@ class MyApp extends StatelessWidget {
               ),
               initialRoute: auth.currentUser == null ? '/' : '/profile',
               routes: <String, WidgetBuilder>{
-                '/home': (BuildContext context) => HomePage(title: 'Home'),
+                '/home': (BuildContext context) => HomePage(title: 'Home', app: ),
                 '/login': (BuildContext context) => LoginPage(),
                 '/register': (BuildContext context) => RegisterPage(),
                 '/': (context) {

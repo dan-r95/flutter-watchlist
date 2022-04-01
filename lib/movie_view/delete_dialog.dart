@@ -4,10 +4,7 @@ import 'package:flutter_watchlist/common/bloc.dart';
 
 class DeleteMovieDialog extends StatelessWidget {
   const DeleteMovieDialog(
-      {Key key,
-      @required this.type,
-      @required this.bloc,
-      @required this.document})
+      {Key? key, @required this.type, this.bloc, this.document})
       : super(key: key);
 
   final String type;

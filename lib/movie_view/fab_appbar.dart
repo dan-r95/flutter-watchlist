@@ -1,26 +1,24 @@
- //  Widget _buildFab(BuildContext context) {
-  //   final icons = [ Icons.sms, Icons.mail, Icons.phone ];
-  //   return AnchoredOverlay(
-  //     showOverlay: true,
-  //     overlayBuilder: (context, offset) {
-  //       return CenterAbout(
-  //         position: Offset(offset.dx, offset.dy - icons.length * 35.0),
-  //         child: FabWithIcons(
-  //           icons: icons,
-  //           onIconTapped: _selectedFab,
-  //         ),
-  //       );
-  //     },
-  //     child: FloatingActionButton(
-  //       onPressed: () { },
-  //       tooltip: 'Increment',
-  //       child: Icon(Icons.add),
-  //       elevation: 2.0,
-  //     ),
-  //   );
-  // }
-
-
+//  Widget _buildFab(BuildContext context) {
+//   final icons = [ Icons.sms, Icons.mail, Icons.phone ];
+//   return AnchoredOverlay(
+//     showOverlay: true,
+//     overlayBuilder: (context, offset) {
+//       return CenterAbout(
+//         position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+//         child: FabWithIcons(
+//           icons: icons,
+//           onIconTapped: _selectedFab,
+//         ),
+//       );
+//     },
+//     child: FloatingActionButton(
+//       onPressed: () { },
+//       tooltip: 'Increment',
+//       child: Icon(Icons.add),
+//       elevation: 2.0,
+//     ),
+//   );
+// }
 
 //https://github.com/bizz84/bottom_bar_fab_flutter
 import 'package:flutter/material.dart';
@@ -112,7 +110,7 @@ class FABBottomAppBarState extends State<FABBottomAppBar> {
 
   Widget _buildTabItem({
     FABBottomAppBarItem item,
-    int index,
+    int index = 0,
     ValueChanged<int> onPressed,
   }) {
     Color color = _selectedIndex == index ? widget.selectedColor : widget.color;

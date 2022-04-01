@@ -16,7 +16,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 );
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.uiErrorUtils, this.bloc}) : super(key: key);
+  LoginPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
 
   final UiErrorUtils uiErrorUtils;
   final Bloc bloc;
@@ -45,13 +45,13 @@ class _LoginPageState extends State<LoginPage> {
     pwdInputController = new TextEditingController();
   }
 
-  _LoginPageState({UiErrorUtils uiErrorUtils, Bloc bloc}) {
-    _bloc = bloc ?? Bloc();
-    _uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+  _LoginPageState({required UiErrorUtils uiErrorUtils, required Bloc bloc}) {
+    _bloc = bloc;
+    _uiErrorUtils = uiErrorUtils;
   }
 
   String emailValidator(String value) {
-    Pattern pattern =
+    String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value)) {
@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
         .signInWithCredential(credential)
         .then((currentUser) => FirebaseFirestore.instance
             .collection("users")
-            .doc(currentUser.user.uid)
+            .doc(currentUser.user?.uid)
             .get()
             .then((DocumentSnapshot result) => {
                   print(result),
@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute(
                           builder: (context) => HomePage(
                                 title: result["fname"] + "'s Tasks",
-                                uuid: currentUser.user.uid,
+                                uuid: currentUser.user!.uid,
                               )))
                 })
             .catchError((err) => _bloc.addMessage(err)))
@@ -185,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       child: Text("Login"),
                       onPressed: () => {
-                        if (_loginFormKey.currentState.validate())
+                        if (_loginFormKey.currentState!.validate())
                           {
                             FirebaseAuth.instance
                                 .signInWithEmailAndPassword(
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                                 .then((currentUser) => FirebaseFirestore
                                     .instance
                                     .collection("users")
-                                    .doc(currentUser.user.uid)
+                                    .doc(currentUser.user?.uid)
                                     .get()
                                     .then((DocumentSnapshot result) => {
                                           tabBloc.updateIndex(0),
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                                                         title: result["fname"] +
                                                             "'s Tasks",
                                                         uuid: currentUser
-                                                            .user.uid,
+                                                            .user!.uid,
                                                       )))
                                         })
                                     .catchError((err) =>

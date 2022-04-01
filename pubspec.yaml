@@ -19,31 +19,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http:
-  firebase_database: ^9.0.0
-  rxdart:
-  firebase_core: ^1.1.14
-  firebase_auth: ^3.3.2
+  http: ^0.13.4
+  firebase_database: ^9.0.9
+  rxdart: ^0.27.3
+  firebase_core: ^1.14.0
+  firebase_auth: ^3.3.12
   #firebase_analytics:
-  cloud_firestore: ^3.1.0
-  flutter_typeahead:
-  cached_network_image:
-  shared_preferences:
-  flare_flutter: 
+  cloud_firestore: ^3.1.11
+  flutter_typeahead: ^3.2.4
+  cached_network_image: ^3.2.0
+  shared_preferences: ^2.0.13
+  flare_flutter: ^3.0.2 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: 
+  cupertino_icons: ^1.0.4 
   # app center related
   #appcenter:
   #appcenter_analytics:
   #appcenter_crashes:
-  shimmer:
-  google_sign_in: 
-  android_intent:
-  url_launcher: 
+  shimmer: ^2.0.0
+  google_sign_in: ^5.2.4 
+  #android_intent: ^2.0.2
+  url_launcher: ^6.0.20 
   #flutter_appcenter_bundle: 
-  characters: #for fixing windows crash
+  characters: ^1.2.0 #for fixing windows crash
   flutterfire_ui: ^0.4.0
+  android_intent_plus: ^3.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

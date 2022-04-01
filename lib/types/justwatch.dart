@@ -23,28 +23,28 @@ class JustWatchResponse {
   String cinemaReleaseDate;
 
   JustWatchResponse(
-      {this.jwEntityId,
-      this.id,
-      this.title,
-      this.fullPath,
-      this.fullPaths,
-      this.poster,
-      this.backdrops,
-      this.shortDescription,
-      this.originalReleaseYear,
-      this.tmdbPopularity,
-      this.objectType,
-      this.originalTitle,
-      this.localizedReleaseDate,
-      this.offers,
-      this.clips,
-      this.scoring,
-      this.credits,
-      this.externalIds,
-      this.genreIds,
-      this.ageCertification,
-      this.runtime,
-      this.cinemaReleaseDate});
+      {required this.jwEntityId,
+      required this.id,
+      required this.title,
+      required this.fullPath,
+      required this.fullPaths,
+      required this.poster,
+      required this.backdrops,
+      required this.shortDescription,
+      required this.originalReleaseYear,
+      required this.tmdbPopularity,
+      required this.objectType,
+      required this.originalTitle,
+      required this.localizedReleaseDate,
+      required this.offers,
+      required this.clips,
+      required this.scoring,
+      required this.credits,
+      required this.externalIds,
+      required this.genreIds,
+      required this.ageCertification,
+      required this.runtime,
+      required this.cinemaReleaseDate});
 
   JustWatchResponse.fromJson(Map<String, dynamic> json) {
     jwEntityId = json['jw_entity_id'];
@@ -86,7 +86,7 @@ class JustWatchResponse {
       });
     }
     if (json['credits'] != null) {
-      credits =[];
+      credits = [];
       json['credits'].forEach((v) {
         credits.add(new Credits.fromJson(v));
       });
@@ -146,17 +146,17 @@ class JustWatchResponse {
 }
 
 class FullPaths {
-  String mOVIEDETAILOVERVIEW;
+  String movieDetailOverview;
 
-  FullPaths({this.mOVIEDETAILOVERVIEW});
+  FullPaths({required this.movieDetailOverview});
 
   FullPaths.fromJson(Map<String, dynamic> json) {
-    mOVIEDETAILOVERVIEW = json['MOVIE_DETAIL_OVERVIEW'];
+    movieDetailOverview = json['MOVIE_DETAIL_OVERVIEW'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['MOVIE_DETAIL_OVERVIEW'] = this.mOVIEDETAILOVERVIEW;
+    data['MOVIE_DETAIL_OVERVIEW'] = this.movieDetailOverview;
     return data;
   }
 }
@@ -164,7 +164,7 @@ class FullPaths {
 class Backdrops {
   String backdropUrl;
 
-  Backdrops({this.backdropUrl});
+  Backdrops({required this.backdropUrl});
 
   Backdrops.fromJson(Map<String, dynamic> json) {
     backdropUrl = json['backdrop_url'];
@@ -195,21 +195,21 @@ class Offers {
   List<String> subtitleLanguages;
 
   Offers(
-      {this.monetizationType,
-      this.providerId,
-      this.retailPrice,
-      this.currency,
-      this.urls,
-      this.presentationType,
-      this.dateProviderId,
-      this.dateCreated,
-      this.lastChangeRetailPrice,
-      this.lastChangeDifference,
-      this.lastChangePercent,
-      this.lastChangeDate,
-      this.lastChangeDateProviderId,
-      this.audioLanguages,
-      this.subtitleLanguages});
+      {required this.monetizationType,
+      required this.providerId,
+      required this.retailPrice,
+      required this.currency,
+      required this.urls,
+      required this.presentationType,
+      required this.dateProviderId,
+      required this.dateCreated,
+      required this.lastChangeRetailPrice,
+      required this.lastChangeDifference,
+      required this.lastChangePercent,
+      required this.lastChangeDate,
+      required this.lastChangeDateProviderId,
+      required this.audioLanguages,
+      required this.subtitleLanguages});
 
   Offers.fromJson(Map<String, dynamic> json) {
     monetizationType = json['monetization_type'];
@@ -264,10 +264,10 @@ class Urls {
   String deeplinkTvos;
 
   Urls(
-      {this.standardWeb,
-      this.deeplinkAndroidTv,
-      this.deeplinkFireTv,
-      this.deeplinkTvos});
+      {required this.standardWeb,
+      required this.deeplinkAndroidTv,
+      required this.deeplinkFireTv,
+      required this.deeplinkTvos});
 
   Urls.fromJson(Map<String, dynamic> json) {
     standardWeb = json['standard_web'];
@@ -292,7 +292,11 @@ class Clips {
   String externalId;
   String name;
 
-  Clips({this.type, this.provider, this.externalId, this.name});
+  Clips(
+      {required this.type,
+      required this.provider,
+      required this.externalId,
+      required this.name});
 
   Clips.fromJson(Map<String, dynamic> json) {
     type = json['type'];
@@ -315,7 +319,7 @@ class Scoring {
   String providerType;
   double value;
 
-  Scoring({this.providerType, this.value});
+  Scoring({required this.providerType, required this.value});
 
   Scoring.fromJson(Map<String, dynamic> json) {
     providerType = json['provider_type'];
@@ -336,7 +340,11 @@ class Credits {
   int personId;
   String name;
 
-  Credits({this.role, this.characterName, this.personId, this.name});
+  Credits(
+      {required this.role,
+      required this.characterName,
+      required this.personId,
+      required this.name});
 
   Credits.fromJson(Map<String, dynamic> json) {
     role = json['role'];
@@ -359,7 +367,7 @@ class ExternalIds {
   String provider;
   String externalId;
 
-  ExternalIds({this.provider, this.externalId});
+  ExternalIds({required this.provider, required this.externalId});
 
   ExternalIds.fromJson(Map<String, dynamic> json) {
     provider = json['provider'];

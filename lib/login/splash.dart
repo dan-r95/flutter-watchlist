@@ -8,7 +8,7 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 class SplashPage extends StatefulWidget {
-  SplashPage({Key key, this.uiErrorUtils, this.bloc}) : super(key: key);
+  SplashPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
   final UiErrorUtils uiErrorUtils;
   final Bloc bloc;
   @override
@@ -23,8 +23,8 @@ class _SplashPageState extends State<SplashPage>
   Bloc bloc;
 
   _SplashPageState(this.uiErrorUtils, this.bloc) {
-    bloc = bloc ?? Bloc();
-    uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+    bloc = bloc;
+    uiErrorUtils = uiErrorUtils;
   }
 
   Duration duration = new Duration(seconds: 2);
@@ -56,7 +56,7 @@ class _SplashPageState extends State<SplashPage>
     } else {
       FirebaseFirestore.instance
           .collection("users")
-          .doc(_auth.currentUser.uid)
+          .doc(_auth.currentUser?.uid)
           .get()
           .then((DocumentSnapshot result) => {
                 if (!result.exists)
@@ -68,7 +68,7 @@ class _SplashPageState extends State<SplashPage>
                         MaterialPageRoute(
                             builder: (context) => HomePage(
                                   title: result["fname"] + "'s Tasks",
-                                  uuid: _auth.currentUser.uid,
+                                  uuid: _auth.currentUser?.uid,
                                 )))
                   }
               })
@@ -115,8 +115,8 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   void dispose() {
-    timerAnim?.cancel();
-    controller?.stop();
+    timerAnim.cancel();
+    controller.stop();
     super.dispose();
   }
 

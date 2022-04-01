@@ -8,19 +8,15 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
 import 'package:flutter_watchlist/api/justwatchManager.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
-import 'package:flutter_watchlist/common/Movie.dart';
-import 'package:flutter_watchlist/common/MovieDBProvider.dart';
+import 'package:flutter_watchlist/types/Movie.dart';
+import 'package:flutter_watchlist/types/MovieDBProvider.dart';
 
 class InfoDialog extends StatelessWidget {
   final String url;
   final Bloc bloc;
   final List<MovieSuggestion> favorites;
 
-  const InfoDialog(
-      {Key key,
-      @required this.url,
-      @required this.bloc,
-      @required this.favorites})
+  const InfoDialog({Key? key, @required this.url, this.bloc, this.favorites})
       : super(key: key);
 
   Future<Movie> getMovieDescription(String id) async {
@@ -39,7 +35,7 @@ class InfoDialog extends StatelessWidget {
 
       return desc;
     }
-    return null;
+    return Movie();
   }
 
   final bool _enabled = true;
@@ -60,14 +56,14 @@ class InfoDialog extends StatelessWidget {
                       ListTile(
                         trailing: IconButton(
                           icon: Icon(Icons.video_label),
-                          onPressed: () => launchYT(snapshot.data.title),
+                          onPressed: () => launchYT(snapshot.data!.title),
                         ),
-                        title: Text(snapshot.data.title),
-                        subtitle: Text(snapshot.data.popularity.toString()),
+                        title: Text(snapshot.data!.title),
+                        subtitle: Text(snapshot.data!.popularity.toString()),
                       ),
-                      Text(snapshot.data.runtime.toString()),
-                      Text(snapshot.data.voteAverage.toString()),
-                      Text(snapshot.data.overview),
+                      Text(snapshot.data!.runtime.toString()),
+                      Text(snapshot.data!.voteAverage.toString()),
+                      Text(snapshot.data!.overview),
                       // Text(snapshot.data.director),
                       // Text("Metascore: ${snapshot.data.metascore}"),
                       // Text(snapshot.data.runtime),
@@ -77,7 +73,7 @@ class InfoDialog extends StatelessWidget {
                           if (!snapshot.hasData) {
                             return CircularProgressIndicator();
                           } else if (snapshot.hasData &&
-                              snapshot.data.length > 0) {
+                              snapshot.data!.length > 0) {
                             //   &&
                             //   snapshot.data.offers.length > 0) {
                             // snapshot.data.list = snapshot.data.offers
@@ -87,7 +83,7 @@ class InfoDialog extends StatelessWidget {
                             //     .toList();
                             return ListView.builder(
                                 shrinkWrap: true,
-                                itemCount: snapshot.data.length,
+                                itemCount: snapshot.data?.length,
                                 itemBuilder: (context, index) {
                                   //                               CachedNetworkImage(
                                   //   imageUrl: "http://via.placeholder.com/200x150",
@@ -96,14 +92,15 @@ class InfoDialog extends StatelessWidget {
                                   //   errorWidget: (context, url, error) => Icon(Icons.error),
                                   // );
                                   return ListView.builder(
-                                      itemCount: snapshot.data.length,
+                                      itemCount: snapshot.data?.length,
                                       scrollDirection: Axis.horizontal,
                                       shrinkWrap: true,
                                       itemBuilder: (context, index) => ListTile(
                                             leading: CircleAvatar(
                                                 backgroundImage:
                                                     CachedNetworkImageProvider(
-                                              snapshot.data[index].providerName,
+                                              snapshot
+                                                  .data![index].providerName,
                                             )),
                                             // no matter how big it is, it won't overflow
 
@@ -122,8 +119,8 @@ class InfoDialog extends StatelessWidget {
                                 });
                           } else {
                             return Shimmer.fromColors(
-                                baseColor: Colors.grey[300],
-                                highlightColor: Colors.grey[100],
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade100,
                                 enabled: _enabled,
                                 child: Column(
                                   children: <int>[0, 1]
@@ -184,14 +181,14 @@ class InfoDialog extends StatelessWidget {
                                 ));
                           }
                         },
-                        future: apiManager.searchTitle(snapshot.data.id),
+                        future: apiManager.searchTitle(snapshot.data!.id),
                       )
                     ]);
                     //Image.network(description., fit: BoxFit.scaleDown),
                   } else {
                     return Shimmer.fromColors(
-                        baseColor: Colors.grey[300],
-                        highlightColor: Colors.grey[100],
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
                         enabled: _enabled,
                         child: Column(
                           children: <int>[0, 1, 2, 3, 4, 5]

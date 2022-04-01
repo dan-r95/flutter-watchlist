@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_watchlist/movie_view/already_watched.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/movie_view/favorites.dart';
 import 'package:flutter_watchlist/settings/settings.dart';
@@ -21,7 +20,12 @@ import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(
-      {Key key, this.title, this.app, this.uiErrorUtils, this.bloc, this.uuid})
+      {Key? key,
+      required this.title,
+      required this.app,
+      this.uiErrorUtils,
+      this.bloc,
+      this.uuid})
       : super(key: key);
 
   final String title;
@@ -136,7 +140,7 @@ class _HomePageState extends State<HomePage> {
 
   MovieSuggestion selected;
 
-  _HomePageState({Bloc bloc, UiErrorUtils uiErrorUtils}) {
+  _HomePageState({Bloc? bloc, UiErrorUtils? uiErrorUtils}) {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -151,8 +155,8 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    _bloc = bloc ?? Bloc();
-    _uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+    _bloc = bloc!;
+    _uiErrorUtils = uiErrorUtils!;
   }
 
   final TextEditingController _filter = new TextEditingController();
@@ -187,7 +191,7 @@ class _HomePageState extends State<HomePage> {
               onPointerDown: (_) => showAddDialog(context, suggestion),
             );
           },
-          onSuggestionSelected: (suggestion) {
+          onSuggestionSelected: (MovieSuggestion suggestion) {
             showAddDialog(context, suggestion);
           },
         );

@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Map<int, String> companyList = {8: "Netflix", 10: "Amazon", 29: "Sky"};

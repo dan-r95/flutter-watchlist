@@ -12,7 +12,7 @@ class Bloc {
     try {
       // get request code here
     } catch (error) {
-      this.snackBarSubject.add(error);
+      this.snackBarSubject.add(error.toString());
     }
   }
 
@@ -21,7 +21,7 @@ class Bloc {
   }
 
   void dispose() {
-    snackBarSubject?.close();
+    snackBarSubject.close();
     animationIndexController.close();
     brightnessController.close();
     alreadyWatchedListController.close();

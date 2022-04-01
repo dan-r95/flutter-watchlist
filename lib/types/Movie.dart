@@ -26,31 +26,31 @@ class Movie {
   int voteCount;
 
   Movie(
-      {this.adult,
-      this.backdropPath,
-      this.belongsToCollection,
-      this.budget,
-      this.genres,
-      this.homepage,
-      this.id,
-      this.imdbId,
-      this.originalLanguage,
-      this.originalTitle,
-      this.overview,
-      this.popularity,
-      this.posterPath,
-      this.productionCompanies,
-      this.productionCountries,
-      this.releaseDate,
-      this.revenue,
-      this.runtime,
-      this.spokenLanguages,
-      this.status,
-      this.tagline,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount});
+      {required this.adult,
+      required this.backdropPath,
+      required this.belongsToCollection,
+      required this.budget,
+      required this.genres,
+      required this.homepage,
+      required this.id,
+      required this.imdbId,
+      required this.originalLanguage,
+      required this.originalTitle,
+      required this.overview,
+      required this.popularity,
+      required this.posterPath,
+      required this.productionCompanies,
+      required this.productionCountries,
+      required this.releaseDate,
+      required this.revenue,
+      required this.runtime,
+      required this.spokenLanguages,
+      required this.status,
+      required this.tagline,
+      required this.title,
+      required this.video,
+      required this.voteAverage,
+      required this.voteCount});
 
   Movie.fromJson(Map<String, dynamic> json) {
     adult = json['adult'];
@@ -146,7 +146,7 @@ class Genres {
   int id;
   String name;
 
-  Genres({this.id, this.name});
+  Genres({required this.id, required this.name});
 
   Genres.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -167,7 +167,11 @@ class ProductionCompanies {
   String name;
   String originCountry;
 
-  ProductionCompanies({this.id, this.logoPath, this.name, this.originCountry});
+  ProductionCompanies(
+      {required this.id,
+      required this.logoPath,
+      required this.name,
+      required this.originCountry});
 
   ProductionCompanies.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -190,7 +194,7 @@ class ProductionCountries {
   String iso31661;
   String name;
 
-  ProductionCountries({this.iso31661, this.name});
+  ProductionCountries({required this.iso31661, required this.name});
 
   ProductionCountries.fromJson(Map<String, dynamic> json) {
     iso31661 = json['iso_3166_1'];
@@ -210,7 +214,8 @@ class SpokenLanguages {
   String iso6391;
   String name;
 
-  SpokenLanguages({this.englishName, this.iso6391, this.name});
+  SpokenLanguages(
+      {required this.englishName, required this.iso6391, required this.name});
 
   SpokenLanguages.fromJson(Map<String, dynamic> json) {
     englishName = json['english_name'];

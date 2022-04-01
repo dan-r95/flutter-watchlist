@@ -1,5 +1,5 @@
-import 'package:flutter_watchlist/common/justwatch.dart';
-import 'package:flutter_watchlist/common/MovieDBProvider.dart';
+import 'package:flutter_watchlist/types/justwatch.dart';
+import 'package:flutter_watchlist/types/MovieDBProvider.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';

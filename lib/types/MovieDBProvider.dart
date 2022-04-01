@@ -2,7 +2,7 @@ class Providers {
   int id;
   Results results;
 
-  Providers({this.id, this.results});
+  Providers({required this.id, required this.results});
 
   Providers.fromJson(Map<String, dynamic> json) {
     id = json['id'];
