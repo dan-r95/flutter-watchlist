@@ -28,8 +28,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Bloc _bloc;
 
   _RegisterPageState({UiErrorUtils uiErrorUtils, Bloc bloc}) {
-    _bloc = bloc ?? Bloc();
-    _uiErrorUtils = uiErrorUtils ?? UiErrorUtils();
+    _bloc = bloc;
+    _uiErrorUtils = uiErrorUtils;
   }
 
   @override
@@ -42,19 +42,19 @@ class _RegisterPageState extends State<RegisterPage> {
     super.initState();
   }
 
-  String emailValidator(String value) {
-    Pattern pattern =
+  String? emailValidator(String? value) {
+    String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value)) {
+    if (!regex.hasMatch(value!)) {
       return 'Email format is invalid';
     } else {
-      return null;
+      return "";
     }
   }
 
-  String pwdValidator(String value) {
-    if (value.length < 8) {
+  String? pwdValidator(String? value) {
+    if (value!.length < 8) {
       return 'Password must be longer than 8 characters';
     } else {
       return null;
@@ -85,7 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: firstNameInputController,
                       autofillHints: [AutofillHints.name],
                       validator: (value) {
-                        if (value.length < 3) {
+                        if (value!.length < 3) {
                           return "Please enter a valid first name.";
                         }
                         return "";
@@ -127,7 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ElevatedButton(
                       child: Text("Register"),
                       onPressed: () {
-                        if (_registerFormKey.currentState.validate()) {
+                        if (_registerFormKey.currentState!.validate()) {
                           if (pwdInputController.text ==
                               confirmPwdInputController.text) {
                             FirebaseAuth.instance
@@ -137,9 +137,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 .then((currentUser) => FirebaseFirestore
                                     .instance
                                     .collection("users")
-                                    .doc(currentUser.user.uid)
+                                    .doc(currentUser.user?.uid)
                                     .set({
-                                      "uid": currentUser.user.uid,
+                                      "uid": currentUser.user?.uid,
                                       "fname": firstNameInputController.text,
                                       "surname": lastNameInputController.text,
                                       "email": emailInputController.text,
@@ -155,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                                     .text +
                                                                 "'s Tasks",
                                                         uuid: currentUser
-                                                            .user.uid,
+                                                            .user!.uid,
                                                       )),
                                               (_) => false),
                                           firstNameInputController.clear(),

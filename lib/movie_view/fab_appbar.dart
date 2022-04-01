@@ -24,22 +24,22 @@
 import 'package:flutter/material.dart';
 
 class FABBottomAppBarItem {
-  FABBottomAppBarItem({this.iconData, this.text});
+  FABBottomAppBarItem({required this.iconData, required this.text});
   IconData iconData;
   String text;
 }
 
 class FABBottomAppBar extends StatefulWidget {
   FABBottomAppBar({
-    this.items,
-    this.centerItemText,
+    required this.items,
+    this.centerItemText: "",
     this.height: 60.0,
     this.iconSize: 24.0,
-    this.backgroundColor,
-    this.color,
-    this.selectedColor,
-    this.notchedShape,
-    this.onTabSelected,
+    this.backgroundColor: Colors.blue,
+    required this.color,
+    required this.selectedColor,
+    required this.notchedShape,
+    required this.onTabSelected,
   }) {
     assert(this.items.length == 2 || this.items.length == 4);
   }
@@ -109,9 +109,9 @@ class FABBottomAppBarState extends State<FABBottomAppBar> {
   }
 
   Widget _buildTabItem({
-    FABBottomAppBarItem item,
+    required FABBottomAppBarItem item,
     int index = 0,
-    ValueChanged<int> onPressed,
+    required ValueChanged<int> onPressed,
   }) {
     Color color = _selectedIndex == index ? widget.selectedColor : widget.color;
     return Expanded(

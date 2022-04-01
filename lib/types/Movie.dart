@@ -1,29 +1,29 @@
 class Movie {
-  bool adult;
-  String backdropPath;
+  bool? adult;
+  String? backdropPath;
   Null belongsToCollection;
-  int budget;
-  List<Genres> genres;
-  String homepage;
-  int id;
-  String imdbId;
-  String originalLanguage;
-  String originalTitle;
-  String overview;
-  double popularity;
-  String posterPath;
-  List<ProductionCompanies> productionCompanies;
-  List<ProductionCountries> productionCountries;
-  String releaseDate;
-  int revenue;
-  int runtime;
-  List<SpokenLanguages> spokenLanguages;
-  String status;
-  String tagline;
-  String title;
-  bool video;
-  double voteAverage;
-  int voteCount;
+  int? budget;
+  List<Genres>? genres;
+  String? homepage;
+  int? id;
+  String? imdbId;
+  String? originalLanguage;
+  String? originalTitle;
+  String? overview;
+  double? popularity;
+  String? posterPath;
+  List<ProductionCompanies>? productionCompanies;
+  List<ProductionCountries>? productionCountries;
+  String? releaseDate;
+  int? revenue;
+  int? runtime;
+  List<SpokenLanguages>? spokenLanguages;
+  String? status;
+  String? tagline;
+  String? title;
+  bool? video;
+  double? voteAverage;
+  int? voteCount;
 
   Movie(
       {required this.adult,
@@ -60,7 +60,7 @@ class Movie {
     if (json['genres'] != null) {
       genres = [];
       json['genres'].forEach((v) {
-        genres.add(new Genres.fromJson(v));
+        genres?.add(new Genres.fromJson(v));
       });
     }
     homepage = json['homepage'];
@@ -74,13 +74,13 @@ class Movie {
     if (json['production_companies'] != null) {
       productionCompanies = [];
       json['production_companies'].forEach((v) {
-        productionCompanies.add(new ProductionCompanies.fromJson(v));
+        productionCompanies?.add(new ProductionCompanies.fromJson(v));
       });
     }
     if (json['production_countries'] != null) {
       productionCountries = [];
       json['production_countries'].forEach((v) {
-        productionCountries.add(new ProductionCountries.fromJson(v));
+        productionCountries?.add(new ProductionCountries.fromJson(v));
       });
     }
     releaseDate = json['release_date'];
@@ -89,7 +89,7 @@ class Movie {
     if (json['spoken_languages'] != null) {
       spokenLanguages = [];
       json['spoken_languages'].forEach((v) {
-        spokenLanguages.add(new SpokenLanguages.fromJson(v));
+        spokenLanguages?.add(new SpokenLanguages.fromJson(v));
       });
     }
     status = json['status'];
@@ -107,7 +107,7 @@ class Movie {
     data['belongs_to_collection'] = this.belongsToCollection;
     data['budget'] = this.budget;
     if (this.genres != null) {
-      data['genres'] = this.genres.map((v) => v.toJson()).toList();
+      data['genres'] = this.genres?.map((v) => v.toJson()).toList();
     }
     data['homepage'] = this.homepage;
     data['id'] = this.id;
@@ -119,18 +119,18 @@ class Movie {
     data['poster_path'] = this.posterPath;
     if (this.productionCompanies != null) {
       data['production_companies'] =
-          this.productionCompanies.map((v) => v.toJson()).toList();
+          this.productionCompanies?.map((v) => v.toJson()).toList();
     }
     if (this.productionCountries != null) {
       data['production_countries'] =
-          this.productionCountries.map((v) => v.toJson()).toList();
+          this.productionCountries?.map((v) => v.toJson()).toList();
     }
     data['release_date'] = this.releaseDate;
     data['revenue'] = this.revenue;
     data['runtime'] = this.runtime;
     if (this.spokenLanguages != null) {
       data['spoken_languages'] =
-          this.spokenLanguages.map((v) => v.toJson()).toList();
+          this.spokenLanguages?.map((v) => v.toJson()).toList();
     }
     data['status'] = this.status;
     data['tagline'] = this.tagline;
@@ -143,8 +143,8 @@ class Movie {
 }
 
 class Genres {
-  int id;
-  String name;
+  int? id;
+  String? name;
 
   Genres({required this.id, required this.name});
 
@@ -162,16 +162,12 @@ class Genres {
 }
 
 class ProductionCompanies {
-  int id;
-  Null logoPath;
-  String name;
-  String originCountry;
+  int? id;
+  Null? logoPath;
+  String? name;
+  String? originCountry;
 
-  ProductionCompanies(
-      {required this.id,
-      required this.logoPath,
-      required this.name,
-      required this.originCountry});
+  ProductionCompanies({this.id, this.logoPath, this.name, this.originCountry});
 
   ProductionCompanies.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -191,10 +187,10 @@ class ProductionCompanies {
 }
 
 class ProductionCountries {
-  String iso31661;
-  String name;
+  String? iso31661;
+  String? name;
 
-  ProductionCountries({required this.iso31661, required this.name});
+  ProductionCountries({this.iso31661, this.name});
 
   ProductionCountries.fromJson(Map<String, dynamic> json) {
     iso31661 = json['iso_3166_1'];
@@ -210,9 +206,9 @@ class ProductionCountries {
 }
 
 class SpokenLanguages {
-  String englishName;
-  String iso6391;
-  String name;
+  String? englishName;
+  String? iso6391;
+  String? name;
 
   SpokenLanguages(
       {required this.englishName, required this.iso6391, required this.name});

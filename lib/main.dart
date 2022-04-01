@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
               ),
               initialRoute: auth.currentUser == null ? '/' : '/profile',
               routes: <String, WidgetBuilder>{
-                '/home': (BuildContext context) => HomePage(title: 'Home', app: ),
+                '/home': (BuildContext context) => HomePage(title: 'Home'),
                 '/login': (BuildContext context) => LoginPage(),
                 '/register': (BuildContext context) => RegisterPage(),
                 '/': (context) {

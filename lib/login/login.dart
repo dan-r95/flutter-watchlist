@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   UiErrorUtils _uiErrorUtils;
   Bloc _bloc;
 
-  GoogleSignInAccount _currentUser;
+  GoogleSignInAccount? _currentUser;
 
   @override
   initState() {
@@ -50,22 +50,22 @@ class _LoginPageState extends State<LoginPage> {
     _uiErrorUtils = uiErrorUtils;
   }
 
-  String emailValidator(String value) {
+  String? emailValidator(String? value) {
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value)) {
+    if (!regex.hasMatch(value!)) {
       return 'Email format is invalid';
     } else {
-      return null;
+      return "";
     }
   }
 
-  String pwdValidator(String value) {
-    if (value.length < 6) {
+  String? pwdValidator(String? value) {
+    if (value!.length < 6) {
       return 'Password must be longer than 6 characters';
     } else {
-      return null;
+      return "";
     }
   }
 
@@ -98,11 +98,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount googleSignInAccount = await GoogleSignIn()
+    final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn()
         .signIn()
         .catchError((err) => bloc.addMessage(err.toString()));
     final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+        await googleSignInAccount!.authentication;
 
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken,

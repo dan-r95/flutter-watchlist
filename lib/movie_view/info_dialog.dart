@@ -12,14 +12,14 @@ import 'package:flutter_watchlist/types/Movie.dart';
 import 'package:flutter_watchlist/types/MovieDBProvider.dart';
 
 class InfoDialog extends StatelessWidget {
-  final String url;
-  final Bloc bloc;
-  final List<MovieSuggestion> favorites;
+  final String? url;
+  final Bloc? bloc;
+  final List<MovieSuggestion>? favorites;
 
   const InfoDialog({Key? key, @required this.url, this.bloc, this.favorites})
       : super(key: key);
 
-  Future<Movie> getMovieDescription(String id) async {
+  Future<Movie?> getMovieDescription(String id) async {
     final response = await http.get(new Uri.https(
         "api.themoviedb.org", "/3/movie/$id", {
       "api_key": "623ee3bd0e5c4882ac7411d102f1aeb6",
@@ -35,7 +35,7 @@ class InfoDialog extends StatelessWidget {
 
       return desc;
     }
-    return Movie();
+    return null;
   }
 
   final bool _enabled = true;
@@ -48,7 +48,8 @@ class InfoDialog extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: ListBody(children: <Widget>[
             FutureBuilder(
-                builder: (BuildContext context, AsyncSnapshot<Movie> snapshot) {
+                builder:
+                    (BuildContext context, AsyncSnapshot<Movie?> snapshot) {
                   if (snapshot.hasData) {
                     return // new Card(
                         Column(mainAxisSize: MainAxisSize.min, children: <
@@ -58,12 +59,12 @@ class InfoDialog extends StatelessWidget {
                           icon: Icon(Icons.video_label),
                           onPressed: () => launchYT(snapshot.data!.title),
                         ),
-                        title: Text(snapshot.data!.title),
+                        title: Text(snapshot.data.title),
                         subtitle: Text(snapshot.data!.popularity.toString()),
                       ),
                       Text(snapshot.data!.runtime.toString()),
                       Text(snapshot.data!.voteAverage.toString()),
-                      Text(snapshot.data!.overview),
+                      Text(snapshot.data.overview),
                       // Text(snapshot.data.director),
                       // Text("Metascore: ${snapshot.data.metascore}"),
                       // Text(snapshot.data.runtime),
@@ -181,7 +182,7 @@ class InfoDialog extends StatelessWidget {
                                 ));
                           }
                         },
-                        future: apiManager.searchTitle(snapshot.data!.id),
+                        future: apiManager.searchTitle(snapshot.data.id),
                       )
                     ]);
                     //Image.network(description., fit: BoxFit.scaleDown),

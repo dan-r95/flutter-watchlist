@@ -34,7 +34,7 @@ class _SplashPageState extends State<SplashPage>
   int tweenIndex = 0;
 
   AnimationController controller;
-  List<Animation<Color>> colorAnimations = [];
+  List<Animation<Color?>> colorAnimations = [];
 
   List<Color> colors = [Colors.green, Colors.red, Colors.white, Colors.blue];
 
@@ -44,7 +44,7 @@ class _SplashPageState extends State<SplashPage>
     // print(user);
     // here you write the codes to input the data into firestore
 
-    final User result = (await _auth.signInWithEmailAndPassword(
+    final User? result = (await _auth.signInWithEmailAndPassword(
             email: "d.rossburg@googlemail.com", password: "12345678"))
         .user;
   }
@@ -68,7 +68,7 @@ class _SplashPageState extends State<SplashPage>
                         MaterialPageRoute(
                             builder: (context) => HomePage(
                                   title: result["fname"] + "'s Tasks",
-                                  uuid: _auth.currentUser?.uid,
+                                  uuid: _auth.currentUser!.uid,
                                 )))
                   }
               })
@@ -91,7 +91,7 @@ class _SplashPageState extends State<SplashPage>
         .add(ColorTween(begin: colors[colors.length - 1], end: colors[0]));
 
     for (int i = 0; i < colors.length; i++) {
-      Animation<Color> animation = tweenAnimations[i].animate(CurvedAnimation(
+      Animation<Color?> animation = tweenAnimations[i].animate(CurvedAnimation(
           parent: controller,
           curve: Interval((1 / colors.length) * (i + 1) - 0.05,
               (1 / colors.length) * (i + 1),

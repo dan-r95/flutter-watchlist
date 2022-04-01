@@ -73,13 +73,11 @@ class _FavoritesListState extends State<FavoritesList> {
                                     MovieSuggestion.fromDocument(document!));
                                 bloc.writeToalreadyWatched.add(list);
 
-                                pushToDB(
-                                    MovieSuggestion.fromDocument(document!),
-                                    'alreadyWatched',
-                                    widget.uuid);
+                                pushToDB(MovieSuggestion.fromDocument(document),
+                                    'alreadyWatched', widget.uuid);
                                 FirebaseFirestore.instance
                                     .collection('favorites')
-                                    .doc(document?.id)
+                                    .doc(document.id)
                                     .delete();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

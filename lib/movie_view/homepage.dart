@@ -22,10 +22,10 @@ class HomePage extends StatefulWidget {
   HomePage(
       {Key? key,
       required this.title,
-      required this.app,
+      this.app,
       this.uiErrorUtils,
       this.bloc,
-      this.uuid})
+      required this.uuid})
       : super(key: key);
 
   final String title;
