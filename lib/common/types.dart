@@ -19,16 +19,18 @@ class MovieSuggestion {
         _imgURL = json['Poster'],
         _year = json['Year'];
 
+/*
   MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot.value is List) {
       _id = snapshot.key;
-      _name = snapshot.value['Title'];
+      _name = snapshot.value?.Title;
       _imgURL = snapshot.value['Poster'];
       _year = snapshot.value['Year'];
       _imdbUrl = snapshot.value['imdbUrl'];
       _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
     }
   }
+*/
 
   MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;

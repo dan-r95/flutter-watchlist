@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +7,9 @@ import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/login/register.dart';
 import 'package:flutter_watchlist/login/splash.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
-
+import 'package:flutterfire_ui/auth.dart';
 import 'common/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 var firebaseConfig = {
@@ -36,6 +36,14 @@ Future<void> main() async {
     //   usePrivateDistributeTrack: false, // Defaults to false
     // );
   }
+
+  FlutterFireUIAuth.configureProviders([
+    const EmailProviderConfiguration(),
+    const PhoneProviderConfiguration(),
+    const GoogleProviderConfiguration(clientId: null),
+    const AppleProviderConfiguration(),
+  ]);
+
   runApp(App());
 }
 
@@ -74,6 +82,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final auth = FirebaseAuth.instance;
+
     return StreamBuilder<Brightness>(
         stream: bloc.currentBrightness,
         builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
@@ -93,11 +103,31 @@ class MyApp extends StatelessWidget {
                 // is not restarted.
                 primarySwatch: Colors.blue,
               ),
-              home: SplashPage(),
+              initialRoute: auth.currentUser == null ? '/' : '/profile',
               routes: <String, WidgetBuilder>{
                 '/home': (BuildContext context) => HomePage(title: 'Home'),
                 '/login': (BuildContext context) => LoginPage(),
                 '/register': (BuildContext context) => RegisterPage(),
+                '/': (context) {
+                  return SignInScreen(
+                    // no providerConfigs property - global configuration will be used instead
+                    actions: [
+                      AuthStateChangeAction<SignedIn>((context, state) {
+                        Navigator.pushReplacementNamed(context, '/profile');
+                      }),
+                    ],
+                  );
+                },
+                '/profile': (context) {
+                  return ProfileScreen(
+                    // no providerConfigs property here as well
+                    actions: [
+                      SignedOutAction((context) {
+                        Navigator.pushReplacementNamed(context, '/');
+                      }),
+                    ],
+                  );
+                },
               });
         });
   }

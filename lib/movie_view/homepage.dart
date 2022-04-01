@@ -4,7 +4,6 @@ import 'package:flutter_watchlist/movie_view/already_watched.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_watchlist/movie_view/favorites.dart';
 import 'package:flutter_watchlist/settings/settings.dart';
 import 'package:http/http.dart' as http;
@@ -45,8 +44,8 @@ class _HomePageState extends State<HomePage> {
 
   bool loading = false;
   List<MovieSuggestion> favorites = [];
-  StreamSubscription<Event> _onNoteAddedSubscription;
-  StreamSubscription<Event> _onNoteChangedSubscription;
+  //StreamSubscription<Event> _onNoteAddedSubscription;
+  //StreamSubscription<Event> _onNoteChangedSubscription;
   final notesReference = FirebaseDatabase.instance.reference();
   UiErrorUtils _uiErrorUtils;
   Bloc _bloc;
@@ -60,9 +59,11 @@ class _HomePageState extends State<HomePage> {
     //   print('Connected to second database and read ${snapshot.value}');
     // });
     favorites = [];
+    /*
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     _onNoteChangedSubscription =
         notesReference.onChildChanged.listen(_onNoteUpdated);
+*/
 
     _children.addAll([
       FavoritesList(widget.uuid, bloc),
@@ -73,11 +74,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _onNoteAddedSubscription?.cancel();
+    //_onNoteAddedSubscription?.cancel();
     super.dispose();
-    _onNoteChangedSubscription?.cancel();
+    //_onNoteChangedSubscription?.cancel();
   }
-
+/*
   void _onNoteAdded(Event event) {
     setState(() {
       favorites.add(new MovieSuggestion.fromSnapshot(event.snapshot));
@@ -91,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       favorites[favorites.indexOf(oldNoteValue)] =
           new MovieSuggestion.fromSnapshot(event.snapshot);
     });
-  }
+  }*/
 
   Future<List<MovieSuggestion>> updateSuggestions(String query) async {
     List<MovieSuggestion> list = [];
@@ -132,10 +133,6 @@ class _HomePageState extends State<HomePage> {
     }
     return list;
   }
-
-  GlobalKey key = new GlobalKey<AutoCompleteTextFieldState<MovieSuggestion>>();
-
-  AutoCompleteTextField<MovieSuggestion> textField;
 
   MovieSuggestion selected;
 
