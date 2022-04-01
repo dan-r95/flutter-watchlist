@@ -59,12 +59,12 @@ class InfoDialog extends StatelessWidget {
                           icon: Icon(Icons.video_label),
                           onPressed: () => launchYT(snapshot.data!.title),
                         ),
-                        title: Text(snapshot.data.title),
+                        title: Text(snapshot.data!.title!),
                         subtitle: Text(snapshot.data!.popularity.toString()),
                       ),
                       Text(snapshot.data!.runtime.toString()),
                       Text(snapshot.data!.voteAverage.toString()),
-                      Text(snapshot.data.overview),
+                      Text(snapshot.data!.overview!),
                       // Text(snapshot.data.director),
                       // Text("Metascore: ${snapshot.data.metascore}"),
                       // Text(snapshot.data.runtime),
@@ -101,7 +101,7 @@ class InfoDialog extends StatelessWidget {
                                                 backgroundImage:
                                                     CachedNetworkImageProvider(
                                               snapshot
-                                                  .data![index].providerName,
+                                                  .data![index].providerName!,
                                             )),
                                             // no matter how big it is, it won't overflow
 
@@ -182,7 +182,7 @@ class InfoDialog extends StatelessWidget {
                                 ));
                           }
                         },
-                        future: apiManager.searchTitle(snapshot.data.id),
+                        future: apiManager.searchTitle(snapshot.data!.id!),
                       )
                     ]);
                     //Image.network(description., fit: BoxFit.scaleDown),
@@ -246,7 +246,7 @@ class InfoDialog extends StatelessWidget {
                         ));
                   }
                 },
-                future: getMovieDescription(this.url))
+                future: getMovieDescription(this.url!))
 
             // ]))
           ])),

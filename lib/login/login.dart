@@ -18,29 +18,29 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
 
-  final UiErrorUtils uiErrorUtils;
-  final Bloc bloc;
+  final UiErrorUtils? uiErrorUtils;
+  final Bloc? bloc;
 
   @override
   _LoginPageState createState() => _LoginPageState(
-        uiErrorUtils: uiErrorUtils,
-        bloc: bloc,
+        uiErrorUtils: uiErrorUtils!,
+        bloc: bloc!,
       );
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
-  TextEditingController emailInputController;
-  TextEditingController pwdInputController;
-  UiErrorUtils _uiErrorUtils;
-  Bloc _bloc;
+  final GlobalKey<FormState>? _loginFormKey = GlobalKey<FormState>();
+  TextEditingController? emailInputController;
+  TextEditingController? pwdInputController;
+  UiErrorUtils? _uiErrorUtils;
+  Bloc? _bloc;
 
   GoogleSignInAccount? _currentUser;
 
   @override
   initState() {
     super.initState();
-    _bloc.addMessage("LOL");
+    _bloc!.addMessage("LOL");
     emailInputController = new TextEditingController();
     pwdInputController = new TextEditingController();
   }
@@ -128,8 +128,8 @@ class _LoginPageState extends State<LoginPage> {
                                 uuid: currentUser.user!.uid,
                               )))
                 })
-            .catchError((err) => _bloc.addMessage(err)))
-        .catchError((err) => (_bloc.addMessage(err)));
+            .catchError((err) => _bloc?.addMessage(err)))
+        .catchError((err) => (_bloc?.addMessage(err)));
   }
 
   void signOutGoogle() async {
@@ -143,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
           title: Text("Login"),
         ),
         body: Builder(builder: (context) {
-          _uiErrorUtils.subscribeToSnackBarStream(
+          _uiErrorUtils?.subscribeToSnackBarStream(
               context, bloc.snackBarSubject);
           return Container(
               margin: MediaQuery.of(context).size.width > 1400
@@ -185,12 +185,12 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       child: Text("Login"),
                       onPressed: () => {
-                        if (_loginFormKey.currentState!.validate())
+                        if (_loginFormKey!.currentState!.validate())
                           {
                             FirebaseAuth.instance
                                 .signInWithEmailAndPassword(
-                                    email: emailInputController.text.trim(),
-                                    password: pwdInputController.text.trim())
+                                    email: emailInputController!.text.trim(),
+                                    password: pwdInputController!.text.trim())
                                 .then((currentUser) => FirebaseFirestore
                                     .instance
                                     .collection("users")

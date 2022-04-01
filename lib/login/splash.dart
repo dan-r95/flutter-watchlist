@@ -9,18 +9,18 @@ import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 class SplashPage extends StatefulWidget {
   SplashPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
-  final UiErrorUtils uiErrorUtils;
-  final Bloc bloc;
+  final UiErrorUtils? uiErrorUtils;
+  final Bloc? bloc;
   @override
-  _SplashPageState createState() => _SplashPageState(uiErrorUtils, bloc);
+  _SplashPageState createState() => _SplashPageState(uiErrorUtils!, bloc!);
 }
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  UiErrorUtils uiErrorUtils;
-  Bloc bloc;
+  UiErrorUtils? uiErrorUtils;
+  Bloc? bloc;
 
   _SplashPageState(this.uiErrorUtils, this.bloc) {
     bloc = bloc;
@@ -28,12 +28,12 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Duration duration = new Duration(seconds: 2);
-  Timer timerAnim;
+  Timer? timerAnim;
 
   List<ColorTween> tweenAnimations = [];
   int tweenIndex = 0;
 
-  AnimationController controller;
+  AnimationController? controller;
   List<Animation<Color?>> colorAnimations = [];
 
   List<Color> colors = [Colors.green, Colors.red, Colors.white, Colors.blue];
@@ -72,7 +72,7 @@ class _SplashPageState extends State<SplashPage>
                                 )))
                   }
               })
-          .catchError((err) => {bloc.addMessage(err)});
+          .catchError((err) => {bloc?.addMessage(err)});
     }
 
     super.initState();
@@ -92,7 +92,7 @@ class _SplashPageState extends State<SplashPage>
 
     for (int i = 0; i < colors.length; i++) {
       Animation<Color?> animation = tweenAnimations[i].animate(CurvedAnimation(
-          parent: controller,
+          parent: controller!,
           curve: Interval((1 / colors.length) * (i + 1) - 0.05,
               (1 / colors.length) * (i + 1),
               curve: Curves.linear)));
@@ -105,18 +105,18 @@ class _SplashPageState extends State<SplashPage>
     timerAnim = Timer.periodic(duration, (Timer t) {
       // setState(() {
       tweenIndex = (tweenIndex + 1) % colors.length;
-      bloc.animationIndexController.add(tweenIndex);
+      bloc?.animationIndexController.add(tweenIndex);
 
       //  });
     });
-    uiErrorUtils.subscribeToSnackBarStream(context, bloc.snackBarSubject);
-    controller.forward();
+    uiErrorUtils?.subscribeToSnackBarStream(context, bloc!.snackBarSubject);
+    controller?.forward();
   }
 
   @override
   void dispose() {
-    timerAnim.cancel();
-    controller.stop();
+    timerAnim?.cancel();
+    controller?.stop();
     super.dispose();
   }
 

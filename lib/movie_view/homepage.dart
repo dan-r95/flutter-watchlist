@@ -25,19 +25,19 @@ class HomePage extends StatefulWidget {
       this.app,
       this.uiErrorUtils,
       this.bloc,
-      required this.uuid})
+      this.uuid})
       : super(key: key);
 
   final String title;
-  final String uuid;
-  final FirebaseApp app;
-  final UiErrorUtils uiErrorUtils;
-  final Bloc bloc;
+  final String? uuid;
+  final FirebaseApp? app;
+  final UiErrorUtils? uiErrorUtils;
+  final Bloc? bloc;
 
   @override
   _HomePageState createState() => _HomePageState(
-        uiErrorUtils: uiErrorUtils,
-        bloc: bloc,
+        uiErrorUtils: uiErrorUtils!,
+        bloc: bloc!,
       );
 }
 
@@ -51,8 +51,8 @@ class _HomePageState extends State<HomePage> {
   //StreamSubscription<Event> _onNoteAddedSubscription;
   //StreamSubscription<Event> _onNoteChangedSubscription;
   final notesReference = FirebaseDatabase.instance.reference();
-  UiErrorUtils _uiErrorUtils;
-  Bloc _bloc;
+  UiErrorUtils? _uiErrorUtils;
+  Bloc? _bloc;
 
   List<MovieSuggestion> alreadyWatched = [];
 
@@ -70,8 +70,8 @@ class _HomePageState extends State<HomePage> {
 */
 
     _children.addAll([
-      FavoritesList(widget.uuid, bloc),
-      AlreadyWatchedList(widget.uuid, bloc),
+      FavoritesList(widget.uuid!, bloc),
+      AlreadyWatchedList(widget.uuid!, bloc),
       SettingsRoute(title: widget.title)
     ]);
   }
@@ -138,9 +138,9 @@ class _HomePageState extends State<HomePage> {
     return list;
   }
 
-  MovieSuggestion selected;
+  MovieSuggestion? selected;
 
-  _HomePageState({Bloc? bloc, UiErrorUtils? uiErrorUtils}) {
+  _HomePageState({required Bloc bloc, required UiErrorUtils uiErrorUtils}) {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -155,8 +155,8 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    _bloc = bloc!;
-    _uiErrorUtils = uiErrorUtils!;
+    _bloc = bloc;
+    _uiErrorUtils = uiErrorUtils;
   }
 
   final TextEditingController _filter = new TextEditingController();
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Watchlist');
 
-  MovieDescription description;
+  MovieDescription? description;
 
   void _searchPressed() {
     setState(() {
@@ -213,9 +213,9 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AddMovieDialog(
           suggestion: suggestion,
-          bloc: _bloc,
+          bloc: _bloc!,
           favorites: favorites,
-          uuid: widget.uuid,
+          uuid: widget.uuid!,
         );
       },
     );
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
-    _uiErrorUtils.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
+    _uiErrorUtils?.subscribeToSnackBarStream(context, _bloc!.snackBarSubject);
 
     return Scaffold(
         appBar: new AppBar(
@@ -251,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                 : EdgeInsets.all(0),
             child: Builder(
               builder: (context) {
-                _uiErrorUtils.subscribeToSnackBarStream(
+                _uiErrorUtils?.subscribeToSnackBarStream(
                     context, bloc.snackBarSubject);
                 return StreamBuilder(
                     stream: tabBloc.getIndex,

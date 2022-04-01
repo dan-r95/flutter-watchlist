@@ -6,28 +6,28 @@ import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 
 class RegisterPage extends StatefulWidget {
-  RegisterPage({Key key, this.bloc, this.uiErrorUtils}) : super(key: key);
-  final UiErrorUtils uiErrorUtils;
-  final Bloc bloc;
+  RegisterPage({Key? key, this.bloc, this.uiErrorUtils}) : super(key: key);
+  final UiErrorUtils? uiErrorUtils;
+  final Bloc? bloc;
   @override
   _RegisterPageState createState() => _RegisterPageState(
-        uiErrorUtils: uiErrorUtils,
-        bloc: bloc,
+        uiErrorUtils: uiErrorUtils!,
+        bloc: bloc!,
       );
 }
 
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
-  TextEditingController firstNameInputController;
-  TextEditingController lastNameInputController;
-  TextEditingController emailInputController;
-  TextEditingController pwdInputController;
-  TextEditingController confirmPwdInputController;
+  TextEditingController? firstNameInputController;
+  TextEditingController? lastNameInputController;
+  TextEditingController? emailInputController;
+  TextEditingController? pwdInputController;
+  TextEditingController? confirmPwdInputController;
 
-  UiErrorUtils _uiErrorUtils;
-  Bloc _bloc;
+  UiErrorUtils? _uiErrorUtils;
+  Bloc? _bloc;
 
-  _RegisterPageState({UiErrorUtils uiErrorUtils, Bloc bloc}) {
+  _RegisterPageState({required UiErrorUtils uiErrorUtils, required Bloc bloc}) {
     _bloc = bloc;
     _uiErrorUtils = uiErrorUtils;
   }
@@ -68,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
           title: Text("Register"),
         ),
         body: Builder(builder: (context) {
-          _uiErrorUtils.subscribeToSnackBarStream(
+          _uiErrorUtils?.subscribeToSnackBarStream(
               context, bloc.snackBarSubject);
           return Container(
               margin: MediaQuery.of(context).size.width > 1400
@@ -97,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: lastNameInputController,
                         autofillHints: [AutofillHints.familyName],
                         validator: (value) {
-                          if (value.length < 3) {
+                          if (value!.length < 3) {
                             return "Please enter a valid last name.";
                           }
                           return "";
@@ -128,21 +128,21 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Text("Register"),
                       onPressed: () {
                         if (_registerFormKey.currentState!.validate()) {
-                          if (pwdInputController.text ==
-                              confirmPwdInputController.text) {
+                          if (pwdInputController!.text ==
+                              confirmPwdInputController!.text) {
                             FirebaseAuth.instance
                                 .createUserWithEmailAndPassword(
-                                    email: emailInputController.text,
-                                    password: pwdInputController.text)
+                                    email: emailInputController!.text,
+                                    password: pwdInputController!.text)
                                 .then((currentUser) => FirebaseFirestore
                                     .instance
                                     .collection("users")
                                     .doc(currentUser.user?.uid)
                                     .set({
                                       "uid": currentUser.user?.uid,
-                                      "fname": firstNameInputController.text,
-                                      "surname": lastNameInputController.text,
-                                      "email": emailInputController.text,
+                                      "fname": firstNameInputController!.text,
+                                      "surname": lastNameInputController!.text,
+                                      "email": emailInputController!.text,
                                     })
                                     .then((result) => {
                                           Navigator.pushAndRemoveUntil(
@@ -151,22 +151,22 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   builder: (context) =>
                                                       HomePage(
                                                         title:
-                                                            firstNameInputController
+                                                            firstNameInputController!
                                                                     .text +
                                                                 "'s Tasks",
                                                         uuid: currentUser
                                                             .user!.uid,
                                                       )),
                                               (_) => false),
-                                          firstNameInputController.clear(),
-                                          lastNameInputController.clear(),
-                                          emailInputController.clear(),
-                                          pwdInputController.clear(),
-                                          confirmPwdInputController.clear()
+                                          firstNameInputController!.clear(),
+                                          lastNameInputController!.clear(),
+                                          emailInputController!.clear(),
+                                          pwdInputController!.clear(),
+                                          confirmPwdInputController!.clear()
                                         })
                                     .catchError(
-                                        (err) => (_bloc.addMessage(err))))
-                                .catchError((err) => _bloc.addMessage(err));
+                                        (err) => (_bloc!.addMessage(err))))
+                                .catchError((err) => _bloc!.addMessage(err));
                           } else {
                             showDialog(
                                 context: context,

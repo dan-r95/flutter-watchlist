@@ -1,8 +1,8 @@
 class SearchResults {
-  int page;
-  List<Results> results;
-  int totalPages;
-  int totalResults;
+  int? page;
+  List<Results>? results;
+  int? totalPages;
+  int? totalResults;
 
   SearchResults(
       {required this.page,
@@ -15,7 +15,7 @@ class SearchResults {
     if (json['results'] != null) {
       results = [];
       json['results'].forEach((v) {
-        results.add(new Results.fromJson(v));
+        results?.add(new Results.fromJson(v));
       });
     }
     totalPages = json['total_pages'];
@@ -26,7 +26,7 @@ class SearchResults {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['page'] = this.page;
     if (this.results != null) {
-      data['results'] = this.results.map((v) => v.toJson()).toList();
+      data['results'] = this.results?.map((v) => v.toJson()).toList();
     }
     data['total_pages'] = this.totalPages;
     data['total_results'] = this.totalResults;
@@ -35,20 +35,20 @@ class SearchResults {
 }
 
 class Results {
-  bool adult;
-  String backdropPath;
-  List<int> genreIds;
-  int id;
-  String originalLanguage;
-  String originalTitle;
-  String overview;
-  double popularity;
-  String posterPath;
-  String releaseDate;
-  String title;
-  bool video;
-  double voteAverage;
-  int voteCount;
+  bool? adult;
+  String? backdropPath;
+  List<int>? genreIds;
+  int? id;
+  String? originalLanguage;
+  String? originalTitle;
+  String? overview;
+  double? popularity;
+  String? posterPath;
+  String? releaseDate;
+  String? title;
+  bool? video;
+  double? voteAverage;
+  int? voteCount;
 
   Results(
       {required this.adult,

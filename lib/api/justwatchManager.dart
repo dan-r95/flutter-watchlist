@@ -17,7 +17,7 @@ class JustWatchManager {
     JustWatchResponse movieResponse = await getMovie(id);
 
     if (movieResponse.offers != null) {
-      for (var company in movieResponse.offers) {
+      for (var company in movieResponse.offers!) {
         if (company.providerId == 10 ||
             company.providerId == 8 ||
             company.providerId == 29) {}
@@ -34,7 +34,7 @@ class JustWatchManager {
     ));
     var movieWithIt = Providers.fromJson(jsonDecode(response.body));
 
-    return movieWithIt.results.languageRes.flatrate;
+    return Future.value(movieWithIt.results?.languageRes?.flatrate);
     //return getAvailability(movieWithIt.id);
   }
 }

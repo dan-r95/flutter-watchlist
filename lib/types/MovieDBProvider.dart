@@ -1,6 +1,6 @@
 class Providers {
-  int id;
-  Results results;
+  int? id;
+  Results? results;
 
   Providers({required this.id, required this.results});
 
@@ -14,14 +14,14 @@ class Providers {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     if (this.results != null) {
-      data['results'] = this.results.toJson();
+      data['results'] = this.results?.toJson();
     }
     return data;
   }
 }
 
 class Results {
-  LanguageResults languageRes;
+  LanguageResults? languageRes;
 
   Results({
     this.languageRes,
@@ -37,7 +37,7 @@ class Results {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
     if (this.languageRes != null) {
-      data['US'] = this.languageRes.toJson();
+      data['US'] = this.languageRes?.toJson();
     }
     // if (this.zA != null) {
     //   data['DE'] = this.zA.toJson();
@@ -47,8 +47,8 @@ class Results {
 }
 
 class LanguageResults {
-  String link;
-  List<Flatrate> flatrate;
+  String? link;
+  List<Flatrate>? flatrate;
 
   LanguageResults({this.link, this.flatrate});
 
@@ -57,7 +57,7 @@ class LanguageResults {
     if (json['flatrate'] != null) {
       flatrate = [];
       json['flatrate'].forEach((v) {
-        flatrate.add(new Flatrate.fromJson(v));
+        flatrate?.add(new Flatrate.fromJson(v));
       });
     }
   }
@@ -66,17 +66,17 @@ class LanguageResults {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['link'] = this.link;
     if (this.flatrate != null) {
-      data['flatrate'] = this.flatrate.map((v) => v.toJson()).toList();
+      data['flatrate'] = this.flatrate?.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Flatrate {
-  int displayPriority;
-  String logoPath;
-  int providerId;
-  String providerName;
+  int? displayPriority;
+  String? logoPath;
+  int? providerId;
+  String? providerName;
 
   Flatrate(
       {this.displayPriority,

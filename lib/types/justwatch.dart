@@ -1,26 +1,26 @@
 class JustWatchResponse {
-  String jwEntityId;
-  int id;
-  String title;
-  String fullPath;
-  FullPaths fullPaths;
-  String poster;
-  List<Backdrops> backdrops;
-  String shortDescription;
-  int originalReleaseYear;
-  double tmdbPopularity;
-  String objectType;
-  String originalTitle;
-  String localizedReleaseDate;
-  List<Offers> offers;
-  List<Clips> clips;
-  List<Scoring> scoring;
-  List<Credits> credits;
-  List<ExternalIds> externalIds;
-  List<int> genreIds;
-  String ageCertification;
-  int runtime;
-  String cinemaReleaseDate;
+  String? jwEntityId;
+  int? id;
+  String? title;
+  String? fullPath;
+  FullPaths? fullPaths;
+  String? poster;
+  List<Backdrops>? backdrops;
+  String? shortDescription;
+  int? originalReleaseYear;
+  double? tmdbPopularity;
+  String? objectType;
+  String? originalTitle;
+  String? localizedReleaseDate;
+  List<Offers>? offers;
+  List<Clips>? clips;
+  List<Scoring>? scoring;
+  List<Credits>? credits;
+  List<ExternalIds>? externalIds;
+  List<int>? genreIds;
+  String? ageCertification;
+  int? runtime;
+  String? cinemaReleaseDate;
 
   JustWatchResponse(
       {required this.jwEntityId,
@@ -58,7 +58,7 @@ class JustWatchResponse {
     if (json['backdrops'] != null) {
       backdrops = [];
       json['backdrops'].forEach((v) {
-        backdrops.add(new Backdrops.fromJson(v));
+        backdrops?.add(new Backdrops.fromJson(v));
       });
     }
     shortDescription = json['short_description'];
@@ -70,31 +70,31 @@ class JustWatchResponse {
     if (json['offers'] != null) {
       offers = [];
       json['offers'].forEach((v) {
-        offers.add(new Offers.fromJson(v));
+        offers?.add(new Offers.fromJson(v));
       });
     }
     if (json['clips'] != null) {
       clips = [];
       json['clips'].forEach((v) {
-        clips.add(new Clips.fromJson(v));
+        clips?.add(new Clips.fromJson(v));
       });
     }
     if (json['scoring'] != null) {
       scoring = [];
       json['scoring'].forEach((v) {
-        scoring.add(new Scoring.fromJson(v));
+        scoring?.add(new Scoring.fromJson(v));
       });
     }
     if (json['credits'] != null) {
       credits = [];
       json['credits'].forEach((v) {
-        credits.add(new Credits.fromJson(v));
+        credits?.add(new Credits.fromJson(v));
       });
     }
     if (json['external_ids'] != null) {
       externalIds = [];
       json['external_ids'].forEach((v) {
-        externalIds.add(new ExternalIds.fromJson(v));
+        externalIds?.add(new ExternalIds.fromJson(v));
       });
     }
     genreIds = json['genre_ids'].cast<int>();
@@ -110,11 +110,11 @@ class JustWatchResponse {
     data['title'] = this.title;
     data['full_path'] = this.fullPath;
     if (this.fullPaths != null) {
-      data['full_paths'] = this.fullPaths.toJson();
+      data['full_paths'] = this.fullPaths?.toJson();
     }
     data['poster'] = this.poster;
     if (this.backdrops != null) {
-      data['backdrops'] = this.backdrops.map((v) => v.toJson()).toList();
+      data['backdrops'] = this.backdrops?.map((v) => v.toJson()).toList();
     }
     data['short_description'] = this.shortDescription;
     data['original_release_year'] = this.originalReleaseYear;
@@ -123,19 +123,19 @@ class JustWatchResponse {
     data['original_title'] = this.originalTitle;
     data['localized_release_date'] = this.localizedReleaseDate;
     if (this.offers != null) {
-      data['offers'] = this.offers.map((v) => v.toJson()).toList();
+      data['offers'] = this.offers?.map((v) => v.toJson()).toList();
     }
     if (this.clips != null) {
-      data['clips'] = this.clips.map((v) => v.toJson()).toList();
+      data['clips'] = this.clips?.map((v) => v.toJson()).toList();
     }
     if (this.scoring != null) {
-      data['scoring'] = this.scoring.map((v) => v.toJson()).toList();
+      data['scoring'] = this.scoring?.map((v) => v.toJson()).toList();
     }
     if (this.credits != null) {
-      data['credits'] = this.credits.map((v) => v.toJson()).toList();
+      data['credits'] = this.credits?.map((v) => v.toJson()).toList();
     }
     if (this.externalIds != null) {
-      data['external_ids'] = this.externalIds.map((v) => v.toJson()).toList();
+      data['external_ids'] = this.externalIds?.map((v) => v.toJson()).toList();
     }
     data['genre_ids'] = this.genreIds;
     data['age_certification'] = this.ageCertification;
@@ -146,7 +146,7 @@ class JustWatchResponse {
 }
 
 class FullPaths {
-  String movieDetailOverview;
+  String? movieDetailOverview;
 
   FullPaths({required this.movieDetailOverview});
 
@@ -162,7 +162,7 @@ class FullPaths {
 }
 
 class Backdrops {
-  String backdropUrl;
+  String? backdropUrl;
 
   Backdrops({required this.backdropUrl});
 
@@ -178,21 +178,21 @@ class Backdrops {
 }
 
 class Offers {
-  String monetizationType;
-  int providerId;
-  double retailPrice;
-  String currency;
-  Urls urls;
-  String presentationType;
-  String dateProviderId;
-  String dateCreated;
-  double lastChangeRetailPrice;
-  double lastChangeDifference;
-  double lastChangePercent;
-  String lastChangeDate;
-  String lastChangeDateProviderId;
-  List<String> audioLanguages;
-  List<String> subtitleLanguages;
+  String? monetizationType;
+  int? providerId;
+  double? retailPrice;
+  String? currency;
+  Urls? urls;
+  String? presentationType;
+  String? dateProviderId;
+  String? dateCreated;
+  double? lastChangeRetailPrice;
+  double? lastChangeDifference;
+  double? lastChangePercent;
+  String? lastChangeDate;
+  String? lastChangeDateProviderId;
+  List<String>? audioLanguages;
+  List<String>? subtitleLanguages;
 
   Offers(
       {required this.monetizationType,
@@ -241,7 +241,7 @@ class Offers {
     data['retail_price'] = this.retailPrice;
     data['currency'] = this.currency;
     if (this.urls != null) {
-      data['urls'] = this.urls.toJson();
+      data['urls'] = this.urls?.toJson();
     }
     data['presentation_type'] = this.presentationType;
     data['date_provider_id'] = this.dateProviderId;
@@ -258,10 +258,10 @@ class Offers {
 }
 
 class Urls {
-  String standardWeb;
-  String deeplinkAndroidTv;
-  String deeplinkFireTv;
-  String deeplinkTvos;
+  String? standardWeb;
+  String? deeplinkAndroidTv;
+  String? deeplinkFireTv;
+  String? deeplinkTvos;
 
   Urls(
       {required this.standardWeb,
@@ -287,10 +287,10 @@ class Urls {
 }
 
 class Clips {
-  String type;
-  String provider;
-  String externalId;
-  String name;
+  String? type;
+  String? provider;
+  String? externalId;
+  String? name;
 
   Clips(
       {required this.type,
@@ -316,8 +316,8 @@ class Clips {
 }
 
 class Scoring {
-  String providerType;
-  double value;
+  String? providerType;
+  double? value;
 
   Scoring({required this.providerType, required this.value});
 
@@ -335,10 +335,10 @@ class Scoring {
 }
 
 class Credits {
-  String role;
-  String characterName;
-  int personId;
-  String name;
+  String? role;
+  String? characterName;
+  int? personId;
+  String? name;
 
   Credits(
       {required this.role,
@@ -364,8 +364,8 @@ class Credits {
 }
 
 class ExternalIds {
-  String provider;
-  String externalId;
+  String? provider;
+  String? externalId;
 
   ExternalIds({required this.provider, required this.externalId});
 

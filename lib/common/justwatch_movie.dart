@@ -1,15 +1,15 @@
 class JustWatchMovie {
-  int id;
-  String title;
-  String fullPath;
-  String poster;
-  int originalReleaseYear;
-  String objectType;
-  String originalTitle;
-  List<Offers> offers;
-  int showId;
-  String showTitle;
-  int seasonNumber;
+  int? id;
+  String? title;
+  String? fullPath;
+  String? poster;
+  int? originalReleaseYear;
+  String? objectType;
+  String? originalTitle;
+  List<Offers>? offers;
+  int? showId;
+  String? showTitle;
+  int? seasonNumber;
 
   JustWatchMovie(
       {required this.id,
@@ -35,7 +35,7 @@ class JustWatchMovie {
     if (json['offers'] != null) {
       offers = [];
       json['offers'].forEach((v) {
-        offers.add(new Offers.fromJson(v));
+        offers?.add(new Offers.fromJson(v));
       });
     }
     showId = json['show_id'];
@@ -53,7 +53,7 @@ class JustWatchMovie {
     data['object_type'] = this.objectType;
     data['original_title'] = this.originalTitle;
     if (this.offers != null) {
-      data['offers'] = this.offers.map((v) => v.toJson()).toList();
+      data['offers'] = this.offers?.map((v) => v.toJson()).toList();
     }
     data['show_id'] = this.showId;
     data['show_title'] = this.showTitle;
@@ -66,24 +66,24 @@ class Language {
   Language();
   Language.fromJson(Map<String, dynamic> json);
 
-  Map<String, dynamic> toJson() {}
+  Map<String, dynamic>? toJson() {}
 }
 
 class Offers {
-  String type;
-  String monetizationType;
-  int providerId;
-  String currency;
-  Urls urls;
-  List<Language> subtitleLanguages;
-  List<Language> audioLanguages;
-  String presentationType;
-  int elementCount;
-  int newElementCount;
-  String dateCreatedProviderId;
-  String dateCreated;
-  String dateCreatedTimestamp;
-  String country;
+  String? type;
+  String? monetizationType;
+  int? providerId;
+  String? currency;
+  Urls? urls;
+  List<Language>? subtitleLanguages;
+  List<Language>? audioLanguages;
+  String? presentationType;
+  int? elementCount;
+  int? newElementCount;
+  String? dateCreatedProviderId;
+  String? dateCreated;
+  String? dateCreatedTimestamp;
+  String? country;
 
   Offers(
       {required this.type,
@@ -110,13 +110,13 @@ class Offers {
     if (json['subtitle_languages'] != null) {
       subtitleLanguages = [];
       json['subtitle_languages'].forEach((v) {
-        subtitleLanguages.add(Language());
+        subtitleLanguages?.add(Language());
       });
     }
     if (json['audio_languages'] != null) {
       audioLanguages = [];
       json['audio_languages'].forEach((v) {
-        audioLanguages.add(Language());
+        audioLanguages?.add(Language());
       });
     }
     presentationType = json['presentation_type'];
@@ -135,15 +135,15 @@ class Offers {
     data['provider_id'] = this.providerId;
     data['currency'] = this.currency;
     if (this.urls != null) {
-      data['urls'] = this.urls.toJson();
+      data['urls'] = this.urls?.toJson();
     }
     if (this.subtitleLanguages != null) {
       data['subtitle_languages'] =
-          this.subtitleLanguages.map((v) => v.toJson()).toList();
+          this.subtitleLanguages?.map((v) => v.toJson()).toList();
     }
     if (this.audioLanguages != null) {
       data['audio_languages'] =
-          this.audioLanguages.map((v) => v.toJson()).toList();
+          this.audioLanguages?.map((v) => v.toJson()).toList();
     }
     data['presentation_type'] = this.presentationType;
     data['element_count'] = this.elementCount;
@@ -157,12 +157,12 @@ class Offers {
 }
 
 class Urls {
-  String standardWeb;
-  String deeplinkAndroid;
-  String deeplinkIos;
-  String deeplinkAndroidTv;
-  String deeplinkFireTv;
-  String deeplinkTvos;
+  String? standardWeb;
+  String? deeplinkAndroid;
+  String? deeplinkIos;
+  String? deeplinkAndroidTv;
+  String? deeplinkFireTv;
+  String? deeplinkTvos;
 
   Urls(
       {required this.standardWeb,

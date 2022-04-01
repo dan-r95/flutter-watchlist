@@ -4,12 +4,12 @@ Map<int, String> companyList = {8: "Netflix", 10: "Amazon", 29: "Sky"};
 
 class MovieSuggestion {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
-  String _imdbUrl;
-  String _name, _imgURL;
-  double _stars;
-  String _year;
-  String _id;
-  DateTime _added;
+  String? _imdbUrl;
+  String? _name, _imgURL;
+  double? _stars;
+  String? _year;
+  String? _id;
+  DateTime? _added;
   MovieSuggestion(this._stars, this._name, this._imgURL);
 
   MovieSuggestion.fromMappedJson(Map<String, dynamic> json)
@@ -41,29 +41,29 @@ class MovieSuggestion {
     _added = DateTime.fromMillisecondsSinceEpoch(data['added']);
   }
 
-  String get id => _id;
-  double get stars => _stars;
-  String get year => _year;
-  String get name => _name;
-  String get imdbUrl => _imdbUrl;
-  String get imgURL => _imgURL;
-  DateTime get added => _added;
+  String get id => _id!;
+  double get stars => _stars!;
+  String get year => _year!;
+  String get name => _name!;
+  String get imdbUrl => _imdbUrl!;
+  String get imgURL => _imgURL!;
+  DateTime get added => _added!;
 }
 
 // class which models the OPEN DB movie response
 class MovieDescription {
-  String title;
-  String year;
-  String rated;
-  String released;
-  String runtime;
-  String genre;
-  String director;
-  String metascore;
-  String imdbRating;
-  String country;
-  String actors;
-  String plot;
+  String? title;
+  String? year;
+  String? rated;
+  String? released;
+  String? runtime;
+  String? genre;
+  String? director;
+  String? metascore;
+  String? imdbRating;
+  String? country;
+  String? actors;
+  String? plot;
 
   MovieDescription();
 
