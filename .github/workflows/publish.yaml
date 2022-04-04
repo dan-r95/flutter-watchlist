@@ -2,7 +2,7 @@ name: Gh-Pages
 # borrowed from https://github.com/bluefireteam/flutter-gh-pages
 on:
   push:
-    branches: [ android ]
+    branches: [ master ]
 
 
 jobs:
