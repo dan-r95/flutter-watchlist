@@ -5,23 +5,23 @@ import 'package:flutter/material.dart';
 
 class Bloc {
   // UI Feedback Subjects
-  final PublishSubject<String> snackBarSubject = PublishSubject<String>();
+  final PublishSubject<String>? snackBarSubject = PublishSubject<String>();
 
   //  some function that gets data from network
   getDataRequest() async {
     try {
       // get request code here
     } catch (error) {
-      this.snackBarSubject.add(error.toString());
+      this.snackBarSubject?.add(error.toString());
     }
   }
 
   void addMessage(String msg) {
-    this.snackBarSubject.add(msg);
+    this.snackBarSubject?.add(msg);
   }
 
   void dispose() {
-    snackBarSubject.close();
+    snackBarSubject?.close();
     animationIndexController.close();
     brightnessController.close();
     alreadyWatchedListController.close();

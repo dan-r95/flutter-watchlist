@@ -4,16 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
-import 'package:flutter_watchlist/build_info.dart';
-
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
+import 'package:flutter_watchlist/login/build_info.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
@@ -22,10 +16,7 @@ class LoginPage extends StatefulWidget {
   final Bloc? bloc;
 
   @override
-  _LoginPageState createState() => _LoginPageState(
-        uiErrorUtils: uiErrorUtils!,
-        bloc: bloc!,
-      );
+  _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -40,222 +31,65 @@ class _LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
-    _bloc!.addMessage("LOL");
-    emailInputController = new TextEditingController();
-    pwdInputController = new TextEditingController();
-  }
-
-  _LoginPageState({required UiErrorUtils uiErrorUtils, required Bloc bloc}) {
-    _bloc = bloc;
-    _uiErrorUtils = uiErrorUtils;
-  }
-
-  String? emailValidator(String? value) {
-    String pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value!)) {
-      return 'Email format is invalid';
-    } else {
-      return "";
-    }
-  }
-
-  String? pwdValidator(String? value) {
-    if (value!.length < 6) {
-      return 'Password must be longer than 6 characters';
-    } else {
-      return "";
-    }
-  }
-
-  Widget _signInButton() {
-    return OutlinedButton(
-      onPressed: () async {
-        await signInWithGoogle();
-      },
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image(image: AssetImage("assets/google_logo.png"), height: 25.0),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Text(
-                'Sign in with Google',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount? googleSignInAccount = await GoogleSignIn()
-        .signIn()
-        .catchError((err) => bloc.addMessage(err.toString()));
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount!.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication.accessToken,
-      idToken: googleSignInAuthentication.idToken,
-    );
-
-    // assert(!user.isAnonymous);
-    // assert(await user.getIdToken() != null);
-
-    FirebaseAuth.instance
-        .signInWithCredential(credential)
-        .then((currentUser) => FirebaseFirestore.instance
-            .collection("users")
-            .doc(currentUser.user?.uid)
-            .get()
-            .then((DocumentSnapshot result) => {
-                  print(result),
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(
-                                title: result["fname"] + "'s Tasks",
-                                uuid: currentUser.user!.uid,
-                              )))
-                })
-            .catchError((err) => _bloc?.addMessage(err)))
-        .catchError((err) => (_bloc?.addMessage(err)));
-  }
-
-  void signOutGoogle() async {
-    await GoogleSignIn().signOut();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Login"),
-        ),
-        body: Builder(builder: (context) {
-          _uiErrorUtils?.subscribeToSnackBarStream(
-              context, bloc.snackBarSubject);
-          return Container(
-              margin: MediaQuery.of(context).size.width > 1400
-                  ? EdgeInsets.fromLTRB(200, 0, 200, 0)
-                  : EdgeInsets.all(0),
-              child: SingleChildScrollView(
-                  child: Form(
-                key: _loginFormKey,
-                child: Column(
-                  children: <Widget>[
-                    AutofillGroup(
-                        child: Column(children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Email*',
-                            hintText: "john.doe@gmail.com"),
-                        controller: emailInputController,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: emailValidator,
-                        autofillHints: [AutofillHints.email],
-                        autofocus: true,
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Password*', hintText: "********"),
-                        controller: pwdInputController,
-                        obscureText: true,
-                        validator: pwdValidator,
-                        autofillHints: [AutofillHints.password],
-                      )
-                    ])),
-                    SizedBox(
-                      height: 15,
+    return SignInScreen(
+      subtitleBuilder: (context, action) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            action == AuthAction.signIn
+                ? 'Please sign in to continue.'
+                : 'Please create an account to continue',
+          ),
+        );
+      },
+      footerBuilder: (context, _) {
+        return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(children: <Widget>[
+              Text(buildTime),
+              Text(buildCommit),
+            ]));
+      },
+      sideBuilder: (context, constraints) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: AspectRatio(
+              aspectRatio: 1, child: Image.asset("../assets/watchlist.png")),
+        );
+      },
+      headerBuilder: (context, constraints, _) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Image.asset("../assets/watchlist.png"),
+          ),
+        );
+      },
+      // no providerConfigs property - global configuration will be used instead
+      actions: [
+        AuthStateChangeAction<SignedIn>((context, state) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }),
+        ForgotPasswordAction((context, state) => {
+              ForgotPasswordScreen(
+                headerBuilder: (context, constraints, shrinkOffset) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20).copyWith(top: 40),
+                    child: Icon(
+                      Icons.lock,
+                      color: Colors.blue,
+                      size: constraints.maxWidth / 4 * (1 - shrinkOffset),
                     ),
-                    _signInButton(),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    ElevatedButton(
-                      child: Text("Login"),
-                      onPressed: () => {
-                        if (_loginFormKey!.currentState!.validate())
-                          {
-                            FirebaseAuth.instance
-                                .signInWithEmailAndPassword(
-                                    email: emailInputController!.text.trim(),
-                                    password: pwdInputController!.text.trim())
-                                .then((currentUser) => FirebaseFirestore
-                                    .instance
-                                    .collection("users")
-                                    .doc(currentUser.user?.uid)
-                                    .get()
-                                    .then((DocumentSnapshot result) => {
-                                          tabBloc.updateIndex(0),
-                                          Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      HomePage(
-                                                        title: result["fname"] +
-                                                            "'s Tasks",
-                                                        uuid: currentUser
-                                                            .user!.uid,
-                                                      )))
-                                        })
-                                    .catchError((err) =>
-                                        bloc.addMessage(err.toString())))
-                                .catchError(
-                                    (err) => (bloc.addMessage(err.toString())))
-                          }
-                      },
-                    ),
-                    Text("Don't have an account yet?"),
-                    TextButton(
-                      child: Text("Register here!"),
-                      onPressed: () =>
-                          {Navigator.pushNamed(context, "/register")},
-                    ),
-                    /* ElevatedButton(
-                        child: Text("Or Continue without an account!"),
-                        onPressed: () => {
-                              FirebaseAuth.instance
-                                  .signInAnonymously()
-                                  .then(
-                                      (currentUser) =>
-                                          FirebaseFirestore.instance
-                                              .collection("users")
-                                              .doc(currentUser.user.uid)
-                                              .get()
-                                              .then(
-                                                  (DocumentSnapshot result) => {
-                                                        Navigator
-                                                            .pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            HomePage(
-                                                                              title: result.data == null ? "Temp account" : result["fname"] + "'s Tasks",
-                                                                              uuid: currentUser.user.uid,
-                                                                            )))
-                                                      })
-                                              .catchError((err) => bloc
-                                                  .addMessage(err.toString())))
-                                  .catchError((err) =>
-                                      (bloc.addMessage(err.toString())))
-                            }), */
-                    Text(buildTime),
-                    Text(buildCommit),
-                  ],
-                ),
-              )));
-        }));
+                  );
+                },
+              )
+            })
+      ],
+    );
   }
 }

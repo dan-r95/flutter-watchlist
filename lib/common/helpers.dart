@@ -29,7 +29,7 @@ void launchYT(url) async {
 }
 
 //TODO use https://pub.dev/packages/flutter_typeahead
-showInfoDialog(BuildContext context, String url, Bloc _bloc) {
+showInfoDialog(BuildContext context, String url, Bloc? _bloc) {
   //print(description.title);
   return showDialog<void>(
     context: context,

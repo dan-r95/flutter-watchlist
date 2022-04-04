@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_watchlist/vars.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 //import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 import 'package:flutter_watchlist/login/login.dart';
-import 'package:flutter_watchlist/login/register.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 
@@ -42,8 +42,8 @@ Future<void> main() async {
 
   FlutterFireUIAuth.configureProviders([
     const EmailProviderConfiguration(),
+    const GoogleProviderConfiguration(clientId: GOOGLE_CLIENT_ID),
     const PhoneProviderConfiguration(),
-    const GoogleProviderConfiguration(clientId: "null"),
     //const AppleProviderConfiguration(),
   ]);
 
@@ -78,10 +78,7 @@ class App extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-
   MyApp({Key? key}) : super(key: key);
-  // final FirebaseApp app;
 
   @override
   Widget build(BuildContext context) {
@@ -97,23 +94,23 @@ class MyApp extends StatelessWidget {
                 brightness: snapshot.data,
                 primarySwatch: Colors.blue,
               ),
-              initialRoute: auth.currentUser == null ? '/' : '/profile',
+              initialRoute: auth.currentUser == null ? '/' : '/home',
               routes: <String, WidgetBuilder>{
-                '/home': (BuildContext context) => HomePage(title: 'Home'),
-                '/login': (BuildContext context) => LoginPage(),
-                '/register': (BuildContext context) => RegisterPage(),
+                '/home': (BuildContext context) => HomePage(
+                      title: 'Home',
+                    ),
                 '/': (context) {
-                  return SignInScreen(
-                    // no providerConfigs property - global configuration will be used instead
-                    actions: [
-                      AuthStateChangeAction<SignedIn>((context, state) {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      }),
-                    ],
-                  );
+                  return LoginPage();
                 },
                 '/profile': (context) {
                   return ProfileScreen(
+                    avatarSize: 24,
+                    providerConfigs: [
+                      const EmailProviderConfiguration(),
+                      const GoogleProviderConfiguration(
+                          clientId: GOOGLE_CLIENT_ID),
+                      const PhoneProviderConfiguration(),
+                    ],
                     // no providerConfigs property here as well
                     actions: [
                       SignedOutAction((context) {

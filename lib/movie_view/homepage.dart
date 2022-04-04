@@ -25,7 +25,7 @@ class HomePage extends StatefulWidget {
       this.app,
       this.uiErrorUtils,
       this.bloc,
-      this.uuid})
+      this.uuid: ""})
       : super(key: key);
 
   final String title;
@@ -36,8 +36,8 @@ class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() => _HomePageState(
-        uiErrorUtils: uiErrorUtils!,
-        bloc: bloc!,
+        uiErrorUtils: UiErrorUtils(),
+        bloc: Bloc(),
       );
 }
 
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   List<MovieSuggestion> favorites = [];
   //StreamSubscription<Event> _onNoteAddedSubscription;
   //StreamSubscription<Event> _onNoteChangedSubscription;
-  final notesReference = FirebaseDatabase.instance.reference();
+  final notesReference = FirebaseDatabase.instance.ref();
   UiErrorUtils? _uiErrorUtils;
   Bloc? _bloc;
 
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
-    _uiErrorUtils?.subscribeToSnackBarStream(context, _bloc!.snackBarSubject);
+    _uiErrorUtils?.subscribeToSnackBarStream(context, _bloc?.snackBarSubject);
 
     return Scaffold(
         appBar: new AppBar(

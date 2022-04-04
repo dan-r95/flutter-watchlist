@@ -13,8 +13,8 @@ class UiErrorUtils {
 
   // subscribes to stream that triggers open snackbar
   void subscribeToSnackBarStream(
-      BuildContext context, PublishSubject<String> stream) {
-    stream.listen((String message) {
+      BuildContext context, PublishSubject<String>? stream) {
+    stream?.listen((String message) {
       openSnackBar(context, message);
     });
   }

@@ -6,7 +6,7 @@ import 'package:flutter_watchlist/common/helpers.dart';
 
 class AlreadyWatchedList extends StatelessWidget {
   String uuid;
-  Bloc bloc;
+  Bloc? bloc;
   AlreadyWatchedList(this.uuid, this.bloc);
 
   @override
