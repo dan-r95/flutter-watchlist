@@ -228,7 +228,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // Subscribe to UI feedback streams from  provided _bloc
-    _uiErrorUtils?.subscribeToSnackBarStream(context, _bloc?.snackBarSubject);
+    _uiErrorUtils?.subscribeToSnackBarStream(context, _bloc.snackBarSubject);
 
     return Scaffold(
         appBar: new AppBar(
