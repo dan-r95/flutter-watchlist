@@ -19,3 +19,5 @@ class UiErrorUtils {
     });
   }
 }
+
+final errorUtils = UiErrorUtils();

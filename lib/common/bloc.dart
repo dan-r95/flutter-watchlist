@@ -28,6 +28,14 @@ class Bloc {
     favoritesListController.close();
   }
 
+  //TODO: ask from storage
+/*
+ var brightness = Brightness.light;
+ var prefs = await SharedPreferences.getInstance();
+  if (prefs?.getString("theme")== "light"){
+
+  }
+  */
   // stream to control the theme of the app
   BehaviorSubject<int> animationIndexController =
       BehaviorSubject<int>.seeded(1); //listen with multiple subjects
@@ -36,7 +44,8 @@ class Bloc {
 
   // stream to control the theme of the app
   BehaviorSubject<Brightness> brightnessController =
-      BehaviorSubject<Brightness>(); //listen with multiple subjects
+      BehaviorSubject<Brightness>.seeded(
+          Brightness.light); //listen with multiple subjects
   Stream<Brightness> get currentBrightness =>
       brightnessController.stream.asBroadcastStream();
 

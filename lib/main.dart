@@ -12,17 +12,6 @@ import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 
-var firebaseConfig = {
-  "apiKey": "AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc",
-  "authDomain": "flutter-watchlist.firebaseapp.com",
-  "databaseURL": "https://flutter-watchlist.firebaseio.com",
-  "projectId": "flutter-watchlist",
-  "storageBucket": "flutter-watchlist.appspot.com",
-  "messagingSenderId": "220852966414",
-  "appId": "1:220852966414:web:4916c4b790d8b390cad85f",
-  "measurementId": "G-W2YH6JWLEN"
-};
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -87,6 +76,8 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<Brightness>(
         stream: bloc.currentBrightness,
         builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
+          print("aaa");
+          print(snapshot);
           return MaterialApp(
               title: 'My Watchlist',
               debugShowCheckedModeBanner: false,

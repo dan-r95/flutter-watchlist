@@ -24,7 +24,6 @@ class HomePage extends StatefulWidget {
       required this.title,
       this.app,
       this.uiErrorUtils,
-      this.bloc,
       this.uuid: ""})
       : super(key: key);
 
@@ -32,12 +31,11 @@ class HomePage extends StatefulWidget {
   final String? uuid;
   final FirebaseApp? app;
   final UiErrorUtils? uiErrorUtils;
-  final Bloc? bloc;
 
   @override
   _HomePageState createState() => _HomePageState(
-        uiErrorUtils: UiErrorUtils(),
-        bloc: Bloc(),
+        uiErrorUtils: errorUtils,
+        bloc: bloc,
       );
 }
 
@@ -52,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   //StreamSubscription<Event> _onNoteChangedSubscription;
   final notesReference = FirebaseDatabase.instance.ref();
   UiErrorUtils? _uiErrorUtils;
-  Bloc? _bloc;
+  Bloc _bloc = bloc;
 
   List<MovieSuggestion> alreadyWatched = [];
 
@@ -213,7 +211,7 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AddMovieDialog(
           suggestion: suggestion,
-          bloc: _bloc!,
+          bloc: _bloc,
           favorites: favorites,
           uuid: widget.uuid!,
         );
