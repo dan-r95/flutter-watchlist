@@ -1,6 +1,5 @@
-import 'package:flutter_watchlist/common/justwatch.dart';
-import 'package:flutter_watchlist/common/justwatch_movie.dart';
-import 'package:flutter_watchlist/common/MovieDBProvider.dart';
+import 'package:flutter_watchlist/types/justwatch.dart';
+import 'package:flutter_watchlist/types/MovieDBProvider.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -16,13 +15,12 @@ class JustWatchManager {
 
   Future<JustWatchResponse> getAvailability(int id) async {
     JustWatchResponse movieResponse = await getMovie(id);
-    print(movieResponse.toString());
+
     if (movieResponse.offers != null) {
-      for (var company in movieResponse.offers) {
+      for (var company in movieResponse.offers!) {
         if (company.providerId == 10 ||
             company.providerId == 8 ||
-            company.providerId == 29)
-          print("available on: ${company.urls}, id:, ${company.providerId}");
+            company.providerId == 29) {}
       }
     }
     return movieResponse;
@@ -35,8 +33,8 @@ class JustWatchManager {
       {"api_key": "623ee3bd0e5c4882ac7411d102f1aeb6"},
     ));
     var movieWithIt = Providers.fromJson(jsonDecode(response.body));
-    print(movieWithIt.results.languageRes.flatrate.toString());
-    return movieWithIt.results.languageRes.flatrate;
+
+    return Future.value(movieWithIt.results?.languageRes?.flatrate);
     //return getAvailability(movieWithIt.id);
   }
 }

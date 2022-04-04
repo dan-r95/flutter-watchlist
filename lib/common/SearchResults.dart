@@ -1,17 +1,21 @@
 class SearchResults {
-  int page;
-  List<Results> results;
-  int totalPages;
-  int totalResults;
+  int? page;
+  List<Results>? results;
+  int? totalPages;
+  int? totalResults;
 
-  SearchResults({this.page, this.results, this.totalPages, this.totalResults});
+  SearchResults(
+      {required this.page,
+      required this.results,
+      required this.totalPages,
+      required this.totalResults});
 
   SearchResults.fromJson(Map<String, dynamic> json) {
     page = json['page'];
     if (json['results'] != null) {
       results = [];
       json['results'].forEach((v) {
-        results.add(new Results.fromJson(v));
+        results?.add(new Results.fromJson(v));
       });
     }
     totalPages = json['total_pages'];
@@ -22,7 +26,7 @@ class SearchResults {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['page'] = this.page;
     if (this.results != null) {
-      data['results'] = this.results.map((v) => v.toJson()).toList();
+      data['results'] = this.results?.map((v) => v.toJson()).toList();
     }
     data['total_pages'] = this.totalPages;
     data['total_results'] = this.totalResults;
@@ -31,36 +35,36 @@ class SearchResults {
 }
 
 class Results {
-  bool adult;
-  String backdropPath;
-  List<int> genreIds;
-  int id;
-  String originalLanguage;
-  String originalTitle;
-  String overview;
-  double popularity;
-  String posterPath;
-  String releaseDate;
-  String title;
-  bool video;
-  double voteAverage;
-  int voteCount;
+  bool? adult;
+  String? backdropPath;
+  List<int>? genreIds;
+  int? id;
+  String? originalLanguage;
+  String? originalTitle;
+  String? overview;
+  double? popularity;
+  String? posterPath;
+  String? releaseDate;
+  String? title;
+  bool? video;
+  double? voteAverage;
+  int? voteCount;
 
   Results(
-      {this.adult,
-      this.backdropPath,
-      this.genreIds,
-      this.id,
-      this.originalLanguage,
-      this.originalTitle,
-      this.overview,
-      this.popularity,
-      this.posterPath,
-      this.releaseDate,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount});
+      {required this.adult,
+      required this.backdropPath,
+      required this.genreIds,
+      required this.id,
+      required this.originalLanguage,
+      required this.originalTitle,
+      required this.overview,
+      required this.popularity,
+      required this.posterPath,
+      required this.releaseDate,
+      required this.title,
+      required this.video,
+      required this.voteAverage,
+      required this.voteCount});
 
   Results.fromJson(Map<String, dynamic> json) {
     adult = json['adult'];

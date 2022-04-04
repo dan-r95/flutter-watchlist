@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:android_intent/android_intent.dart';
 
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/types.dart';
@@ -19,20 +16,20 @@ void launchURL(url) async {
 }
 
 void launchYT(url) async {
-  if (Platform.isAndroid) {
+  /* if (Platform.isAndroid) {
     try {
       final AndroidIntent intent = AndroidIntent(
           action: 'ACTION_SEARCH',
           arguments: {"query": url},
           data: 'com.google.android.youtube');
-      print(intent.toString());
       await intent.launch();
     } catch (error) {}
-  }
+  }*/
+  //TODO: replace with url launcher action
 }
 
 //TODO use https://pub.dev/packages/flutter_typeahead
-showInfoDialog(BuildContext context, String url, Bloc _bloc) {
+showInfoDialog(BuildContext context, String url, Bloc? _bloc) {
   //print(description.title);
   return showDialog<void>(
     context: context,
@@ -58,8 +55,6 @@ showAlertDialog(BuildContext context, String type, DocumentSnapshot document) {
 }
 
 void pushToDB(MovieSuggestion item, String dbName, String uuid) {
-  print("will push");
-  print("will push");
   FirebaseFirestore.instance
       .collection(dbName)
       .add({
@@ -70,7 +65,7 @@ void pushToDB(MovieSuggestion item, String dbName, String uuid) {
         'imdbUrl': item.imdbUrl,
         'added': DateTime.now().millisecondsSinceEpoch, //Unix timestamp
       })
-      .then((result) => {print(result)})
+      .then((result) => {})
       .catchError((err) => (bloc.addMessage(err)));
   List<MovieSuggestion> list = bloc.favoritesListController.value;
   list.add(item);

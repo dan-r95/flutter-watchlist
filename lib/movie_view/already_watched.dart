@@ -6,7 +6,7 @@ import 'package:flutter_watchlist/common/helpers.dart';
 
 class AlreadyWatchedList extends StatelessWidget {
   String uuid;
-  Bloc bloc;
+  Bloc? bloc;
   AlreadyWatchedList(this.uuid, this.bloc);
 
   @override
@@ -33,14 +33,13 @@ class AlreadyWatchedList extends StatelessWidget {
                             animation: "roll"),
                       );
                     default:
-                      if (snapshot.data.docs.length == 0) {
+                      if (snapshot.data?.docs.length == 0) {
                         return Container(
                             height: 200,
                             width: 200,
                             child: FlareActor("assets/animations/loading.flr",
                                 animation: "roll"));
                       }
-                      print(MediaQuery.of(context).size.width);
                       return new GridView.builder(
                           shrinkWrap: true,
                           gridDelegate: MediaQuery.of(context).size.width > 1000
@@ -52,12 +51,12 @@ class AlreadyWatchedList extends StatelessWidget {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 2.0,
                                   mainAxisSpacing: 2.0),
-                          itemCount: snapshot.data.docs.length,
+                          itemCount: snapshot.data?.docs.length,
                           itemBuilder: (BuildContext context2, int index) {
-                            if (snapshot.data.docs.length == 0) {
+                            if (snapshot.data?.docs.length == 0) {
                               return Text("start adding movies!");
                             }
-                            var document = snapshot.data.docs[index];
+                            var document = snapshot.data?.docs[index];
 
                             return new Dismissible(
                                 key: UniqueKey(),
@@ -77,9 +76,9 @@ class AlreadyWatchedList extends StatelessWidget {
                                             child: Image.network(
                                           // placeholder: (context, url) =>
                                           //     CircularProgressIndicator(),
-                                          document['Poster'] == "N/A"
+                                          document?['Poster'] == "N/A"
                                               ? "https://moviereelist.com/wp-content/uploads/2019/07/poster-placeholder.jpg"
-                                              : document['Poster'],
+                                              : document?['Poster'],
                                           color: Color.fromRGBO(
                                               255, 255, 255, 0.7),
                                           colorBlendMode: BlendMode.modulate,
@@ -102,7 +101,7 @@ class AlreadyWatchedList extends StatelessWidget {
                                                 onPressed: () => {
                                                       showInfoDialog(
                                                           context2,
-                                                          document['imdbUrl'],
+                                                          document!['imdbUrl'],
                                                           bloc)
                                                     }),
                                             title: Container(
@@ -110,7 +109,7 @@ class AlreadyWatchedList extends StatelessWidget {
                                                   color: Colors.black45,
                                                 ),
                                                 child: Text(
-                                                  document['Title'],
+                                                  document!['Title'],
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,

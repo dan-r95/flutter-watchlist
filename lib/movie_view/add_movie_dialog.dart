@@ -11,11 +11,11 @@ class AddMovieDialog extends StatelessWidget {
   final String uuid;
 
   const AddMovieDialog(
-      {Key key,
-      @required this.suggestion,
-      @required this.uuid,
-      @required this.bloc,
-      @required this.favorites})
+      {Key? key,
+      required this.suggestion,
+      required this.uuid,
+      required this.bloc,
+      required this.favorites})
       : super(key: key);
 
   @override

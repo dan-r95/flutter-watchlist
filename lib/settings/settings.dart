@@ -3,18 +3,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_watchlist/login/login.dart';
+import 'package:flutter_watchlist/login/build_info.dart';
 
 // provide a way to change the port, ip, username, password and theme and save it to the preferences
 // next time the app is openend, the preferences are read from storage
 class SettingsRoute extends StatefulWidget {
-  SettingsRoute({Key key, this.title}) : super(key: key);
-  final String title;
+  SettingsRoute({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+  String title = "";
   @override
   SettingsRouteState createState() => SettingsRouteState();
 }
 
 class SettingsRouteState extends State<SettingsRoute> {
-  SharedPreferences prefs;
+  SharedPreferences? prefs;
 
   @override
   void initState() {
@@ -53,10 +57,10 @@ class SettingsRouteState extends State<SettingsRoute> {
               Divider(
                 thickness: 0,
               ),
-              Text(
+              /*   Text(
                 "User: ${widget.title}",
                 style: TextStyle(fontSize: 24),
-              ),
+              ), */
               ElevatedButton(
                   onPressed: () => {
                         FirebaseAuth.instance.signOut(),
@@ -71,14 +75,16 @@ class SettingsRouteState extends State<SettingsRoute> {
                   bloc.brightnessController.value == Brightness.dark
                       ? {
                           prefs
-                              .setString('theme', 'light')
+                              ?.setString('theme', 'light')
                               .then((bool success) {
                             showDialog("Changed the theme");
                             bloc.brightnessController.add(Brightness.light);
                           }),
                         }
                       : {
-                          prefs.setString('theme', 'dark').then((bool success) {
+                          prefs
+                              ?.setString('theme', 'dark')
+                              .then((bool success) {
                             showDialog("Changed the theme");
                             bloc.brightnessController.add(Brightness.dark);
                           }),
@@ -89,7 +95,7 @@ class SettingsRouteState extends State<SettingsRoute> {
               ElevatedButton(
                 onPressed: () => {
                   prefs
-                      .clear()
+                      ?.clear()
                       .then((onValue) => showDialog("Cleared all preferences"))
                       .catchError((onError) => showDialog(onError))
                 },
@@ -104,7 +110,9 @@ class SettingsRouteState extends State<SettingsRoute> {
                       applicationLegalese: "MIT License")
                 },
                 child: Text("About"),
-              )
+              ),
+              Text(buildTime),
+              Text(buildCommit),
             ]));
   }
 }

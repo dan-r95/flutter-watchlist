@@ -1,56 +1,56 @@
 class Movie {
-  bool adult;
-  String backdropPath;
+  bool? adult;
+  String? backdropPath;
   Null belongsToCollection;
-  int budget;
-  List<Genres> genres;
-  String homepage;
-  int id;
-  String imdbId;
-  String originalLanguage;
-  String originalTitle;
-  String overview;
-  double popularity;
-  String posterPath;
-  List<ProductionCompanies> productionCompanies;
-  List<ProductionCountries> productionCountries;
-  String releaseDate;
-  int revenue;
-  int runtime;
-  List<SpokenLanguages> spokenLanguages;
-  String status;
-  String tagline;
-  String title;
-  bool video;
-  double voteAverage;
-  int voteCount;
+  int? budget;
+  List<Genres>? genres;
+  String? homepage;
+  int? id;
+  String? imdbId;
+  String? originalLanguage;
+  String? originalTitle;
+  String? overview;
+  double? popularity;
+  String? posterPath;
+  List<ProductionCompanies>? productionCompanies;
+  List<ProductionCountries>? productionCountries;
+  String? releaseDate;
+  int? revenue;
+  int? runtime;
+  List<SpokenLanguages>? spokenLanguages;
+  String? status;
+  String? tagline;
+  String? title;
+  bool? video;
+  double? voteAverage;
+  int? voteCount;
 
   Movie(
-      {this.adult,
-      this.backdropPath,
-      this.belongsToCollection,
-      this.budget,
-      this.genres,
-      this.homepage,
-      this.id,
-      this.imdbId,
-      this.originalLanguage,
-      this.originalTitle,
-      this.overview,
-      this.popularity,
-      this.posterPath,
-      this.productionCompanies,
-      this.productionCountries,
-      this.releaseDate,
-      this.revenue,
-      this.runtime,
-      this.spokenLanguages,
-      this.status,
-      this.tagline,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount});
+      {required this.adult,
+      required this.backdropPath,
+      required this.belongsToCollection,
+      required this.budget,
+      required this.genres,
+      required this.homepage,
+      required this.id,
+      required this.imdbId,
+      required this.originalLanguage,
+      required this.originalTitle,
+      required this.overview,
+      required this.popularity,
+      required this.posterPath,
+      required this.productionCompanies,
+      required this.productionCountries,
+      required this.releaseDate,
+      required this.revenue,
+      required this.runtime,
+      required this.spokenLanguages,
+      required this.status,
+      required this.tagline,
+      required this.title,
+      required this.video,
+      required this.voteAverage,
+      required this.voteCount});
 
   Movie.fromJson(Map<String, dynamic> json) {
     adult = json['adult'];
@@ -60,7 +60,7 @@ class Movie {
     if (json['genres'] != null) {
       genres = [];
       json['genres'].forEach((v) {
-        genres.add(new Genres.fromJson(v));
+        genres?.add(new Genres.fromJson(v));
       });
     }
     homepage = json['homepage'];
@@ -74,13 +74,13 @@ class Movie {
     if (json['production_companies'] != null) {
       productionCompanies = [];
       json['production_companies'].forEach((v) {
-        productionCompanies.add(new ProductionCompanies.fromJson(v));
+        productionCompanies?.add(new ProductionCompanies.fromJson(v));
       });
     }
     if (json['production_countries'] != null) {
       productionCountries = [];
       json['production_countries'].forEach((v) {
-        productionCountries.add(new ProductionCountries.fromJson(v));
+        productionCountries?.add(new ProductionCountries.fromJson(v));
       });
     }
     releaseDate = json['release_date'];
@@ -89,7 +89,7 @@ class Movie {
     if (json['spoken_languages'] != null) {
       spokenLanguages = [];
       json['spoken_languages'].forEach((v) {
-        spokenLanguages.add(new SpokenLanguages.fromJson(v));
+        spokenLanguages?.add(new SpokenLanguages.fromJson(v));
       });
     }
     status = json['status'];
@@ -107,7 +107,7 @@ class Movie {
     data['belongs_to_collection'] = this.belongsToCollection;
     data['budget'] = this.budget;
     if (this.genres != null) {
-      data['genres'] = this.genres.map((v) => v.toJson()).toList();
+      data['genres'] = this.genres?.map((v) => v.toJson()).toList();
     }
     data['homepage'] = this.homepage;
     data['id'] = this.id;
@@ -119,18 +119,18 @@ class Movie {
     data['poster_path'] = this.posterPath;
     if (this.productionCompanies != null) {
       data['production_companies'] =
-          this.productionCompanies.map((v) => v.toJson()).toList();
+          this.productionCompanies?.map((v) => v.toJson()).toList();
     }
     if (this.productionCountries != null) {
       data['production_countries'] =
-          this.productionCountries.map((v) => v.toJson()).toList();
+          this.productionCountries?.map((v) => v.toJson()).toList();
     }
     data['release_date'] = this.releaseDate;
     data['revenue'] = this.revenue;
     data['runtime'] = this.runtime;
     if (this.spokenLanguages != null) {
       data['spoken_languages'] =
-          this.spokenLanguages.map((v) => v.toJson()).toList();
+          this.spokenLanguages?.map((v) => v.toJson()).toList();
     }
     data['status'] = this.status;
     data['tagline'] = this.tagline;
@@ -143,10 +143,10 @@ class Movie {
 }
 
 class Genres {
-  int id;
-  String name;
+  int? id;
+  String? name;
 
-  Genres({this.id, this.name});
+  Genres({required this.id, required this.name});
 
   Genres.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -162,10 +162,10 @@ class Genres {
 }
 
 class ProductionCompanies {
-  int id;
-  Null logoPath;
-  String name;
-  String originCountry;
+  int? id;
+  Null? logoPath;
+  String? name;
+  String? originCountry;
 
   ProductionCompanies({this.id, this.logoPath, this.name, this.originCountry});
 
@@ -187,8 +187,8 @@ class ProductionCompanies {
 }
 
 class ProductionCountries {
-  String iso31661;
-  String name;
+  String? iso31661;
+  String? name;
 
   ProductionCountries({this.iso31661, this.name});
 
@@ -206,11 +206,12 @@ class ProductionCountries {
 }
 
 class SpokenLanguages {
-  String englishName;
-  String iso6391;
-  String name;
+  String? englishName;
+  String? iso6391;
+  String? name;
 
-  SpokenLanguages({this.englishName, this.iso6391, this.name});
+  SpokenLanguages(
+      {required this.englishName, required this.iso6391, required this.name});
 
   SpokenLanguages.fromJson(Map<String, dynamic> json) {
     englishName = json['english_name'];

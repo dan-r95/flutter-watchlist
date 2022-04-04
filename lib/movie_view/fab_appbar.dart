@@ -1,47 +1,45 @@
- //  Widget _buildFab(BuildContext context) {
-  //   final icons = [ Icons.sms, Icons.mail, Icons.phone ];
-  //   return AnchoredOverlay(
-  //     showOverlay: true,
-  //     overlayBuilder: (context, offset) {
-  //       return CenterAbout(
-  //         position: Offset(offset.dx, offset.dy - icons.length * 35.0),
-  //         child: FabWithIcons(
-  //           icons: icons,
-  //           onIconTapped: _selectedFab,
-  //         ),
-  //       );
-  //     },
-  //     child: FloatingActionButton(
-  //       onPressed: () { },
-  //       tooltip: 'Increment',
-  //       child: Icon(Icons.add),
-  //       elevation: 2.0,
-  //     ),
-  //   );
-  // }
-
-
+//  Widget _buildFab(BuildContext context) {
+//   final icons = [ Icons.sms, Icons.mail, Icons.phone ];
+//   return AnchoredOverlay(
+//     showOverlay: true,
+//     overlayBuilder: (context, offset) {
+//       return CenterAbout(
+//         position: Offset(offset.dx, offset.dy - icons.length * 35.0),
+//         child: FabWithIcons(
+//           icons: icons,
+//           onIconTapped: _selectedFab,
+//         ),
+//       );
+//     },
+//     child: FloatingActionButton(
+//       onPressed: () { },
+//       tooltip: 'Increment',
+//       child: Icon(Icons.add),
+//       elevation: 2.0,
+//     ),
+//   );
+// }
 
 //https://github.com/bizz84/bottom_bar_fab_flutter
 import 'package:flutter/material.dart';
 
 class FABBottomAppBarItem {
-  FABBottomAppBarItem({this.iconData, this.text});
+  FABBottomAppBarItem({required this.iconData, required this.text});
   IconData iconData;
   String text;
 }
 
 class FABBottomAppBar extends StatefulWidget {
   FABBottomAppBar({
-    this.items,
-    this.centerItemText,
+    required this.items,
+    this.centerItemText: "",
     this.height: 60.0,
     this.iconSize: 24.0,
-    this.backgroundColor,
-    this.color,
-    this.selectedColor,
-    this.notchedShape,
-    this.onTabSelected,
+    this.backgroundColor: Colors.blue,
+    required this.color,
+    required this.selectedColor,
+    required this.notchedShape,
+    required this.onTabSelected,
   }) {
     assert(this.items.length == 2 || this.items.length == 4);
   }
@@ -101,7 +99,7 @@ class FABBottomAppBarState extends State<FABBottomAppBar> {
           children: <Widget>[
             SizedBox(height: widget.iconSize),
             Text(
-              widget.centerItemText ?? '',
+              widget.centerItemText,
               style: TextStyle(color: widget.color),
             ),
           ],
@@ -111,9 +109,9 @@ class FABBottomAppBarState extends State<FABBottomAppBar> {
   }
 
   Widget _buildTabItem({
-    FABBottomAppBarItem item,
-    int index,
-    ValueChanged<int> onPressed,
+    required FABBottomAppBarItem item,
+    int index = 0,
+    required ValueChanged<int> onPressed,
   }) {
     Color color = _selectedIndex == index ? widget.selectedColor : widget.color;
     return Expanded(
