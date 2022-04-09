@@ -5,16 +5,11 @@ import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/helpers.dart';
 import 'package:flutter_watchlist/common/types.dart';
 
-class FavoritesList extends StatefulWidget {
+class FavoritesList extends StatelessWidget {
   String uuid;
   Bloc bloc;
   FavoritesList(this.uuid, this.bloc);
 
-  @override
-  _FavoritesListState createState() => _FavoritesListState();
-}
-
-class _FavoritesListState extends State<FavoritesList> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -23,7 +18,7 @@ class _FavoritesListState extends State<FavoritesList> {
             child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection("favorites")
-                    .where("user", isEqualTo: this.widget.uuid)
+                    .where("user", isEqualTo: this.uuid)
                     .orderBy("added", descending: true)
                     .snapshots(),
                 builder: (BuildContext context,
@@ -39,12 +34,20 @@ class _FavoritesListState extends State<FavoritesList> {
                             animation: "roll"),
                       );
                     default:
+                      print(snapshot.data?.docs);
                       if (snapshot.data?.docs.length == 0) {
                         return Container(
                             height: 200,
                             width: 200,
-                            child: FlareActor("assets/animations/loading.flr",
-                                animation: "roll"));
+                            child: Column(
+                              children: [
+                                Text(this.uuid),
+                                Text("no movies added yet 😫"),
+                                FlareActor("assets/animations/loading.flr",
+                                    animation: "roll"),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            ));
                       }
                       return new GridView.builder(
                           shrinkWrap: true,
@@ -74,7 +77,7 @@ class _FavoritesListState extends State<FavoritesList> {
                                 bloc.writeToalreadyWatched.add(list);
 
                                 pushToDB(MovieSuggestion.fromDocument(document),
-                                    'alreadyWatched', widget.uuid);
+                                    'alreadyWatched', uuid);
                                 FirebaseFirestore.instance
                                     .collection('favorites')
                                     .doc(document.id)

@@ -76,12 +76,25 @@ class MyApp extends StatelessWidget {
     return StreamBuilder<Brightness>(
         stream: bloc.currentBrightness,
         builder: (BuildContext context, AsyncSnapshot<Brightness> snapshot) {
-          print("aaa");
-          print(snapshot);
           return MaterialApp(
               title: 'My Watchlist',
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
+                inputDecorationTheme: InputDecorationTheme(
+                    border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                )),
+                outlinedButtonTheme: OutlinedButtonThemeData(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.all(24),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                ),
                 brightness: snapshot.data,
                 primarySwatch: Colors.blue,
               ),
@@ -89,6 +102,7 @@ class MyApp extends StatelessWidget {
               routes: <String, WidgetBuilder>{
                 '/home': (BuildContext context) => HomePage(
                       title: 'Home',
+                      uuid: auth.currentUser?.uid,
                     ),
                 '/': (context) {
                   return LoginPage();

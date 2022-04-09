@@ -37,8 +37,15 @@ class AlreadyWatchedList extends StatelessWidget {
                         return Container(
                             height: 200,
                             width: 200,
-                            child: FlareActor("assets/animations/loading.flr",
-                                animation: "roll"));
+                            child: Column(
+                              children: [
+                                Text(this.uuid),
+                                Text("no movies added yet 😫"),
+                                FlareActor("assets/animations/loading.flr",
+                                    animation: "roll"),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            ));
                       }
                       return new GridView.builder(
                           shrinkWrap: true,

@@ -20,11 +20,7 @@ import 'package:flutter_watchlist/movie_view/add_movie_dialog.dart';
 
 class HomePage extends StatefulWidget {
   HomePage(
-      {Key? key,
-      required this.title,
-      this.app,
-      this.uiErrorUtils,
-      this.uuid: ""})
+      {Key? key, required this.title, this.app, this.uiErrorUtils, this.uuid})
       : super(key: key);
 
   final String title;
