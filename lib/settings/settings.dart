@@ -47,7 +47,7 @@ class SettingsRouteState extends State<SettingsRoute> {
         margin: EdgeInsets.all(20),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Text(
                 "Settings",
@@ -57,10 +57,6 @@ class SettingsRouteState extends State<SettingsRoute> {
               Divider(
                 thickness: 0,
               ),
-              /*   Text(
-                "User: ${widget.title}",
-                style: TextStyle(fontSize: 24),
-              ), */
               ElevatedButton(
                   onPressed: () => {
                         FirebaseAuth.instance.signOut(),

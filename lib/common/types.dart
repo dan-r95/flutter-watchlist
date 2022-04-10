@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 Map<int, String> companyList = {8: "Netflix", 10: "Amazon", 29: "Sky"};
 
@@ -18,18 +19,17 @@ class MovieSuggestion {
         _imgURL = json['Poster'],
         _year = json['Year'];
 
-/*
   MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot.value is List) {
+      final value = snapshot.value as Map;
       _id = snapshot.key;
-      _name = snapshot.value?.Title;
-      _imgURL = snapshot.value['Poster'];
-      _year = snapshot.value['Year'];
-      _imdbUrl = snapshot.value['imdbUrl'];
-      _added = DateTime.fromMillisecondsSinceEpoch(snapshot.value['added']);
+      _name = value['Title'];
+      _imgURL = value['Poster'];
+      _year = value['Year'];
+      _imdbUrl = value['imdbUrl'];
+      _added = DateTime.fromMillisecondsSinceEpoch(value['added']);
     }
   }
-*/
 
   MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;

@@ -4,7 +4,6 @@ import 'package:flutter_watchlist/movie_view/already_watched.dart';
 import 'package:flutter_watchlist/movie_view/fab_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_watchlist/movie_view/favorites.dart';
-import 'package:flutter_watchlist/settings/settings.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -42,8 +41,9 @@ class _HomePageState extends State<HomePage> {
 
   bool loading = false;
   List<MovieSuggestion> favorites = [];
-  //StreamSubscription<Event> _onNoteAddedSubscription;
-  //StreamSubscription<Event> _onNoteChangedSubscription;
+  StreamSubscription<DatabaseEvent>? _onNoteAddedSubscription;
+  StreamSubscription<DatabaseEvent>? _onNoteChangedSubscription;
+  StreamSubscription<DatabaseEvent>? _onNoteRemovedSubscription;
   final notesReference = FirebaseDatabase.instance.ref();
   UiErrorUtils? _uiErrorUtils;
   Bloc _bloc = bloc;
@@ -53,20 +53,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // notesReference.reference().once().then((DataSnapshot snapshot) {
-    //   print('Connected to second database and read ${snapshot.value}');
-    // });
     favorites = [];
-    /*
+
     _onNoteAddedSubscription = notesReference.onChildAdded.listen(_onNoteAdded);
     _onNoteChangedSubscription =
         notesReference.onChildChanged.listen(_onNoteUpdated);
-*/
+    _onNoteRemovedSubscription = notesReference.onChildRemoved.listen(null);
 
     _children.addAll([
       FavoritesList(widget.uuid!, bloc),
       AlreadyWatchedList(widget.uuid!, bloc),
-      SettingsRoute(title: widget.title)
     ]);
   }
 
@@ -76,21 +72,21 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
     //_onNoteChangedSubscription?.cancel();
   }
-/*
-  void _onNoteAdded(Event event) {
+
+  void _onNoteAdded(DatabaseEvent event) {
     setState(() {
       favorites.add(new MovieSuggestion.fromSnapshot(event.snapshot));
     });
   }
 
-  void _onNoteUpdated(Event event) {
+  void _onNoteUpdated(DatabaseEvent event) {
     var oldNoteValue =
         favorites.singleWhere((note) => note.id == event.snapshot.key);
     setState(() {
       favorites[favorites.indexOf(oldNoteValue)] =
           new MovieSuggestion.fromSnapshot(event.snapshot);
     });
-  }*/
+  }
 
   Future<List<MovieSuggestion>> updateSuggestions(String query) async {
     List<MovieSuggestion> list = [];
@@ -237,7 +233,8 @@ class _HomePageState extends State<HomePage> {
             actions: <Widget>[
               new IconButton(
                   icon: Icon(Icons.info),
-                  onPressed: () => tabBloc.updateIndex(2)),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/profile')),
             ]),
         body: Container(
             margin: MediaQuery.of(context).size.width > 1400
