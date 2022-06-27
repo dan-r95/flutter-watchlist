@@ -2,20 +2,23 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_watchlist/login/build_info.dart';
-import 'package:flutter_watchlist/settings/settings.dart';
+
 import 'package:flutterfire_ui/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
+import 'package:flutter_watchlist/login/build_info.dart';
+import 'package:flutter_watchlist/settings/settings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "user.env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -33,9 +36,10 @@ Future<void> main() async {
 
   FlutterFireUIAuth.configureProviders([
     const EmailProviderConfiguration(),
+    EmailLinkProviderConfiguration(
+        actionCodeSettings:
+            ActionCodeSettings(url: 'https://watchlist.firebaseapp.com/')),
     const GoogleProviderConfiguration(clientId: GOOGLE_CLIENT_ID),
-    const PhoneProviderConfiguration(),
-    //const AppleProviderConfiguration(),
   ]);
 
   runApp(App());
@@ -114,24 +118,19 @@ class MyApp extends StatelessWidget {
                   return LoginPage();
                 },
                 '/profile': (context) {
-                  return Column(children: [
-                    ProfileScreen(
-                      avatarSize: 24,
-                      providerConfigs: [
-                        const EmailProviderConfiguration(),
-                        const GoogleProviderConfiguration(
-                            clientId: GOOGLE_CLIENT_ID),
-                        const PhoneProviderConfiguration(),
-                      ],
-                      // no providerConfigs property here as well
-                      actions: [
-                        SignedOutAction((context) {
-                          Navigator.pushReplacementNamed(context, '/');
-                        }),
-                      ],
-                    ),
-                    //SettingsRoute(title: "Settings")
-                  ], crossAxisAlignment: CrossAxisAlignment.start);
+                  return
+                      //Column(children: [
+                      ProfileScreen(
+                    avatarSize: 24,
+                    actions: [
+                      SignedOutAction((context) {
+                        Navigator.pushReplacementNamed(context, '/');
+                      }),
+                    ],
+                    children: [SettingsRoute(title: "Settings")],
+                  );
+                  //SettingsRoute(title: "Settings")
+                  // ], crossAxisAlignment: CrossAxisAlignment.start);
                 },
               });
         });

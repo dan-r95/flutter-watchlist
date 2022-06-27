@@ -58,15 +58,6 @@ class SettingsRouteState extends State<SettingsRoute> {
                 thickness: 0,
               ),
               ElevatedButton(
-                  onPressed: () => {
-                        FirebaseAuth.instance.signOut(),
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()))
-                      },
-                  child: Text("Logout")),
-              ElevatedButton(
                 onPressed: () => {
                   bloc.brightnessController.value == Brightness.dark
                       ? {

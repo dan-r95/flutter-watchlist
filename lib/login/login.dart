@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +10,7 @@ import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_watchlist/common/tab_bloc.dart';
 import 'package:flutter_watchlist/login/build_info.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key, this.uiErrorUtils, this.bloc}) : super(key: key);
@@ -21,8 +24,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState>? _loginFormKey = GlobalKey<FormState>();
-  TextEditingController? emailInputController;
-  TextEditingController? pwdInputController;
+
   UiErrorUtils? _uiErrorUtils;
   Bloc? _bloc;
 
@@ -31,6 +33,27 @@ class _LoginPageState extends State<LoginPage> {
   @override
   initState() {
     super.initState();
+  }
+
+  _signInWithTest() async {
+    final testPw = dotenv.env['TEST_PASSWORD'];
+    final testMail = dotenv.env['TEST_MAIL'];
+    if (testMail == null || testPw == null) {
+      _uiErrorUtils?.openSnackBar(context, "environment not set up");
+    }
+
+    await FirebaseAuth.instance.signInWithCredential(
+        EmailAuthProvider.credential(email: testMail!, password: testPw!));
+    if (FirebaseAuth.instance.currentUser != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomePage(
+                  title: '',
+                  uuid: FirebaseAuth.instance.currentUser?.uid,
+                )),
+      );
+    }
   }
 
   @override
@@ -52,13 +75,26 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(children: <Widget>[
               Text(buildTime),
               Text(buildCommit),
+              TextButton(
+                child: Text('Use a test account 🚀'),
+                onPressed: () async {
+                  await _signInWithTest();
+                },
+              ),
             ]));
       },
       sideBuilder: (context, constraints) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: AspectRatio(
-              aspectRatio: 1, child: Image.asset("../assets/watchlist.png")),
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset("../assets/watchlist.png")),
+            ),
+            Text("My Watchlist")
+          ],
+          crossAxisAlignment: CrossAxisAlignment.center,
         );
       },
       headerBuilder: (context, constraints, _) {
@@ -75,6 +111,9 @@ class _LoginPageState extends State<LoginPage> {
         AuthStateChangeAction<SignedIn>((context, state) {
           Navigator.pushReplacementNamed(context, '/home');
         }),
+        EmailLinkSignInAction((context) => {
+              EmailLinkSignInScreen(),
+            }),
         ForgotPasswordAction((context, state) => {
               ForgotPasswordScreen(
                 headerBuilder: (context, constraints, shrinkOffset) {

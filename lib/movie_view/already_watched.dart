@@ -39,7 +39,6 @@ class AlreadyWatchedList extends StatelessWidget {
                             width: 200,
                             child: Column(
                               children: [
-                                Text(this.uuid),
                                 Text("no movies added yet 😫"),
                                 FlareActor("assets/animations/loading.flr",
                                     animation: "roll"),
