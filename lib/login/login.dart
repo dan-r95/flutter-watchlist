@@ -19,7 +19,7 @@ class LoginPage extends StatefulWidget {
   final Bloc? bloc;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState(uiErrorUtils: errorUtils);
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -30,9 +30,8 @@ class _LoginPageState extends State<LoginPage> {
 
   GoogleSignInAccount? _currentUser;
 
-  @override
-  initState() {
-    super.initState();
+  _LoginPageState({required UiErrorUtils uiErrorUtils}) {
+    _uiErrorUtils = uiErrorUtils;
   }
 
   _signInWithTest() async {
@@ -41,9 +40,12 @@ class _LoginPageState extends State<LoginPage> {
     if (testMail == null || testPw == null) {
       _uiErrorUtils?.openSnackBar(context, "environment not set up");
     }
-
-    await FirebaseAuth.instance.signInWithCredential(
-        EmailAuthProvider.credential(email: testMail!, password: testPw!));
+    try {
+      await FirebaseAuth.instance.signInWithCredential(
+          EmailAuthProvider.credential(email: testMail!, password: testPw!));
+    } catch (e) {
+      _uiErrorUtils?.openSnackBar(context, e.toString());
+    }
     if (FirebaseAuth.instance.currentUser != null) {
       Navigator.push(
         context,

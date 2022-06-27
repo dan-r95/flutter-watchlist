@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 
 Map<int, String> companyList = {8: "Netflix", 10: "Amazon", 29: "Sky"};
 
+//TODO: use https://pub.dev/packages/json_serializable
+
 class MovieSuggestion {
   //For the mock data type we will use review (perhaps this could represent a restaurant);
   String? _imdbUrl;
@@ -10,14 +12,20 @@ class MovieSuggestion {
   double? _stars;
   String? _year;
   String? _id;
+  String? _type;
   DateTime? _added;
   MovieSuggestion(this._stars, this._name, this._imgURL);
 
-  MovieSuggestion.fromMappedJson(Map<String, dynamic> json)
-      : _imdbUrl = json['imdbID'],
-        _name = json['Title'],
-        _imgURL = json['Poster'],
-        _year = json['Year'];
+  MovieSuggestion.fromMappedJson(Map<String, dynamic> json) {
+    print("aaa");
+    print(json);
+    _imdbUrl = json['imdbID'];
+    _name = json['Title'];
+    _imgURL = json['Poster'];
+    _year = json['Year'];
+    _type = json['Type'];
+    print("got here");
+  }
 
   MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot.value is List) {
@@ -44,6 +52,7 @@ class MovieSuggestion {
   String get id => _id!;
   double get stars => _stars!;
   String get year => _year!;
+  String get type => _type!;
   String get name => _name!;
   String get imdbUrl => _imdbUrl!;
   String get imgURL => _imgURL!;

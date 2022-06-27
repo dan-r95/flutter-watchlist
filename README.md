@@ -35,7 +35,5 @@ movie watchlist using imdb
 - icons
 - add snackbar when login fails
 - add animation when loggin in
-  
+-  https://pub.dev/packages/json_serializable
 
-
-  # todo: test login machen

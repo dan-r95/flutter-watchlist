@@ -68,9 +68,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    //_onNoteAddedSubscription?.cancel();
+    _onNoteAddedSubscription?.cancel();
     super.dispose();
-    //_onNoteChangedSubscription?.cancel();
+    _onNoteChangedSubscription?.cancel();
   }
 
   void _onNoteAdded(DatabaseEvent event) {
@@ -110,15 +110,15 @@ class _HomePageState extends State<HomePage> {
       response = await http.get(
           new Uri.https("omdbapi.com", "", {"t": query, "apikey": "e83d3bc2"}));
 
-      //print(response.body);
       Map<String, dynamic> decodedMap = jsonDecode(response.body);
-      //print(decoded);
 
       if (decoded != null) {
         MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
+        print(item.toString());
         list.add(item);
         list.addAll(listOtherSugg);
 
+        print(list.length);
         setState(() {
           loading = false;
         });
@@ -255,8 +255,6 @@ class _HomePageState extends State<HomePage> {
                     });
               },
             )),
-
-        // define the bottom tab navigaation bar
         bottomNavigationBar: StreamBuilder(
             initialData: 0,
             stream: tabBloc.getIndex,
@@ -271,8 +269,6 @@ class _HomePageState extends State<HomePage> {
                   FABBottomAppBarItem(iconData: Icons.movie, text: 'Watchlist'),
                   FABBottomAppBarItem(
                       iconData: Icons.done, text: 'Already Seen'),
-                  // FABBottomAppBarItem(
-                  //     iconData: Icons.settings, text: 'Settings'),
                 ],
               );
             }),

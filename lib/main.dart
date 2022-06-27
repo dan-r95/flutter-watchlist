@@ -121,16 +121,18 @@ class MyApp extends StatelessWidget {
                   return
                       //Column(children: [
                       ProfileScreen(
-                    avatarSize: 24,
+                    appBar: AppBar(
+                      title: Text('Profile'),
+                    ),
                     actions: [
                       SignedOutAction((context) {
                         Navigator.pushReplacementNamed(context, '/');
                       }),
                     ],
-                    children: [SettingsRoute(title: "Settings")],
+                    children: [
+                      SettingsRoute(title: "Settings"),
+                    ],
                   );
-                  //SettingsRoute(title: "Settings")
-                  // ], crossAxisAlignment: CrossAxisAlignment.start);
                 },
               });
         });
