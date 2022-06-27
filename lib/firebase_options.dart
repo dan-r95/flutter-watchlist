@@ -4,6 +4,16 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+/// Default [FirebaseOptions] for use with your Firebase apps.
+///
+/// Example:
+/// ```dart
+/// import 'firebase_options.dart';
+/// // ...
+/// await Firebase.initializeApp(
+///   options: DefaultFirebaseOptions.currentPlatform,
+/// );
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -16,6 +26,10 @@ class DefaultFirebaseOptions {
         return ios;
       case TargetPlatform.macOS:
         return macos;
+      case TargetPlatform.windows:
+        return windows;
+      case TargetPlatform.linux:
+        return linux;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -45,16 +59,14 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDW6HRueRM1cAzEl3lMl4rLgvAm7auc_-I',
-    appId: '1:220852966414:ios:58abfb0e4c048917cad85f',
+    appId: '1:220852966414:ios:06295d8c7471b151cad85f',
     messagingSenderId: '220852966414',
     projectId: 'flutter-watchlist',
     databaseURL: 'https://flutter-watchlist.firebaseio.com',
     storageBucket: 'flutter-watchlist.appspot.com',
-    androidClientId:
-        '220852966414-dtn27q5ga3b6vsmg9k4le84drdsmst6i.apps.googleusercontent.com',
-    iosClientId:
-        '220852966414-1lb77tmb2qfirnffv2mipp124ova3dct.apps.googleusercontent.com',
-    iosBundleId: 'com.danr95.flutterWatchlist',
+    androidClientId: '220852966414-dtn27q5ga3b6vsmg9k4le84drdsmst6i.apps.googleusercontent.com',
+    iosClientId: '220852966414-rhjcerg90m2amibs6los6iebfi2k4e05.apps.googleusercontent.com',
+    iosBundleId: 'com.dan-r95',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -64,10 +76,30 @@ class DefaultFirebaseOptions {
     projectId: 'flutter-watchlist',
     databaseURL: 'https://flutter-watchlist.firebaseio.com',
     storageBucket: 'flutter-watchlist.appspot.com',
-    androidClientId:
-        '220852966414-dtn27q5ga3b6vsmg9k4le84drdsmst6i.apps.googleusercontent.com',
-    iosClientId:
-        '220852966414-1lb77tmb2qfirnffv2mipp124ova3dct.apps.googleusercontent.com',
+    androidClientId: '220852966414-dtn27q5ga3b6vsmg9k4le84drdsmst6i.apps.googleusercontent.com',
+    iosClientId: '220852966414-1lb77tmb2qfirnffv2mipp124ova3dct.apps.googleusercontent.com',
     iosBundleId: 'com.danr95.flutterWatchlist',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc',
+    appId: '1:220852966414:web:1ddf06c4f8f1b9a7cad85f',
+    messagingSenderId: '220852966414',
+    projectId: 'flutter-watchlist',
+    authDomain: 'flutter-watchlist.firebaseapp.com',
+    databaseURL: 'https://flutter-watchlist.firebaseio.com',
+    storageBucket: 'flutter-watchlist.appspot.com',
+    measurementId: 'G-PJXXTDXZ7T',
+  );
+
+  static const FirebaseOptions linux = FirebaseOptions(
+    apiKey: 'AIzaSyAekU2K2qwbisvtEkakX3d2g6eA478LwHc',
+    appId: '1:220852966414:web:9e9ef19f445574f3cad85f',
+    messagingSenderId: '220852966414',
+    projectId: 'flutter-watchlist',
+    authDomain: 'flutter-watchlist.firebaseapp.com',
+    databaseURL: 'https://flutter-watchlist.firebaseio.com',
+    storageBucket: 'flutter-watchlist.appspot.com',
+    measurementId: 'G-FJWT787DKN',
   );
 }

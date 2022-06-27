@@ -36,3 +36,6 @@ movie watchlist using imdb
 - add snackbar when login fails
 - add animation when loggin in
   
+
+
+  # todo: test login machen

@@ -38,6 +38,13 @@
             {
               "client_id": "220852966414-65na518a477ikct2348lapo34s7uj8f9.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "220852966414-1lb77tmb2qfirnffv2mipp124ova3dct.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.danr95.flutterWatchlist"
+              }
             }
           ]
         }
