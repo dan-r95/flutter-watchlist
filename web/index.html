@@ -67,6 +67,37 @@
        https://developers.google.com/web/fundamentals/primers/service-workers -->
 
     <!--borrowed from https://github.com/GotokHQ/mini_test/blob/main/web/index.html-->
+    <!-- Capture PWA install prompt event -->
+    <script>
+      let deferredPrompt2;
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        deferredPrompt2 = e;
+      });
+
+      function promptInstall(){
+        deferredPrompt2.prompt();
+      }
+
+      // Listen for app install event
+      window.addEventListener('appinstalled', () => {
+        deferredPrompt2 = null;
+        appInstalled();
+      });
+
+      // Track how PWA was launched (either from browser or as PWA)
+      function getLaunchMode() {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if(deferredPrompt2) hasPrompt();
+        if (document.referrer.startsWith('android-app://')) {
+          appLaunchedAsTWA();
+        } else if (navigator.standalone || isStandalone) {
+          appLaunchedAsPWA();
+        } else {
+          window.appLaunchedInBrowser();
+        }
+      }
+    </script>
     <script>
       let deferredPrompt;
       const addBtn = document.querySelector('.add-button');

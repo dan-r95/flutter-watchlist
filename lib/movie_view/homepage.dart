@@ -114,11 +114,11 @@ class _HomePageState extends State<HomePage> {
 
       if (decoded != null) {
         MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
-        print(item.toString());
+        //print(item.toString());
         list.add(item);
         list.addAll(listOtherSugg);
 
-        print(list.length);
+        //print(list.length);
         setState(() {
           loading = false;
         });
@@ -160,6 +160,7 @@ class _HomePageState extends State<HomePage> {
   MovieDescription? description;
 
   void _searchPressed() {
+    print("search pressed");
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
@@ -172,11 +173,13 @@ class _HomePageState extends State<HomePage> {
             return await updateSuggestions(pattern);
           },
           itemBuilder: (context, MovieSuggestion suggestion) {
+            //print(suggestion.toString());
             return Listener(
               child: ListTile(
                 leading: Icon(Icons.movie),
-                title: Text(suggestion.name),
-                subtitle: Text('${suggestion.year} / ${suggestion.stars}'),
+                title: Text(suggestion.name ?? ''),
+                subtitle: Text(
+                    '${suggestion.year ?? ''} / ${suggestion.stars ?? ''}'),
               ),
               onPointerDown: (_) => showAddDialog(context, suggestion),
             );
@@ -226,7 +229,7 @@ class _HomePageState extends State<HomePage> {
         appBar: new AppBar(
             leading: new IconButton(
               icon: _searchIcon,
-              onPressed: null,
+              onPressed: _searchPressed,
             ),
             centerTitle: true,
             title: _appBarTitle,

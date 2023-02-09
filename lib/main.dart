@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pwa_install/pwa_install.dart';
 //import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 import 'package:flutter_watchlist/login/login.dart';
@@ -41,6 +42,11 @@ Future<void> main() async {
             ActionCodeSettings(url: 'https://watchlist.firebaseapp.com/')),
     const GoogleProviderConfiguration(clientId: GOOGLE_CLIENT_ID),
   ]);
+
+  // Add this
+  PWAInstall().setup(installCallback: () {
+    debugPrint('APP INSTALLED!');
+  });
 
   runApp(App());
 }

@@ -17,24 +17,21 @@ class MovieSuggestion {
   MovieSuggestion(this._stars, this._name, this._imgURL);
 
   MovieSuggestion.fromMappedJson(Map<String, dynamic> json) {
-    print("aaa");
-    print(json);
-    _imdbUrl = json['imdbID'];
-    _name = json['Title'];
-    _imgURL = json['Poster'];
-    _year = json['Year'];
-    _type = json['Type'];
-    print("got here");
+    _imdbUrl = json['imdbID'] ?? "";
+    _name = json['Title'] ?? "";
+    _imgURL = json['Poster'] ?? "";
+    _year = json['Year'] ?? "";
+    _type = json['Type'] ?? "";
   }
 
   MovieSuggestion.fromSnapshot(DataSnapshot snapshot) {
     if (snapshot.value is List) {
       final value = snapshot.value as Map;
       _id = snapshot.key;
-      _name = value['Title'];
-      _imgURL = value['Poster'];
-      _year = value['Year'];
-      _imdbUrl = value['imdbUrl'];
+      _name = value['Title'] ?? "";
+      _imgURL = value['Poster'] ?? "";
+      _year = value['Year'] ?? "";
+      _imdbUrl = value['imdbUrl'] ?? "";
       _added = DateTime.fromMillisecondsSinceEpoch(value['added']);
     }
   }
@@ -42,15 +39,15 @@ class MovieSuggestion {
   MovieSuggestion.fromDocument(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     _id = data['id'] as String;
-    _name = data['Title'];
-    _imgURL = data['Poster'];
-    _year = data['Year'];
-    _imdbUrl = data['imdbUrl'];
+    _name = data['Title'] ?? "";
+    _imgURL = data['Poster'] ?? "";
+    _year = data['Year'] ?? "";
+    _imdbUrl = data['imdbUrl'] ?? "";
     _added = DateTime.fromMillisecondsSinceEpoch(data['added']);
   }
 
   String get id => _id!;
-  double get stars => _stars!;
+  double get stars => _stars ?? 0;
   String get year => _year!;
   String get type => _type!;
   String get name => _name!;

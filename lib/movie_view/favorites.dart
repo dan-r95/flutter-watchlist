@@ -10,6 +10,22 @@ class FavoritesList extends StatelessWidget {
   Bloc bloc;
   FavoritesList(this.uuid, this.bloc);
 
+  void _move(QueryDocumentSnapshot<Object?>? document, BuildContext context) {
+    print(document);
+
+    List<MovieSuggestion> list = bloc.alreadyWatchedListController.value;
+    list.add(MovieSuggestion.fromDocument(document!));
+    bloc.writeToalreadyWatched.add(list);
+
+    pushToDB(MovieSuggestion.fromDocument(document), 'alreadyWatched', uuid);
+    FirebaseFirestore.instance
+        .collection('favorites')
+        .doc(document.id)
+        .delete();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("added to already watched")));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -34,7 +50,7 @@ class FavoritesList extends StatelessWidget {
                             animation: "roll"),
                       );
                     default:
-                      print(snapshot.data?.docs);
+                      //print(snapshot.data?.docs);
                       if (snapshot.data?.docs.length == 0) {
                         return Container(
                             height: 200,
@@ -69,22 +85,7 @@ class FavoritesList extends StatelessWidget {
                             return new Dismissible(
                               key: UniqueKey(),
                               onDismissed: (direction) {
-                                List<MovieSuggestion> list =
-                                    bloc.alreadyWatchedListController.value;
-                                list.add(
-                                    MovieSuggestion.fromDocument(document!));
-                                bloc.writeToalreadyWatched.add(list);
-
-                                pushToDB(MovieSuggestion.fromDocument(document),
-                                    'alreadyWatched', uuid);
-                                FirebaseFirestore.instance
-                                    .collection('favorites')
-                                    .doc(document.id)
-                                    .delete();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text("added to already watched")));
+                                _move(document, context);
                               },
                               child: Card(
                                   semanticContainer: true,
@@ -168,6 +169,21 @@ class FavoritesList extends StatelessWidget {
                                                   onPressed: () {
                                                     showAlertDialog(context,
                                                         'favorites', document!);
+                                                  },
+                                                )),
+                                            Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black26,
+                                                ),
+                                                child: IconButton(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      0, 0, 0, 0),
+                                                  iconSize: 24,
+                                                  icon: Icon(Icons
+                                                      .move_to_inbox_outlined),
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    _move(document, context);
                                                   },
                                                 )),
                                           ]),
