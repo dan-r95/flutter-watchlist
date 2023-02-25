@@ -1,14 +1,10 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_watchlist/common/tab_bloc.dart';
 import 'package:flutter_watchlist/login/build_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/login/build_info.dart';
 
 // provide a way to change the port, ip, username, password and theme and save it to the preferences

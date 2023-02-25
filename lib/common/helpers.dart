@@ -8,8 +8,8 @@ import 'package:flutter_watchlist/movie_view/delete_dialog.dart';
 import 'package:flutter_watchlist/movie_view/info_dialog.dart';
 
 void launchURL(url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
+  if (await canLaunchUrl(url)) {
+    await canLaunchUrl(url);
   } else {
     throw 'Could not launch $url';
   }
