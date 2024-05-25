@@ -109,10 +109,10 @@ class _LoginPageState extends State<LoginPage> {
         AuthStateChangeAction<SignedIn>((context, state) {
           Navigator.pushReplacementNamed(context, '/home');
         }),
-        EmailLinkSignInAction((context) => {
-              EmailLinkSignInScreen(),
+        EmailLinkSignInAction((context) {
+              EmailLinkSignInScreen();
             }),
-        ForgotPasswordAction((context, state) => {
+        ForgotPasswordAction((context, state) {
               ForgotPasswordScreen(
                 headerBuilder: (context, constraints, shrinkOffset) {
                   return Padding(
@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-              )
+              );
             })
       ],
     );

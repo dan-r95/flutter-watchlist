@@ -103,28 +103,24 @@ class _HomePageState extends State<HomePage> {
       List decoded = jsonDecode(response.body)['Search'];
       //print(decoded);
       List<MovieSuggestion> listOtherSugg = [];
-      if (decoded != null) {
-        listOtherSugg =
-            decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
-      }
-      response = await http.get(
+      listOtherSugg =
+          decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
+          response = await http.get(
           new Uri.https("omdbapi.com", "", {"t": query, "apikey": "e83d3bc2"}));
 
       Map<String, dynamic> decodedMap = jsonDecode(response.body);
 
-      if (decoded != null) {
-        MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
-        //print(item.toString());
-        list.add(item);
-        list.addAll(listOtherSugg);
+      MovieSuggestion item = MovieSuggestion.fromMappedJson(decodedMap);
+      //print(item.toString());
+      list.add(item);
+      list.addAll(listOtherSugg);
 
-        //print(list.length);
-        setState(() {
-          loading = false;
-        });
-        return list;
-      }
-    }
+      //print(list.length);
+      setState(() {
+        loading = false;
+      });
+      return list;
+        }
     return list;
   }
 

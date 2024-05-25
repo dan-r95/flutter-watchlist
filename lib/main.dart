@@ -14,7 +14,6 @@ import 'package:pwa_install/pwa_install.dart';
 import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
-import 'package:flutter_watchlist/login/build_info.dart';
 import 'package:flutter_watchlist/settings/settings.dart';
 
 Future<void> main() async {
@@ -98,13 +97,13 @@ class MyApp extends StatelessWidget {
                 )),
                 outlinedButtonTheme: OutlinedButtonThemeData(
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsets>(
+                    padding: WidgetStateProperty.all<EdgeInsets>(
                       const EdgeInsets.all(24),
                     ),
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
+                        WidgetStateProperty.all<Color>(Colors.blue),
                     foregroundColor:
-                        MaterialStateProperty.all<Color>(Colors.white),
+                        WidgetStateProperty.all<Color>(Colors.white),
                   ),
                 ),
                 brightness: snapshot.data,

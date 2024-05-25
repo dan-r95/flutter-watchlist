@@ -66,7 +66,9 @@ class Language {
   Language();
   Language.fromJson(Map<String, dynamic> json);
 
-  Map<String, dynamic>? toJson() {}
+  Map<String, dynamic>? toJson() {
+    return null;
+  }
 }
 
 class Offers {

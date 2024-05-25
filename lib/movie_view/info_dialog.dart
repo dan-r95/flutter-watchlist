@@ -27,15 +27,13 @@ class InfoDialog extends StatelessWidget {
     })); // "www.omdbapi.com/", "?i=$id&apikey=e83d3bc2"));
 
     Map<String, dynamic> decoded = jsonDecode(response.body);
-    if (decoded != null) {
-      Movie desc = Movie.fromJson(decoded);
-      // setState(() {
-      //suggestions = list;
-      // });
+    Movie desc = Movie.fromJson(decoded);
+    // setState(() {
+    //suggestions = list;
+    // });
 
-      return desc;
-    }
-    return null;
+    return desc;
+      return null;
   }
 
   final bool _enabled = true;

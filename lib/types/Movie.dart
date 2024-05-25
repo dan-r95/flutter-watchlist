@@ -163,7 +163,7 @@ class Genres {
 
 class ProductionCompanies {
   int? id;
-  Null? logoPath;
+  Null logoPath;
   String? name;
   String? originCountry;
 
