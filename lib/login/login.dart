@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/common/snackbar.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 
-import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_watchlist/login/build_info.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,9 +37,11 @@ class _LoginPageState extends State<LoginPage> {
     if (testMail == null || testPw == null) {
       _uiErrorUtils?.openSnackBar(context, "environment not set up");
     }
+    late final EmailAuthProvider provider = EmailAuthProvider();
     try {
-      await FirebaseAuth.instance.signInWithCredential(
-          EmailAuthProvider.credential(email: testMail, password: testPw!));
+      //TODO: fix
+      /* await FirebaseAuth.instance
+          .signInWithCredential(provider.authenticate(testMail!, testPw!));*/
     } catch (e) {
       _uiErrorUtils?.openSnackBar(context, e.toString());
     }
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       },
-      footerBuilder: (context, _) {
+      /* footerBuilder: (context, _) {
         return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(children: <Widget>[
@@ -82,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
             ]));
-      },
+      },*/
       sideBuilder: (context, constraints) {
         return Column(
           children: [
