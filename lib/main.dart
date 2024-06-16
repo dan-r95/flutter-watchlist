@@ -3,18 +3,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutterfire_ui/auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pwa_install/pwa_install.dart';
-//import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
 
 import 'package:flutter_watchlist/login/login.dart';
 import 'package:flutter_watchlist/movie_view/homepage.dart';
 import 'package:flutter_watchlist/common/bloc.dart';
 import 'package:flutter_watchlist/settings/settings.dart';
+
+import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart'
+    as google_auth;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,12 +36,12 @@ Future<void> main() async {
     // );
   }
 
-  FlutterFireUIAuth.configureProviders([
-    const EmailProviderConfiguration(),
-    EmailLinkProviderConfiguration(
+  FirebaseUIAuth.configureProviders([
+    EmailAuthProvider(),
+    EmailLinkAuthProvider(
         actionCodeSettings:
             ActionCodeSettings(url: 'https://watchlist.firebaseapp.com/')),
-    const GoogleProviderConfiguration(clientId: GOOGLE_CLIENT_ID),
+    google_auth.GoogleProvider(clientId: GOOGLE_CLIENT_ID),
   ]);
 
   // Add this

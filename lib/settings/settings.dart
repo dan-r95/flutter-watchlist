@@ -8,7 +8,7 @@ import 'package:flutter_watchlist/login/build_info.dart';
 class SettingsRoute extends StatefulWidget {
   SettingsRoute({
     Key? key,
-    required this.title,
+    required final this.title,
   }) : super(key: key);
   String title = "";
   @override

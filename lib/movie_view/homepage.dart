@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       List<MovieSuggestion> listOtherSugg = [];
       listOtherSugg =
           decoded.map((m) => MovieSuggestion.fromMappedJson(m)).toList();
-          response = await http.get(
+      response = await http.get(
           new Uri.https("omdbapi.com", "", {"t": query, "apikey": "e83d3bc2"}));
 
       Map<String, dynamic> decodedMap = jsonDecode(response.body);
@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
         loading = false;
       });
       return list;
-        }
+    }
     return list;
   }
 
@@ -161,10 +161,13 @@ class _HomePageState extends State<HomePage> {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
         this._appBarTitle = TypeAheadField(
-          textFieldConfiguration: TextFieldConfiguration(
+          onSelected: (MovieSuggestion suggestion) {
+            showAddDialog(context, suggestion);
+          },
+          /*textFieldConfiguration: TextFieldConfiguration(
               autofocus: true,
               style: TextStyle(),
-              decoration: InputDecoration(border: OutlineInputBorder())),
+              decoration: InputDecoration(border: OutlineInputBorder())),*/
           suggestionsCallback: (pattern) async {
             return await updateSuggestions(pattern);
           },
@@ -179,9 +182,6 @@ class _HomePageState extends State<HomePage> {
               ),
               onPointerDown: (_) => showAddDialog(context, suggestion),
             );
-          },
-          onSuggestionSelected: (MovieSuggestion suggestion) {
-            showAddDialog(context, suggestion);
           },
         );
       } else {
